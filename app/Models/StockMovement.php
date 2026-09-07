@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\StockMovementType;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -54,5 +55,20 @@ class StockMovement extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function scopeForProduct(Builder $query, int $productId): Builder
+    {
+        return $query->where('product_id', $productId);
+    }
+
+    public function scopeOfType(Builder $query, StockMovementType $type): Builder
+    {
+        return $query->where('type', $type);
+    }
+
+    public function scopeRecent(Builder $query, int $days = 30): Builder
+    {
+        return $query->where('created_at', '>=', now()->subDays($days));
     }
 }

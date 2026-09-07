@@ -80,4 +80,22 @@ class Product extends Model
     {
         return $query->whereColumn('current_stock', '<=', 'minimum_stock');
     }
+
+    public function scopeInCategory(Builder $query, int $categoryId): Builder
+    {
+        return $query->where('category_id', $categoryId);
+    }
+
+    public function scopeFromSupplier(Builder $query, int $supplierId): Builder
+    {
+        return $query->where('supplier_id', $supplierId);
+    }
+
+    public function scopeSearch(Builder $query, string $search): Builder
+    {
+        return $query->where(function ($q) use ($search) {
+            $q->where('name', 'ilike', "%{$search}%")
+                ->orWhere('sku', 'ilike', "%{$search}%");
+        });
+    }
 }
