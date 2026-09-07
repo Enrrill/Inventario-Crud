@@ -21,20 +21,20 @@ class UpdateProductRequest extends FormRequest
         $productId = $this->route('product')?->id;
 
         return [
-            'sku' => [
+            'sku_product' => [
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('products', 'sku')->ignore($productId),
+                Rule::unique('products', 'sku_product')->ignore($productId),
             ],
-            'name' => ['required', 'string', 'max:200'],
-            'description' => ['nullable', 'string'],
+            'name_product' => ['required', 'string', 'max:200'],
+            'description_product' => ['nullable', 'string'],
             'category_id' => ['required', 'exists:categories,id'],
             'supplier_id' => ['nullable', 'exists:suppliers,id'],
-            'unit_price' => ['required', 'numeric', 'min:0'],
-            'unit_of_measure' => ['required', 'string', 'max:50'],
-            'minimum_stock' => ['required', 'integer', 'min:0'],
-            'is_active' => ['boolean'],
+            'unit_price_product' => ['required', 'numeric', 'min:0'],
+            'unit_of_measure_product' => ['required', 'string', 'max:50'],
+            'minimum_stock_product' => ['required', 'integer', 'min:0'],
+            'is_active_product' => ['boolean'],
         ];
     }
 }

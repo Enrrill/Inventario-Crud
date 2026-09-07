@@ -21,16 +21,16 @@ class UpdateSupplierRequest extends FormRequest
         $supplierId = $this->route('supplier')?->id;
 
         return [
-            'name' => ['required', 'string', 'max:150'],
-            'contact_name' => ['nullable', 'string', 'max:150'],
-            'email' => [
+            'name_supplier' => ['required', 'string', 'max:150'],
+            'contact_name_supplier' => ['nullable', 'string', 'max:150'],
+            'email_supplier' => [
                 'nullable',
                 'email',
                 'max:255',
-                Rule::unique('suppliers', 'email')->ignore($supplierId),
+                Rule::unique('suppliers', 'email_supplier')->ignore($supplierId),
             ],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'address' => ['nullable', 'string'],
+            'phone_supplier' => ['nullable', 'string', 'max:50'],
+            'address_supplier' => ['nullable', 'string'],
         ];
     }
 }

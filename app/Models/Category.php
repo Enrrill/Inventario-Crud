@@ -11,9 +11,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
- * @property string $name
- * @property string|null $description
- * @property int|null $parent_id
+ * @property string $name_category
+ * @property string|null $description_category
+ * @property int|null $parent_category_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -22,19 +22,19 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'description',
-        'parent_id',
+        'name_category',
+        'description_category',
+        'parent_category_id',
     ];
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'parent_id');
+        return $this->belongsTo(Category::class, 'parent_category_id');
     }
 
     public function children(): HasMany
     {
-        return $this->hasMany(Category::class, 'parent_id');
+        return $this->hasMany(Category::class, 'parent_category_id');
     }
 
     public function products(): HasMany

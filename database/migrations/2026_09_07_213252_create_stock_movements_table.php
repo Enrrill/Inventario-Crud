@@ -13,19 +13,19 @@ return new class extends Migration
             $table->foreignId('product_id')
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->string('type', 20);
-            $table->integer('quantity');
-            $table->integer('previous_stock');
-            $table->integer('new_stock');
-            $table->string('reference', 100)->nullable();
-            $table->text('notes')->nullable();
+            $table->string('type_movement', 20);
+            $table->integer('quantity_movement');
+            $table->integer('previous_stock_movement');
+            $table->integer('new_stock_movement');
+            $table->string('reference_movement', 100)->nullable();
+            $table->text('notes_movement')->nullable();
             $table->foreignId('user_id')
                 ->constrained()
                 ->cascadeOnDelete();
             $table->timestamps();
 
             $table->index('product_id');
-            $table->index('type');
+            $table->index('type_movement');
             $table->index('created_at');
         });
     }

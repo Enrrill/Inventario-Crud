@@ -11,16 +11,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
- * @property string $sku
- * @property string $name
- * @property string|null $description
+ * @property string $sku_product
+ * @property string $name_product
+ * @property string|null $description_product
  * @property int $category_id
  * @property int|null $supplier_id
- * @property float $unit_price
- * @property string $unit_of_measure
- * @property int $minimum_stock
- * @property int $current_stock
- * @property bool $is_active
+ * @property float $unit_price_product
+ * @property string $unit_of_measure_product
+ * @property int $minimum_stock_product
+ * @property int $current_stock_product
+ * @property bool $is_active_product
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -29,25 +29,25 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'sku',
-        'name',
-        'description',
+        'sku_product',
+        'name_product',
+        'description_product',
         'category_id',
         'supplier_id',
-        'unit_price',
-        'unit_of_measure',
-        'minimum_stock',
-        'current_stock',
-        'is_active',
+        'unit_price_product',
+        'unit_of_measure_product',
+        'minimum_stock_product',
+        'current_stock_product',
+        'is_active_product',
     ];
 
     protected function casts(): array
     {
         return [
-            'unit_price' => 'decimal:2',
-            'minimum_stock' => 'integer',
-            'current_stock' => 'integer',
-            'is_active' => 'boolean',
+            'unit_price_product' => 'decimal:2',
+            'minimum_stock_product' => 'integer',
+            'current_stock_product' => 'integer',
+            'is_active_product' => 'boolean',
         ];
     }
 
@@ -68,17 +68,17 @@ class Product extends Model
 
     public function isLowStock(): bool
     {
-        return $this->current_stock <= $this->minimum_stock;
+        return $this->current_stock_product <= $this->minimum_stock_product;
     }
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('is_active', true);
+        return $query->where('is_active_product', true);
     }
 
     public function scopeLowStock(Builder $query): Builder
     {
-        return $query->whereColumn('current_stock', '<=', 'minimum_stock');
+        return $query->whereColumn('current_stock_product', '<=', 'minimum_stock_product');
     }
 
     public function scopeInCategory(Builder $query, int $categoryId): Builder
@@ -94,8 +94,8 @@ class Product extends Model
     public function scopeSearch(Builder $query, string $search): Builder
     {
         return $query->where(function ($q) use ($search) {
-            $q->where('name', 'ilike', "%{$search}%")
-                ->orWhere('sku', 'ilike', "%{$search}%");
+            $q->where('name_product', 'ilike', "%{$search}%")
+                ->orWhere('sku_product', 'ilike', "%{$search}%");
         });
     }
 }

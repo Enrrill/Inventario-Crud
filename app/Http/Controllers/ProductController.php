@@ -17,7 +17,7 @@ class ProductController extends Controller
     public function index(Request $request): Response
     {
         $query = Product::with('category', 'supplier')
-            ->orderBy('name');
+            ->orderBy('name_product');
 
         if ($search = $request->string('search')) {
             $query->search($search);
@@ -36,15 +36,15 @@ class ProductController extends Controller
         }
 
         if ($request->boolean('inactive')) {
-            $query->where('is_active', false);
+            $query->where('is_active_product', false);
         } else {
             $query->active();
         }
 
         $products = $query->paginate(15);
 
-        $categories = Category::orderBy('name')->get();
-        $suppliers = Supplier::orderBy('name')->get();
+        $categories = Category::orderBy('name_category')->get();
+        $suppliers = Supplier::orderBy('name_supplier')->get();
 
         return Inertia::render('products/index', [
             'products' => $products,
@@ -56,8 +56,8 @@ class ProductController extends Controller
 
     public function create(): Response
     {
-        $categories = Category::orderBy('name')->get();
-        $suppliers = Supplier::orderBy('name')->get();
+        $categories = Category::orderBy('name_category')->get();
+        $suppliers = Supplier::orderBy('name_supplier')->get();
 
         return Inertia::render('products/create', [
             'categories' => $categories,
@@ -85,8 +85,8 @@ class ProductController extends Controller
 
     public function edit(Product $product): Response
     {
-        $categories = Category::orderBy('name')->get();
-        $suppliers = Supplier::orderBy('name')->get();
+        $categories = Category::orderBy('name_category')->get();
+        $suppliers = Supplier::orderBy('name_supplier')->get();
 
         return Inertia::render('products/edit', [
             'product' => $product,

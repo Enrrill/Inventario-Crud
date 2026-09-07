@@ -14,12 +14,12 @@ class SupplierController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = Supplier::withCount('products')->orderBy('name');
+        $query = Supplier::withCount('products')->orderBy('name_supplier');
 
         if ($search = $request->string('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'ilike', "%{$search}%")
-                    ->orWhere('email', 'ilike', "%{$search}%");
+                $q->where('name_supplier', 'ilike', "%{$search}%")
+                    ->orWhere('email_supplier', 'ilike', "%{$search}%");
             });
         }
 

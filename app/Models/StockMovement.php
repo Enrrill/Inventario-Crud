@@ -12,12 +12,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property int $product_id
- * @property StockMovementType $type
- * @property int $quantity
- * @property int $previous_stock
- * @property int $new_stock
- * @property string|null $reference
- * @property string|null $notes
+ * @property StockMovementType $type_movement
+ * @property int $quantity_movement
+ * @property int $previous_stock_movement
+ * @property int $new_stock_movement
+ * @property string|null $reference_movement
+ * @property string|null $notes_movement
  * @property int $user_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -28,22 +28,22 @@ class StockMovement extends Model
 
     protected $fillable = [
         'product_id',
-        'type',
-        'quantity',
-        'previous_stock',
-        'new_stock',
-        'reference',
-        'notes',
+        'type_movement',
+        'quantity_movement',
+        'previous_stock_movement',
+        'new_stock_movement',
+        'reference_movement',
+        'notes_movement',
         'user_id',
     ];
 
     protected function casts(): array
     {
         return [
-            'type' => StockMovementType::class,
-            'quantity' => 'integer',
-            'previous_stock' => 'integer',
-            'new_stock' => 'integer',
+            'type_movement' => StockMovementType::class,
+            'quantity_movement' => 'integer',
+            'previous_stock_movement' => 'integer',
+            'new_stock_movement' => 'integer',
         ];
     }
 
@@ -64,7 +64,7 @@ class StockMovement extends Model
 
     public function scopeOfType(Builder $query, StockMovementType $type): Builder
     {
-        return $query->where('type', $type);
+        return $query->where('type_movement', $type);
     }
 
     public function scopeRecent(Builder $query, int $days = 30): Builder

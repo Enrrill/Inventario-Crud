@@ -18,19 +18,19 @@ class RegisterEntryAction
         User $user,
     ): StockMovement {
         return DB::transaction(function () use ($product, $quantity, $reference, $notes, $user) {
-            $previousStock = $product->current_stock;
+            $previousStock = $product->current_stock_product;
             $newStock = $previousStock + $quantity;
 
-            $product->update(['current_stock' => $newStock]);
+            $product->update(['current_stock_product' => $newStock]);
 
             return StockMovement::create([
                 'product_id' => $product->id,
-                'type' => StockMovementType::Entry,
-                'quantity' => $quantity,
-                'previous_stock' => $previousStock,
-                'new_stock' => $newStock,
-                'reference' => $reference,
-                'notes' => $notes,
+                'type_movement' => StockMovementType::Entry,
+                'quantity_movement' => $quantity,
+                'previous_stock_movement' => $previousStock,
+                'new_stock_movement' => $newStock,
+                'reference_movement' => $reference,
+                'notes_movement' => $notes,
                 'user_id' => $user->id,
             ]);
         });

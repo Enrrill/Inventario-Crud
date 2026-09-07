@@ -31,7 +31,7 @@ class StockMovementController extends Controller
 
         $movements = $query->paginate(15);
 
-        $products = Product::active()->orderBy('name')->get();
+        $products = Product::active()->orderBy('name_product')->get();
 
         return Inertia::render('movements/index', [
             'movements' => $movements,
@@ -42,7 +42,7 @@ class StockMovementController extends Controller
 
     public function create(): Response
     {
-        $products = Product::active()->orderBy('name')->get();
+        $products = Product::active()->orderBy('name_product')->get();
 
         return Inertia::render('movements/create', [
             'products' => $products,
@@ -62,26 +62,26 @@ class StockMovementController extends Controller
         $product = Product::findOrFail($request->validated('product_id'));
         $validated = $request->validated();
 
-        match ($request->validated('type')) {
+        match ($request->validated('type_movement')) {
             StockMovementType::Entry => $registerEntry->handle(
                 $product,
-                $validated['quantity'],
-                $validated['reference'] ?? null,
-                $validated['notes'] ?? null,
+                $validated['quantity_movement'],
+                $validated['reference_movement'] ?? null,
+                $validated['notes_movement'] ?? null,
                 $request->user(),
             ),
             StockMovementType::Exit => $registerExit->handle(
                 $product,
-                $validated['quantity'],
-                $validated['reference'] ?? null,
-                $validated['notes'] ?? null,
+                $validated['quantity_movement'],
+                $validated['reference_movement'] ?? null,
+                $validated['notes_movement'] ?? null,
                 $request->user(),
             ),
             StockMovementType::Adjustment => $registerAdjustment->handle(
                 $product,
-                $validated['quantity'],
-                $validated['reference'] ?? null,
-                $validated['notes'] ?? null,
+                $validated['quantity_movement'],
+                $validated['reference_movement'] ?? null,
+                $validated['notes_movement'] ?? null,
                 $request->user(),
             ),
         };

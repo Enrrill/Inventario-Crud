@@ -20,13 +20,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        $electronica = Category::factory()->create(['name' => 'Electrónica']);
-        Category::factory()->child($electronica)->create(['name' => 'Computadoras']);
-        Category::factory()->child($electronica)->create(['name' => 'Celulares']);
+        $electronica = Category::factory()->create(['name_category' => 'Electrónica']);
+        Category::factory()->child($electronica)->create(['name_category' => 'Computadoras']);
+        Category::factory()->child($electronica)->create(['name_category' => 'Celulares']);
 
-        $ropa = Category::factory()->create(['name' => 'Ropa']);
-        Category::factory()->child($ropa)->create(['name' => 'Camisas']);
-        Category::factory()->child($ropa)->create(['name' => 'Pantalones']);
+        $ropa = Category::factory()->create(['name_category' => 'Ropa']);
+        Category::factory()->child($ropa)->create(['name_category' => 'Camisas']);
+        Category::factory()->child($ropa)->create(['name_category' => 'Pantalones']);
 
         Supplier::factory()->count(5)->create();
 

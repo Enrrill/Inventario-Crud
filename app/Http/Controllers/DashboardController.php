@@ -19,7 +19,7 @@ class DashboardController extends Controller
             'low_stock_products' => Product::lowStock()->active()->count(),
             'total_categories' => Category::count(),
             'total_suppliers' => Supplier::count(),
-            'inventory_value' => Product::active()->sum('current_stock * unit_price'),
+            'inventory_value' => Product::active()->sum('current_stock_product * unit_price_product'),
         ];
 
         $recentMovements = StockMovement::with('product', 'user')

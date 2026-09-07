@@ -22,10 +22,10 @@ class StoreStockMovementRequest extends FormRequest
     {
         return [
             'product_id' => ['required', 'exists:products,id'],
-            'type' => ['required', Rule::enum(StockMovementType::class)],
-            'quantity' => ['required', 'integer', 'min:1'],
-            'reference' => ['nullable', 'string', 'max:100'],
-            'notes' => ['nullable', 'string'],
+            'type_movement' => ['required', Rule::enum(StockMovementType::class)],
+            'quantity_movement' => ['required', 'integer', 'min:1'],
+            'reference_movement' => ['nullable', 'string', 'max:100'],
+            'notes_movement' => ['nullable', 'string'],
         ];
     }
 
@@ -39,11 +39,11 @@ class StoreStockMovementRequest extends FormRequest
         return [
             'product_id.required' => 'Debe seleccionar un producto.',
             'product_id.exists' => 'El producto seleccionado no existe.',
-            'type.required' => 'Debe seleccionar un tipo de movimiento.',
-            'type.enum' => 'El tipo de movimiento no es válido.',
-            'quantity.required' => 'La cantidad es obligatoria.',
-            'quantity.integer' => 'La cantidad debe ser un número entero.',
-            'quantity.min' => 'La cantidad debe ser al menos 1.',
+            'type_movement.required' => 'Debe seleccionar un tipo de movimiento.',
+            'type_movement.enum' => 'El tipo de movimiento no es válido.',
+            'quantity_movement.required' => 'La cantidad es obligatoria.',
+            'quantity_movement.integer' => 'La cantidad debe ser un número entero.',
+            'quantity_movement.min' => 'La cantidad debe ser al menos 1.',
         ];
     }
 
@@ -53,16 +53,16 @@ class StoreStockMovementRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            if ($validator->errors()->hasAny(['product_id', 'type', 'quantity'])) {
+            if ($validator->errors()->hasAny(['product_id', 'type_movement', 'quantity_movement'])) {
                 return;
             }
 
             $product = Product::find($this->product_id);
 
-            if ($this->type === StockMovementType::Exit && $this->quantity > $product->current_stock) {
+            if ($this->type_movement === StockMovementType::Exit && $this->quantity_movement > $product->current_stock_product) {
                 $validator->errors()->add(
-                    'quantity',
-                    "Stock insuficiente. Disponible: {$product->current_stock}"
+                    'quantity_movement',
+                    "Stock insuficiente. Disponible: {$product->current_stock_product}"
                 );
             }
         });

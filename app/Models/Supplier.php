@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
- * @property string $name
- * @property string|null $contact_name
- * @property string|null $email
- * @property string|null $phone
- * @property string|null $address
+ * @property string $name_supplier
+ * @property string|null $contact_name_supplier
+ * @property string|null $email_supplier
+ * @property string|null $phone_supplier
+ * @property string|null $address_supplier
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -22,11 +22,11 @@ class Supplier extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'contact_name',
-        'email',
-        'phone',
-        'address',
+        'name_supplier',
+        'contact_name_supplier',
+        'email_supplier',
+        'phone_supplier',
+        'address_supplier',
     ];
 
     public function products(): HasMany

@@ -22,28 +22,28 @@ class StockMovementFactory extends Factory
 
         return [
             'product_id' => Product::factory(),
-            'type' => fake()->randomElement(StockMovementType::cases()),
-            'quantity' => $quantity,
-            'previous_stock' => $previousStock,
-            'new_stock' => $previousStock + $quantity,
-            'reference' => fake()->optional()->bothify('REF-####'),
-            'notes' => fake()->optional()->sentence(),
+            'type_movement' => fake()->randomElement(StockMovementType::cases()),
+            'quantity_movement' => $quantity,
+            'previous_stock_movement' => $previousStock,
+            'new_stock_movement' => $previousStock + $quantity,
+            'reference_movement' => fake()->optional()->bothify('REF-####'),
+            'notes_movement' => fake()->optional()->sentence(),
             'user_id' => User::factory(),
         ];
     }
 
     public function entry(): static
     {
-        return $this->state(fn () => ['type' => StockMovementType::Entry]);
+        return $this->state(fn () => ['type_movement' => StockMovementType::Entry]);
     }
 
     public function exit(): static
     {
-        return $this->state(fn () => ['type' => StockMovementType::Exit]);
+        return $this->state(fn () => ['type_movement' => StockMovementType::Exit]);
     }
 
     public function adjustment(): static
     {
-        return $this->state(fn () => ['type' => StockMovementType::Adjustment]);
+        return $this->state(fn () => ['type_movement' => StockMovementType::Adjustment]);
     }
 }

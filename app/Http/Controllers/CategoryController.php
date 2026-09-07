@@ -17,7 +17,7 @@ class CategoryController extends Controller
     {
         $categories = Category::with('parent', 'children', 'products')
             ->withCount('products')
-            ->orderBy('name')
+            ->orderBy('name_category')
             ->paginate(15);
 
         return Inertia::render('categories/index', [
@@ -27,8 +27,8 @@ class CategoryController extends Controller
 
     public function create(): Response
     {
-        $parentCategories = Category::whereNull('parent_id')
-            ->orderBy('name')
+        $parentCategories = Category::whereNull('parent_category_id')
+            ->orderBy('name_category')
             ->get();
 
         return Inertia::render('categories/create', [
@@ -56,9 +56,9 @@ class CategoryController extends Controller
 
     public function edit(Category $category): Response
     {
-        $parentCategories = Category::whereNull('parent_id')
+        $parentCategories = Category::whereNull('parent_category_id')
             ->where('id', '!=', $category->id)
-            ->orderBy('name')
+            ->orderBy('name_category')
             ->get();
 
         return Inertia::render('categories/edit', [
