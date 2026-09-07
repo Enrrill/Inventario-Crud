@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Http\Requests\Supplier;
+
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreSupplierRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return array<string, array<int, ValidationRule|array<mixed>|string>>
+     */
+    public function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:150'],
+            'contact_name' => ['nullable', 'string', 'max:150'],
+            'email' => ['nullable', 'email', 'max:255', 'unique:suppliers,email'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string'],
+        ];
+    }
+}
