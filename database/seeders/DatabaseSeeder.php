@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -10,16 +13,25 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        $electronica = Category::factory()->create(['name' => 'Electrónica']);
+        Category::factory()->child($electronica)->create(['name' => 'Computadoras']);
+        Category::factory()->child($electronica)->create(['name' => 'Celulares']);
+
+        $ropa = Category::factory()->create(['name' => 'Ropa']);
+        Category::factory()->child($ropa)->create(['name' => 'Camisas']);
+        Category::factory()->child($ropa)->create(['name' => 'Pantalones']);
+
+        Supplier::factory()->count(5)->create();
+
+        Product::factory()->count(10)->create(['category_id' => $electronica->id]);
+        Product::factory()->count(10)->create(['category_id' => $ropa->id]);
+        Product::factory()->lowStock()->count(3)->create();
     }
 }
