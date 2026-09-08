@@ -1,6 +1,6 @@
 import {
-    useReactTable,
-    getCoreRowModel,
+    useTable,
+    createCoreRowModel,
     flexRender,
     type ColumnDef,
     type PaginationState,
@@ -46,10 +46,10 @@ function DataTable<TData, TValue>({
     emptyAction?: { label: string; href: string };
     loading?: boolean;
 }) {
-    const table = useReactTable({
+    const table = useTable({
         data,
         columns,
-        getCoreRowModel: getCoreRowModel(),
+        getCoreRowModel: createCoreRowModel(),
         manualPagination: true,
         pageCount: pagination?.last_page ?? 1,
     });

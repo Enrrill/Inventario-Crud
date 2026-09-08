@@ -1,0 +1,228 @@
+import { Head, Link, router } from '@inertiajs/react';
+import { ArrowLeftIcon, PencilIcon, Trash2Icon } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
+import { EmptyState } from '@/components/inventory/empty-state';
+import { PageHeader } from '@/components/inventory/page-header';
+import { StockBadge } from '@/components/inventory/stock-badge';
+import categories from '@/routes/categories';
+import products from '@/routes/products';
+import type { Category, Product } from '@/types/inventory';
+
+type CategoriesShowProps = {
+    category: Category & {
+        parent?: Category | null;
+        children?: Category[];
+        products?: Product[];
+    };
+};
+
+export default function CategoriesShow({ category }: CategoriesShowProps) {
+    const [showDelete, setShowDelete] = useState(false);
+
+    function handleDelete() {
+        router.delete(categories.destroy.url(category.id));
+    }
+
+    return (
+        <>
+            <Head title={category.name_category} />
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <PageHeader
+                    title={category.name_category}
+                    description={category.description_category ?? 'Sin descripción'}
+                >
+                    <Button variant="outline" asChild>
+                        <Link href={categories.index.url()}>
+                            <ArrowLeftIcon className="size-4" />
+                            Volver
+                        </Link>
+                    </Button>
+                    <Button variant="outline" asChild>
+                        <Link href={categories.edit.url(category.id)}>
+                            <PencilIcon className="size-4" />
+                            Editar
+                        </Link>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        onClick={() => setShowDelete(true)}
+                    >
+                        <Trash2Icon className="text-destructive size-4" />
+                        Eliminar
+                    </Button>
+                </PageHeader>
+
+                <div className="grid gap-4 lg:grid-cols-3">
+                    <Card className="lg:col-span-1">
+                        <CardHeader>
+                            <CardTitle>Detalle</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div>
+                                <p className="text-muted-foreground text-sm">Nombre</p>
+                                <p className="font-medium">{category.name_category}</p>
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground text-sm">Descripción</p>
+                                <p className="font-medium">
+                                    {category.description_category ?? '—'}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground text-sm">Categoría padre</p>
+                                <p className="font-medium">
+                                    {category.parent ? (
+                                        <Link
+                                            href={categories.show.url(category.parent.id)}
+                                            className="hover:text-primary"
+                                        >
+                                            {category.parent.name_category}
+                                        </Link>
+                                    ) : (
+                                        '—'
+                                    )}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground text-sm">Subcategorías</p>
+                                <p className="font-medium">{category.children?.length ?? 0}</p>
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground text-sm">Productos</p>
+                                <p className="font-medium">{category.products?.length ?? 0}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <div className="space-y-4 lg:col-span-2">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <CardTitle>
+                                    Subcategorías ({category.children?.length ?? 0})
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {!category.children || category.children.length === 0 ? (
+                                    <EmptyState
+                                        icon={ArrowLeftIcon}
+                                        title="Sin subcategorías"
+                                        description="Esta categoría no tiene subcategorías."
+                                    />
+                                ) : (
+                                    <div className="space-y-2">
+                                        {category.children.map((child) => (
+                                            <Link
+                                                key={child.id}
+                                                href={categories.show.url(child.id)}
+                                                className="hover:bg-muted flex items-center justify-between rounded-lg border p-3 transition-colors"
+                                            >
+                                                <span className="font-medium">
+                                                    {child.name_category}
+                                                </span>
+                                                <span className="text-muted-foreground text-sm">
+                                                    {child.products_count} productos
+                                                </span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <CardTitle>
+                                    Productos ({category.products?.length ?? 0})
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {!category.products || category.products.length === 0 ? (
+                                    <EmptyState
+                                        icon={ArrowLeftIcon}
+                                        title="Sin productos"
+                                        description="Esta categoría no tiene productos asociados."
+                                    />
+                                ) : (
+                                    <div className="rounded-md border">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>SKU</TableHead>
+                                                    <TableHead>Nombre</TableHead>
+                                                    <TableHead className="text-center">
+                                                        Stock
+                                                    </TableHead>
+                                                    <TableHead className="text-center">
+                                                        Estado
+                                                    </TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {category.products.map((product) => (
+                                                    <TableRow key={product.id}>
+                                                        <TableCell className="font-mono text-sm">
+                                                            {product.sku_product}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Link
+                                                                href={products.show.url(product.id)}
+                                                                className="hover:text-primary font-medium"
+                                                            >
+                                                                {product.name_product}
+                                                            </Link>
+                                                        </TableCell>
+                                                        <TableCell className="text-center">
+                                                            {product.current_stock_product}
+                                                        </TableCell>
+                                                        <TableCell className="text-center">
+                                                            <StockBadge
+                                                                currentStock={
+                                                                    product.current_stock_product
+                                                                }
+                                                                minimumStock={
+                                                                    product.minimum_stock_product
+                                                                }
+                                                                showValue={false}
+                                                            />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+
+                <ConfirmDialog
+                    open={showDelete}
+                    onOpenChange={setShowDelete}
+                    title="Eliminar categoría"
+                    description={`¿Estás seguro de eliminar la categoría "${category.name_category}"? Los productos se moverán a "Sin categoría".`}
+                    confirmText="Eliminar"
+                    onConfirm={handleDelete}
+                />
+            </div>
+        </>
+    );
+}
+
+CategoriesShow.layout = {
+    breadcrumbs: [
+        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Categorías', href: categories.index.url() },
+    ],
+};
