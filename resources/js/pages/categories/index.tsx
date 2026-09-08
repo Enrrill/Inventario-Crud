@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/inventory/empty-state';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
 import { SearchInput } from '@/components/inventory/search-input';
+import { useQueryParams } from '@/hooks/use-query-params';
 import categories from '@/routes/categories';
 import type { Category, PaginatedData } from '@/types/inventory';
 import { useState } from 'react';
@@ -17,18 +18,11 @@ type CategoriesIndexProps = {
 };
 
 export default function CategoriesIndex({ categories: pagination }: CategoriesIndexProps) {
-    const [search, setSearch] = useState(
-        new URLSearchParams(window.location.search).get('search') ?? '',
-    );
+    const [filters, setFilters] = useQueryParams<{ search: string }>();
     const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
 
     function handleSearch(value: string) {
-        setSearch(value);
-        router.get(
-            categories.index.url(),
-            { search: value },
-            { preserveScroll: true, preserveState: true },
-        );
+        setFilters({ search: value });
     }
 
     function handleDelete() {
@@ -128,7 +122,7 @@ export default function CategoriesIndex({ categories: pagination }: CategoriesIn
 
                 <FilterBar>
                     <SearchInput
-                        value={search}
+                        value={filters.search ?? ''}
                         onChange={handleSearch}
                         placeholder="Buscar categoría..."
                         className="w-full sm:w-80"
@@ -139,10 +133,9 @@ export default function CategoriesIndex({ categories: pagination }: CategoriesIn
                     columns={columns}
                     data={pagination.data}
                     pagination={pagination}
-                    searchValue={search}
+                    searchValue={filters.search ?? ''}
                     onSearchChange={handleSearch}
                     searchPlaceholder="Buscar categoría..."
-                    emptyIcon={categories.index.definition ? undefined : undefined}
                     emptyTitle="Sin categorías"
                     emptyDescription="No se encontraron categorías. Crea una nueva para comenzar."
                     emptyAction={{

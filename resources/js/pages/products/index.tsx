@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -21,6 +21,7 @@ import { SearchInput } from '@/components/inventory/search-input';
 import { StockBadge } from '@/components/inventory/stock-badge';
 import { StatusBadge } from '@/components/inventory/status-badge';
 import { ViewToggle } from '@/components/inventory/view-toggle';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import products from '@/routes/products';
 import type {
     Category,
@@ -65,20 +66,11 @@ export default function ProductsIndex({
     suppliers,
     filters,
 }: ProductsIndexProps) {
-    const [view, setView] = useState<'list' | 'grid'>(() => {
-        if (typeof window !== 'undefined') {
-            return (
-                (localStorage.getItem('products-view') as 'list' | 'grid') ??
-                'list'
-            );
-        }
-        return 'list';
-    });
+    const [view, setView] = useLocalStorage<'list' | 'grid'>(
+        'products-view',
+        'list',
+    );
     const [deleteProduct, setDeleteProduct] = useState<Product | null>(null);
-
-    useEffect(() => {
-        localStorage.setItem('products-view', view);
-    }, [view]);
 
     function applyFilters(overrides: Record<string, string | undefined>) {
         const params: Record<string, string> = {};

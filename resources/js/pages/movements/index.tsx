@@ -1,4 +1,4 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { EyeIcon, PlusIcon } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { EmptyState } from '@/components/inventory/empty-state';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
 import { TypeBadge } from '@/components/inventory/type-badge';
+import { useQueryParams } from '@/hooks/use-query-params';
 import movements from '@/routes/movements';
 import type {
     PaginatedData,
@@ -34,10 +35,17 @@ type MovementsIndexProps = {
 export default function MovementsIndex({
     movements: pagination,
     products,
-    filters,
 }: MovementsIndexProps) {
+    const [filters, setFilters] = useQueryParams<{
+        product_id: string;
+        type: string;
+    }>();
     const page = usePage();
-    const filterTypes: StockMovementType[] = page.props.filterTypes as StockMovementType[] ?? ['entry', 'exit', 'adjustment'];
+    const filterTypes: StockMovementType[] = (page.props.filterTypes as StockMovementType[]) ?? [
+        'entry',
+        'exit',
+        'adjustment',
+    ];
     const typeLabels: Record<string, string> = {
         entry: 'Entrada',
         exit: 'Salida',
@@ -45,16 +53,7 @@ export default function MovementsIndex({
     };
 
     function handleFilter(key: string, value: string) {
-        const params: Record<string, string> = { ...filters };
-        if (value === 'all' || value === '') {
-            delete params[key];
-        } else {
-            params[key] = value;
-        }
-        router.get(movements.index.url(), params, {
-            preserveScroll: true,
-            preserveState: true,
-        });
+        setFilters({ [key]: value === 'all' ? '' : value });
     }
 
     function formatDate(date: string) {
