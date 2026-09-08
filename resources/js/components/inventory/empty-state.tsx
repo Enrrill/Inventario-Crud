@@ -1,14 +1,14 @@
 import { Link } from '@inertiajs/react';
-import type { LucideIcon } from 'lucide-react';
+import { Package, type LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 function EmptyState({
-    icon: Icon,
+    icon: Icon = Package,
     title,
     description,
     action,
 }: {
-    icon: LucideIcon;
+    icon?: LucideIcon;
     title: string;
     description: string;
     action?: {
