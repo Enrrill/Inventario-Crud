@@ -110,7 +110,7 @@ function DataTable<TData extends RowData, TValue>({
                         ) : (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id}>
-                                    {row.getVisibleCells().map((cell) => (
+                                    {row.getAllCells().map((cell) => (
                                         <TableCell key={cell.id}>
                                             {flexRender(
                                                 cell.column.columnDef.cell,
