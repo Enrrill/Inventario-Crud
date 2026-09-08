@@ -1,9 +1,10 @@
 import {
     useTable,
-    createCoreRowModel,
     flexRender,
+    stockFeatures,
     type ColumnDef,
-    type PaginationState,
+    type RowData,
+    type StockFeatures,
 } from '@tanstack/react-table';
 import {
     Table,
@@ -19,7 +20,7 @@ import { Pagination } from '@/components/inventory/pagination';
 import type { PaginatedData } from '@/types/inventory';
 import type { LucideIcon } from 'lucide-react';
 
-function DataTable<TData, TValue>({
+function DataTable<TData extends RowData, TValue>({
     columns,
     data,
     pagination,
@@ -33,7 +34,7 @@ function DataTable<TData, TValue>({
     emptyAction,
     loading = false,
 }: {
-    columns: ColumnDef<TData, TValue>[];
+    columns: ColumnDef<StockFeatures, TData, TValue>[];
     data: TData[];
     pagination?: PaginatedData<TData>;
     searchPlaceholder?: string;
@@ -47,9 +48,9 @@ function DataTable<TData, TValue>({
     loading?: boolean;
 }) {
     const table = useTable({
+        features: stockFeatures,
         data,
-        columns,
-        getCoreRowModel: createCoreRowModel(),
+        columns: columns as ColumnDef<StockFeatures, TData>[],
         manualPagination: true,
         pageCount: pagination?.last_page ?? 1,
     });

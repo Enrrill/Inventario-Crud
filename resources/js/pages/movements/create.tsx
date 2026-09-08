@@ -129,8 +129,8 @@ export default function MovementsCreate({
                                                 </p>
                                             </div>
                                             <StockBadge
-                                                current={selectedProduct.current_stock_product}
-                                                minimum={selectedProduct.minimum_stock_product}
+                                                currentStock={selectedProduct.current_stock_product}
+                                                minimumStock={selectedProduct.minimum_stock_product}
                                             />
                                         </div>
                                         <div className="text-muted-foreground mt-2 text-sm">

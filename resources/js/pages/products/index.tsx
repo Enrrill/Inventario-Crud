@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
 import { DataGrid } from '@/components/inventory/data-grid';
 import { DataTable } from '@/components/inventory/data-table';
 import { EmptyState } from '@/components/inventory/empty-state';
+import { Pagination } from '@/components/inventory/pagination';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
 import { SearchInput } from '@/components/inventory/search-input';
@@ -95,7 +96,7 @@ export default function ProductsIndex({
         });
     }
 
-    const columns: ColumnDef<Product>[] = [
+    const columns: ColumnDef<StockFeatures, Product>[] = [
         {
             accessorKey: 'sku_product',
             header: 'SKU',

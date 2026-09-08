@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
@@ -39,7 +39,7 @@ export default function SuppliersIndex({
         });
     }
 
-    const columns: ColumnDef<Supplier>[] = [
+    const columns: ColumnDef<StockFeatures, Supplier>[] = [
         {
             accessorKey: 'name_supplier',
             header: 'Nombre',

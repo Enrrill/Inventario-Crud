@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
 import { DataTable } from '@/components/inventory/data-table';
@@ -32,7 +32,7 @@ export default function CategoriesIndex({ categories: pagination }: CategoriesIn
         });
     }
 
-    const columns: ColumnDef<Category>[] = [
+    const columns: ColumnDef<StockFeatures, Category>[] = [
         {
             accessorKey: 'name_category',
             header: 'Nombre',

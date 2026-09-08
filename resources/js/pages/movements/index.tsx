@@ -1,6 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { EyeIcon, PlusIcon } from 'lucide-react';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import {
     Select,
@@ -66,7 +66,7 @@ export default function MovementsIndex({
         });
     }
 
-    const columns: ColumnDef<StockMovement>[] = [
+    const columns: ColumnDef<StockFeatures, StockMovement>[] = [
         {
             accessorKey: 'created_at',
             header: 'Fecha',
