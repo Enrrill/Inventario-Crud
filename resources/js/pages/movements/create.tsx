@@ -1,6 +1,7 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
 import { ArrowLeftIcon } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -60,6 +61,7 @@ export default function MovementsCreate({
                     <Form
                         method="post"
                         action={movements.store.url()}
+                        onError={() => toast.error('Error al registrar el movimiento. Verifica los datos.')}
                         className="space-y-6"
                     >
                         {({ processing, errors }) => (

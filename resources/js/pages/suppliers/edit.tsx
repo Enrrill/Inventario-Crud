@@ -1,5 +1,6 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import { ArrowLeftIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,6 +35,7 @@ export default function SuppliersEdit({ supplier }: SuppliersEditProps) {
                     <Form
                         method="put"
                         action={suppliers.update.url(supplier.id)}
+                        onError={() => toast.error('Error al guardar los cambios. Verifica los datos.')}
                         className="space-y-6"
                     >
                         {({ processing, errors }) => (

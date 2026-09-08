@@ -1,5 +1,6 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import { ArrowLeftIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -55,6 +56,7 @@ export default function ProductsCreate({
                     <Form
                         method="post"
                         action={products.store.url()}
+                        onError={() => toast.error('Error al crear el producto. Verifica los datos.')}
                         className="space-y-6"
                     >
                         {({ processing, errors }) => (

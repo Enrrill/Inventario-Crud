@@ -7,6 +7,7 @@ import {
     Truck,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/inventory/empty-state';
 import { PageHeader } from '@/components/inventory/page-header';
 import { StatCard } from '@/components/inventory/stat-card';
@@ -35,11 +36,83 @@ const formatDate = (date: string) =>
         new Date(date),
     );
 
+function DashboardSkeleton() {
+    return (
+        <>
+            <Head title="Dashboard" />
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+                <div className="space-y-2">
+                    <Skeleton className="h-8 w-48" />
+                    <Skeleton className="h-4 w-64" />
+                </div>
+
+                <DataGrid className="xl:grid-cols-5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                        <Card key={`stat-skeleton-${i}`}>
+                            <CardContent className="p-6">
+                                <div className="flex items-center justify-between">
+                                    <Skeleton className="h-4 w-24" />
+                                    <Skeleton className="size-8 rounded-lg" />
+                                </div>
+                                <Skeleton className="mt-2 h-8 w-16" />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </DataGrid>
+
+                <div className="grid gap-6 lg:grid-cols-2">
+                    <Card>
+                        <CardHeader>
+                            <Skeleton className="h-5 w-32" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {Array.from({ length: 4 }).map((_, i) => (
+                                    <div key={`mov-skeleton-${i}`} className="flex items-center justify-between">
+                                        <div className="space-y-1">
+                                            <Skeleton className="h-4 w-32" />
+                                            <Skeleton className="h-3 w-24" />
+                                        </div>
+                                        <Skeleton className="h-5 w-16" />
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <Skeleton className="h-5 w-24" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {Array.from({ length: 4 }).map((_, i) => (
+                                    <div key={`stock-skeleton-${i}`} className="flex items-center justify-between">
+                                        <div className="space-y-1">
+                                            <Skeleton className="h-4 w-36" />
+                                            <Skeleton className="h-3 w-28" />
+                                        </div>
+                                        <Skeleton className="h-5 w-20" />
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </>
+    );
+}
+
 export default function Dashboard({
     stats,
     recentMovements,
     lowStockProducts,
 }: DashboardProps) {
+    if (!stats) {
+        return <DashboardSkeleton />;
+    }
+
     return (
         <>
             <Head title="Dashboard" />
