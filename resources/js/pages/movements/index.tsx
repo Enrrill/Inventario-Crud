@@ -1,6 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { EyeIcon, PlusIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
+import { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Select,
@@ -52,9 +53,12 @@ export default function MovementsIndex({
         adjustment: 'Ajuste',
     };
 
-    function handleFilter(key: string, value: string) {
-        setFilters({ [key]: value === 'all' ? '' : value });
-    }
+    const handleFilter = useCallback(
+        (key: string, value: string) => {
+            setFilters({ [key]: value === 'all' ? '' : value } as Partial<{ product_id: string; type: string }>);
+        },
+        [setFilters],
+    );
 
     function formatDate(date: string) {
         return new Date(date).toLocaleDateString('es-MX', {

@@ -1,6 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
 import { DataTable } from '@/components/inventory/data-table';
@@ -11,19 +12,22 @@ import { SearchInput } from '@/components/inventory/search-input';
 import { useQueryParams } from '@/hooks/use-query-params';
 import categories from '@/routes/categories';
 import type { Category, PaginatedData } from '@/types/inventory';
-import { useState } from 'react';
 
 type CategoriesIndexProps = {
     categories: PaginatedData<Category>;
+    filters: { search?: string };
 };
 
 export default function CategoriesIndex({ categories: pagination }: CategoriesIndexProps) {
     const [filters, setFilters] = useQueryParams<{ search: string }>();
     const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
 
-    function handleSearch(value: string) {
-        setFilters({ search: value });
-    }
+    const handleSearch = useCallback(
+        (value: string) => {
+            setFilters({ search: value });
+        },
+        [setFilters],
+    );
 
     function handleDelete() {
         if (!deleteCategory) return;

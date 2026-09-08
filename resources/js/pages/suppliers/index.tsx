@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
 import { DataTable } from '@/components/inventory/data-table';
@@ -23,14 +23,17 @@ export default function SuppliersIndex({
     const [search, setSearch] = useState(filters.search ?? '');
     const [deleteSupplier, setDeleteSupplier] = useState<Supplier | null>(null);
 
-    function handleSearch(value: string) {
-        setSearch(value);
-        router.get(
-            suppliers.index.url(),
-            { search: value },
-            { preserveScroll: true, preserveState: true },
-        );
-    }
+    const handleSearch = useCallback(
+        (value: string) => {
+            setSearch(value);
+            router.get(
+                suppliers.index.url(),
+                { search: value },
+                { preserveScroll: true, preserveState: true },
+            );
+        },
+        [],
+    );
 
     function handleDelete() {
         if (!deleteSupplier) return;

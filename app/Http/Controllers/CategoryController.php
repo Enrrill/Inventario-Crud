@@ -15,13 +15,22 @@ class CategoryController extends Controller
 {
     public function index(Request $request): Response
     {
-        $categories = Category::with('parent', 'children', 'products')
-            ->withCount('products')
-            ->orderBy('name_category')
+        $query = Category::with('parent', 'children', 'products')
+            ->withCount('products');
+
+        if ($search = $request->string('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name_category', 'ilike', "%{$search}%")
+                    ->orWhere('description_category', 'ilike', "%{$search}%");
+            });
+        }
+
+        $categories = $query->orderBy('name_category')
             ->paginate(15);
 
         return Inertia::render('categories/index', [
             'categories' => $categories,
+            'filters' => $request->only(['search']),
         ]);
     }
 
