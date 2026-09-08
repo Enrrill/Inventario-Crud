@@ -46,6 +46,10 @@ export default function CategoriesEdit({
                     <Form
                         method="put"
                         action={categories.update.url(category.id)}
+                        transform={(data) => ({
+                            ...data,
+                            parent_category_id: data.parent_category_id === 'none' ? null : data.parent_category_id,
+                        })}
                         onError={() => toast.error('Error al guardar los cambios. Verifica los datos.')}
                         className="space-y-6"
                     >
@@ -80,11 +84,6 @@ export default function CategoriesEdit({
 
                                 <div className="space-y-2">
                                     <Label>Categoría padre</Label>
-                                    <input
-                                        type="hidden"
-                                        name="parent_category_id"
-                                        value=""
-                                    />
                                     <Select
                                         name="parent_category_id"
                                         defaultValue={

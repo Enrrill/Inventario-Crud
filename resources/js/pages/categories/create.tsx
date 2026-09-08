@@ -44,6 +44,10 @@ export default function CategoriesCreate({
                     <Form
                         method="post"
                         action={categories.store.url()}
+                        transform={(data) => ({
+                            ...data,
+                            parent_category_id: data.parent_category_id === 'none' ? null : data.parent_category_id,
+                        })}
                         onError={() => toast.error('Error al crear la categoría. Verifica los datos.')}
                         className="space-y-6"
                     >
@@ -78,11 +82,6 @@ export default function CategoriesCreate({
 
                                 <div className="space-y-2">
                                     <Label>Categoría padre</Label>
-                                    <input
-                                        type="hidden"
-                                        name="parent_category_id"
-                                        value=""
-                                    />
                                     <Select name="parent_category_id">
                                         <SelectTrigger>
                                             <SelectValue placeholder="Sin categoría padre" />

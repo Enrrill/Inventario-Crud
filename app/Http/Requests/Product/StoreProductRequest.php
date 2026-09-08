@@ -26,6 +26,7 @@ class StoreProductRequest extends FormRequest
             'unit_price_product' => ['required', 'numeric', 'min:0'],
             'unit_of_measure_product' => ['required', 'string', 'max:50'],
             'minimum_stock_product' => ['required', 'integer', 'min:0'],
+            'current_stock_product' => ['nullable', 'integer', 'min:0'],
         ];
     }
 }

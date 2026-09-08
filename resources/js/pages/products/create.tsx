@@ -56,6 +56,10 @@ export default function ProductsCreate({
                     <Form
                         method="post"
                         action={products.store.url()}
+                        transform={(data) => ({
+                            ...data,
+                            supplier_id: data.supplier_id === 'none' ? null : data.supplier_id,
+                        })}
                         onError={() => toast.error('Error al crear el producto. Verifica los datos.')}
                         className="space-y-6"
                     >
@@ -108,7 +112,6 @@ export default function ProductsCreate({
                                         <Label>
                                             Categoría <span className="text-destructive">*</span>
                                         </Label>
-                                        <input type="hidden" name="category_id" value="" />
                                         <Select name="category_id">
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seleccionar categoría" />
@@ -129,7 +132,6 @@ export default function ProductsCreate({
 
                                     <div className="space-y-2">
                                         <Label>Proveedor</Label>
-                                        <input type="hidden" name="supplier_id" value="" />
                                         <Select name="supplier_id">
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seleccionar proveedor" />
@@ -175,11 +177,6 @@ export default function ProductsCreate({
                                             Unidad de medida{' '}
                                             <span className="text-destructive">*</span>
                                         </Label>
-                                        <input
-                                            type="hidden"
-                                            name="unit_of_measure_product"
-                                            value=""
-                                        />
                                         <Select name="unit_of_measure_product">
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seleccionar unidad" />
@@ -214,6 +211,23 @@ export default function ProductsCreate({
                                             message={errors.minimum_stock_product}
                                         />
                                     </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="current_stock_product">
+                                        Stock inicial
+                                    </Label>
+                                    <Input
+                                        id="current_stock_product"
+                                        name="current_stock_product"
+                                        type="number"
+                                        min="0"
+                                        placeholder="0"
+                                        defaultValue="0"
+                                    />
+                                    <InputError
+                                        message={errors.current_stock_product}
+                                    />
                                 </div>
 
                                 <div className="flex items-center gap-3">

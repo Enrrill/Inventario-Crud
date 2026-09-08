@@ -61,8 +61,9 @@ class StockMovementController extends Controller
     ): RedirectResponse {
         $product = Product::findOrFail($request->validated('product_id'));
         $validated = $request->validated();
+        $type = StockMovementType::from($validated['type_movement']);
 
-        match ($request->validated('type_movement')) {
+        match ($type) {
             StockMovementType::Entry => $registerEntry->handle(
                 $product,
                 $validated['quantity_movement'],
