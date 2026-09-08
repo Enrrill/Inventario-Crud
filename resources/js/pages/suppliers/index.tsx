@@ -1,0 +1,188 @@
+import { Head, Link, router } from '@inertiajs/react';
+import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import type { ColumnDef } from '@tanstack/react-table';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
+import { DataTable } from '@/components/inventory/data-table';
+import { FilterBar } from '@/components/inventory/filter-bar';
+import { PageHeader } from '@/components/inventory/page-header';
+import { SearchInput } from '@/components/inventory/search-input';
+import suppliers from '@/routes/suppliers';
+import type { PaginatedData, Supplier } from '@/types/inventory';
+
+type SuppliersIndexProps = {
+    suppliers: PaginatedData<Supplier>;
+    filters: { search?: string };
+};
+
+export default function SuppliersIndex({
+    suppliers: pagination,
+    filters,
+}: SuppliersIndexProps) {
+    const [search, setSearch] = useState(filters.search ?? '');
+    const [deleteSupplier, setDeleteSupplier] = useState<Supplier | null>(null);
+
+    function handleSearch(value: string) {
+        setSearch(value);
+        router.get(
+            suppliers.index.url(),
+            { search: value },
+            { preserveScroll: true, preserveState: true },
+        );
+    }
+
+    function handleDelete() {
+        if (!deleteSupplier) return;
+        router.delete(suppliers.destroy.url(deleteSupplier.id), {
+            onError: () => setDeleteSupplier(null),
+        });
+    }
+
+    const columns: ColumnDef<Supplier>[] = [
+        {
+            accessorKey: 'name_supplier',
+            header: 'Nombre',
+            cell: ({ row }) => (
+                <Link
+                    href={suppliers.show.url(row.original.id)}
+                    className="hover:text-primary font-medium"
+                >
+                    {row.original.name_supplier}
+                </Link>
+            ),
+        },
+        {
+            accessorKey: 'contact_name_supplier',
+            header: 'Contacto',
+            cell: ({ row }) => (
+                <span className="text-muted-foreground">
+                    {row.original.contact_name_supplier ?? '—'}
+                </span>
+            ),
+        },
+        {
+            accessorKey: 'email_supplier',
+            header: 'Email',
+            cell: ({ row }) => (
+                <span className="text-muted-foreground">
+                    {row.original.email_supplier ?? '—'}
+                </span>
+            ),
+        },
+        {
+            accessorKey: 'phone_supplier',
+            header: 'Teléfono',
+            cell: ({ row }) => (
+                <span className="text-muted-foreground">
+                    {row.original.phone_supplier ?? '—'}
+                </span>
+            ),
+        },
+        {
+            accessorKey: 'products_count',
+            header: () => <span className="text-center">Productos</span>,
+            cell: ({ row }) => (
+                <span className="text-muted-foreground block text-center">
+                    {row.original.products_count}
+                </span>
+            ),
+        },
+        {
+            id: 'actions',
+            header: () => <span className="text-center">Acciones</span>,
+            cell: ({ row }) => (
+                <div className="flex items-center justify-center gap-1">
+                    <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            router.get(suppliers.edit.url(row.original.id));
+                        }}
+                    >
+                        <PencilIcon className="size-4" />
+                        <span className="sr-only">Editar</span>
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteSupplier(row.original);
+                        }}
+                    >
+                        <Trash2Icon className="text-destructive size-4" />
+                        <span className="sr-only">Eliminar</span>
+                    </Button>
+                </div>
+            ),
+        },
+    ];
+
+    return (
+        <>
+            <Head title="Proveedores" />
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <PageHeader
+                    title="Proveedores"
+                    description="Gestión de proveedores del inventario"
+                >
+                    <Button asChild>
+                        <Link href={suppliers.create.url()}>
+                            <PlusIcon className="size-4" />
+                            Nuevo proveedor
+                        </Link>
+                    </Button>
+                </PageHeader>
+
+                <FilterBar>
+                    <SearchInput
+                        value={search}
+                        onChange={handleSearch}
+                        placeholder="Buscar proveedor..."
+                        className="w-full sm:w-80"
+                    />
+                </FilterBar>
+
+                <DataTable
+                    columns={columns}
+                    data={pagination.data}
+                    pagination={pagination}
+                    searchValue={search}
+                    onSearchChange={handleSearch}
+                    searchPlaceholder="Buscar proveedor..."
+                    emptyTitle="Sin proveedores"
+                    emptyDescription="No se encontraron proveedores. Crea uno nuevo para comenzar."
+                    emptyAction={{
+                        label: 'Nuevo proveedor',
+                        href: suppliers.create.url(),
+                    }}
+                />
+
+                <ConfirmDialog
+                    open={deleteSupplier !== null}
+                    onOpenChange={(open) => !open && setDeleteSupplier(null)}
+                    title="Eliminar proveedor"
+                    description={
+                        deleteSupplier?.products_count
+                            ? `No se puede eliminar "${deleteSupplier?.name_supplier}" porque tiene productos asociados.`
+                            : `¿Estás seguro de eliminar el proveedor "${deleteSupplier?.name_supplier}"?`
+                    }
+                    confirmText="Eliminar"
+                    variant={
+                        deleteSupplier?.products_count ? 'default' : 'destructive'
+                    }
+                    onConfirm={handleDelete}
+                />
+            </div>
+        </>
+    );
+}
+
+SuppliersIndex.layout = {
+    breadcrumbs: [
+        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Proveedores', href: suppliers.index.url() },
+    ],
+};
