@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
-import { ArrowLeftRight, BookOpen, FolderGit2, LayoutGrid, Package, Tags, Truck } from 'lucide-react';
+import { usePage } from '@inertiajs/react';
+import { ArrowLeftRight, BookOpen, ClipboardList, FileBarChart, FolderGit2, LayoutGrid, Package, Shield, Tags, Truck, Users } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -14,13 +15,16 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import audit from '@/routes/audit';
 import categories from '@/routes/categories';
 import movements from '@/routes/movements';
 import products from '@/routes/products';
+import reports from '@/routes/reports';
 import suppliers from '@/routes/suppliers';
-import type { NavItem } from '@/types';
+import users from '@/routes/users';
+import type { NavItem, NavItemGroup } from '@/types';
 
-const mainNavItems: NavItem[] = [
+const inventoryNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
@@ -48,6 +52,27 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
+const reportNavItems: NavItem[] = [
+    {
+        title: 'Reportes',
+        href: reports.index.url(),
+        icon: FileBarChart,
+    },
+];
+
+const adminNavItems: NavItem[] = [
+    {
+        title: 'Usuarios',
+        href: users.index.url(),
+        icon: Users,
+    },
+    {
+        title: 'Auditoría',
+        href: audit.index.url(),
+        icon: ClipboardList,
+    },
+];
+
 const footerNavItems: NavItem[] = [
     {
         title: 'Repository',
@@ -62,6 +87,15 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { auth } = usePage().props;
+    const isAdmin = auth?.user?.role === 'admin';
+
+    const groups: NavItemGroup[] = [
+        { label: 'Inventario', items: inventoryNavItems },
+        { label: 'Reportes', items: reportNavItems },
+        ...(isAdmin ? [{ label: 'Administración', items: adminNavItems, icon: Shield }] : []),
+    ];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -77,7 +111,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain groups={groups} />
             </SidebarContent>
 
             <SidebarFooter>
