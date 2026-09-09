@@ -18,15 +18,16 @@ class UserController extends Controller
     {
         $query = User::query();
 
-        if ($search = $request->string('search')) {
+        if ($request->filled('search')) {
+            $search = $request->string('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'ilike', "%{$search}%")
                     ->orWhere('email', 'ilike', "%{$search}%");
             });
         }
 
-        if ($role = $request->string('role')) {
-            $query->where('role', $role);
+        if ($request->filled('role')) {
+            $query->where('role', $request->string('role'));
         }
 
         $users = $query->orderBy('name')
