@@ -59,15 +59,15 @@ export default function Welcome() {
 
                         <div className="flex w-full flex-col gap-3 sm:flex-row">
                             {auth.user ? (
-                                <Button className="w-full" asChild>
+                                <Button className="w-full sm:flex-1" asChild>
                                     <Link href={dashboard()}>Ir al panel</Link>
                                 </Button>
                             ) : (
                                 <>
-                                    <Button className="w-full" asChild>
+                                    <Button className="w-full sm:flex-1" asChild>
                                         <Link href={login()}>Iniciar sesión</Link>
                                     </Button>
-                                    <Button variant="outline" className="w-full" asChild>
+                                    <Button variant="outline" className="w-full sm:flex-1" asChild>
                                         <Link href={register()}>Crear cuenta</Link>
                                     </Button>
                                 </>
