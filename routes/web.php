@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
@@ -28,6 +29,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/movements', [ReportController::class, 'movements'])->name('movements');
         Route::get('/stock-status', [ReportController::class, 'stockStatus'])->name('stock-status');
         Route::get('/export/{type}', [ReportController::class, 'export'])->name('export');
+    });
+
+    Route::prefix('audit')->name('audit.')->middleware('role:admin')->group(function () {
+        Route::get('/', [AuditController::class, 'index'])->name('index');
+        Route::get('/{auditLog}', [AuditController::class, 'show'])->name('show');
     });
 });
 
