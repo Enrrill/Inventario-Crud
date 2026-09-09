@@ -7,14 +7,14 @@ use App\Http\Requests\ReportRequest;
 use App\Models\Product;
 use App\Models\StockMovement;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ReportExportService
 {
-    public function exportInventory(string $type, ReportRequest $request): Response
+    public function exportInventory(string $type, ReportRequest $request): SymfonyResponse
     {
         $query = Product::active()->with('category', 'supplier');
 
@@ -44,7 +44,7 @@ class ReportExportService
         return $this->export($type, $data, $headers, 'reporte_inventario');
     }
 
-    public function exportMovements(string $type, ReportRequest $request): Response
+    public function exportMovements(string $type, ReportRequest $request): SymfonyResponse
     {
         $query = StockMovement::with('product', 'user');
 
@@ -82,7 +82,7 @@ class ReportExportService
         return $this->export($type, $data, $headers, 'reporte_movimientos');
     }
 
-    public function exportStockStatus(string $type, ReportRequest $request): Response
+    public function exportStockStatus(string $type, ReportRequest $request): SymfonyResponse
     {
         $query = Product::active()->with('category');
 
@@ -114,7 +114,7 @@ class ReportExportService
         return $this->export($type, $data, $headers, 'reporte_estado_stock');
     }
 
-    private function export(string $type, Collection $data, array $headers, string $filename): Response
+    private function export(string $type, Collection $data, array $headers, string $filename): SymfonyResponse
     {
         return match ($type) {
             'csv' => $this->exportCsv($data, $filename, $headers),
@@ -124,7 +124,7 @@ class ReportExportService
         };
     }
 
-    private function exportCsv(Collection $data, string $filename, array $headers): Response
+    private function exportCsv(Collection $data, string $filename, array $headers): SymfonyResponse
     {
         $callback = function () use ($data, $headers) {
             $handle = fopen('php://output', 'w');
@@ -144,20 +144,18 @@ class ReportExportService
         ]);
     }
 
-    private function exportPdf(Collection $data, string $filename, array $headers): Response
+    private function exportPdf(Collection $data, string $filename, array $headers): SymfonyResponse
     {
-        $view = view('exports.pdf-table', [
+        $pdf = Pdf::loadView('exports.pdf-table', [
             'data' => $data,
             'headers' => $headers,
             'filename' => $filename,
-        ]);
-
-        $pdf = Pdf::loadView($view)->setPaper('letter', 'landscape');
+        ])->setPaper('letter', 'landscape');
 
         return $pdf->download("{$filename}.pdf");
     }
 
-    private function exportXlsx(Collection $data, string $filename, array $headers): Response
+    private function exportXlsx(Collection $data, string $filename, array $headers): SymfonyResponse
     {
         $callback = function () use ($data, $headers) {
             $writer = WriterEntityFactory::createXLSXWriter();

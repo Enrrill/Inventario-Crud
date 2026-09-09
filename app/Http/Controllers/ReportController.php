@@ -61,6 +61,8 @@ class ReportController extends Controller
             'products' => $products,
             'summary' => $summary,
             'filters' => $request->only(['category_id', 'supplier_id']),
+            'categories' => Category::orderBy('name_category')->get(),
+            'suppliers' => Supplier::orderBy('name_supplier')->get(),
         ]);
     }
 
@@ -129,10 +131,11 @@ class ReportController extends Controller
         return Inertia::render('reports/stock-status', [
             'summary' => $summary,
             'filters' => $request->only(['category_id']),
+            'categories' => Category::orderBy('name_category')->get(),
         ]);
     }
 
-    public function export(string $type, ReportRequest $request, ReportExportService $exportService)
+    public function export(string $type, ReportRequest $request, ReportExportService $exportService): \Symfony\Component\HttpFoundation\Response
     {
         $report = $request->input('report', 'inventory');
 

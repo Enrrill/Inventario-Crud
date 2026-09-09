@@ -1,5 +1,5 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeftIcon, EyeIcon, ClipboardList } from 'lucide-react';
+import { Head, router } from '@inertiajs/react';
+import { EyeIcon, ClipboardList } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -164,14 +164,7 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
                 <PageHeader
                     title="Auditoría"
                     description="Registro de actividad del sistema"
-                >
-                    <Button variant="outline" asChild>
-                        <Link href="/dashboard">
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
-                    </Button>
-                </PageHeader>
+                />
 
                 <div className="grid gap-4 sm:grid-cols-3">
                     <StatCard

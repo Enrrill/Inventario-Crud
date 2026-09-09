@@ -62,6 +62,7 @@ export default function ReportsMovements({
         params.set('report', 'movements');
         if (filters.date_from) params.set('date_from', filters.date_from);
         if (filters.date_to) params.set('date_to', filters.date_to);
+        if (filters.product_id) params.set('product_id', filters.product_id);
         if (filters.type_movement) params.set('type_movement', filters.type_movement);
         window.location.href = reports.export.url(type) + '?' + params.toString();
     }
