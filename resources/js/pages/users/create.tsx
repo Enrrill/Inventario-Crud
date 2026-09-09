@@ -85,6 +85,21 @@ export default function UsersCreate() {
                                 </div>
 
                                 <div className="space-y-2">
+                                    <Label htmlFor="password_confirmation">
+                                        Confirmar contraseña <span className="text-destructive">*</span>
+                                    </Label>
+                                    <Input
+                                        id="password_confirmation"
+                                        name="password_confirmation"
+                                        type="password"
+                                        placeholder="••••••••"
+                                        required
+                                        autoComplete="new-password"
+                                    />
+                                    <InputError message={errors.password_confirmation} />
+                                </div>
+
+                                <div className="space-y-2">
                                     <Label htmlFor="role">
                                         Rol <span className="text-destructive">*</span>
                                     </Label>

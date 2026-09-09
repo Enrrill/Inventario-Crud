@@ -67,6 +67,8 @@ export default function ReportsMovements({
         window.location.href = reports.export.url(type) + '?' + params.toString();
     }
 
+    const hasData = movements.data.length > 0;
+
     const entrySummary = summary.by_type.find((t) => t.type_movement === 'entry');
     const exitSummary = summary.by_type.find((t) => t.type_movement === 'exit');
     const adjustmentSummary = summary.by_type.find((t) => t.type_movement === 'adjustment');
@@ -124,15 +126,15 @@ export default function ReportsMovements({
                             Volver
                         </Link>
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('csv')}>
+                    <Button variant="outline" onClick={() => handleExport('csv')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
                         CSV
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('pdf')}>
+                    <Button variant="outline" onClick={() => handleExport('pdf')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
                         PDF
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('xlsx')}>
+                    <Button variant="outline" onClick={() => handleExport('xlsx')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
                         XLSX
                     </Button>

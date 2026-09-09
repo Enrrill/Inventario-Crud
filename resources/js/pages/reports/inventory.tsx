@@ -75,6 +75,8 @@ export default function ReportsInventory({
         window.location.href = reports.export.url(type) + '?' + params.toString();
     }
 
+    const hasData = productsList.length > 0;
+
     const columns: ColumnDef<StockFeatures, Product>[] = [
         {
             accessorKey: 'sku_product',
@@ -156,15 +158,15 @@ export default function ReportsInventory({
                             Volver
                         </Link>
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('csv')}>
+                    <Button variant="outline" onClick={() => handleExport('csv')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
                         CSV
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('pdf')}>
+                    <Button variant="outline" onClick={() => handleExport('pdf')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
                         PDF
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('xlsx')}>
+                    <Button variant="outline" onClick={() => handleExport('xlsx')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
                         XLSX
                     </Button>

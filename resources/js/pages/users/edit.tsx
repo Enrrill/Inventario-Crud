@@ -89,6 +89,20 @@ export default function UsersEdit({ user }: UsersEditProps) {
                                 </div>
 
                                 <div className="space-y-2">
+                                    <Label htmlFor="password_confirmation">
+                                        Confirmar contraseña
+                                    </Label>
+                                    <Input
+                                        id="password_confirmation"
+                                        name="password_confirmation"
+                                        type="password"
+                                        placeholder="Confirmar nueva contraseña"
+                                        autoComplete="new-password"
+                                    />
+                                    <InputError message={errors.password_confirmation} />
+                                </div>
+
+                                <div className="space-y-2">
                                     <Label htmlFor="role">
                                         Rol <span className="text-destructive">*</span>
                                     </Label>

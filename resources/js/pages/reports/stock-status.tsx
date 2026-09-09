@@ -62,6 +62,8 @@ export default function ReportsStockStatus({
         window.location.href = reports.export.url(type) + '?' + params.toString();
     }
 
+    const hasData = summary.total_active > 0;
+
     const problemProducts = [...summary.out_of_stock, ...summary.low_stock];
 
     const columns: ColumnDef<StockFeatures, Product>[] = [
@@ -136,15 +138,15 @@ export default function ReportsStockStatus({
                             Volver
                         </Link>
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('csv')}>
+                    <Button variant="outline" onClick={() => handleExport('csv')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
                         CSV
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('pdf')}>
+                    <Button variant="outline" onClick={() => handleExport('pdf')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
                         PDF
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('xlsx')}>
+                    <Button variant="outline" onClick={() => handleExport('xlsx')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
                         XLSX
                     </Button>
