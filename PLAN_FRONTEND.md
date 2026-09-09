@@ -39,56 +39,48 @@
 ```
 resources/js/
 ├── types/
-│   └── inventory.ts                     ← NUEVO: interfaces de dominio
+│   ├── auth.ts                            ← ACTUALIZAR: agregar role
+│   ├── inventory.ts                       ← ACTUALIZAR: agregar AuditLog, ReportSummary
+│   ├── navigation.ts
+│   └── ui.ts
 ├── hooks/
-│   ├── use-debounce.ts                  ← NUEVO
-│   ├── use-local-storage.ts             ← NUEVO
-│   └── use-query-params.ts              ← NUEVO
+│   ├── use-debounce.ts
+│   ├── use-local-storage.ts
+│   ├── use-query-params.ts
+│   └── ... (11 hooks existentes)
 ├── components/
-│   ├── ui/                              ← shadcn/ui (agregar 6)
-│   │   ├── table.tsx                    ← NUEVO
-│   │   ├── form.tsx                     ← NUEVO
-│   │   ├── command.tsx                  ← NUEVO
-│   │   ├── combobox.tsx                 ← NUEVO
-│   │   ├── popover.tsx                  ← NUEVO
-│   │   └── spinner.tsx                  ← NUEVO
-│   ├── inventory/                       ← NUEVO: Componentes compartidos
-│   │   ├── data-table.tsx
-│   │   ├── data-grid.tsx
-│   │   ├── view-toggle.tsx
-│   │   ├── search-input.tsx
-│   │   ├── filter-bar.tsx
-│   │   ├── empty-state.tsx
-│   │   ├── confirm-dialog.tsx
-│   │   ├── stat-card.tsx
-│   │   ├── page-header.tsx
-│   │   ├── pagination.tsx
-│   │   ├── form-drawer.tsx
-│   │   ├── stock-badge.tsx
-│   │   ├── type-badge.tsx
-│   │   └── status-badge.tsx
-│   └── app-sidebar.tsx                  ← ACTUALIZAR
+│   ├── ui/                                ← shadcn/ui (33 componentes)
+│   ├── inventory/                         ← Componentes compartidos (14)
+│   ├── app-sidebar.tsx                    ← ACTUALIZAR: agregar nav reportes/audit/users
+│   ├── nav-main.tsx                       ← ACTUALIZAR: grupos colapsables
+│   └── ... (25+ componentes existentes)
 ├── pages/
-│   ├── dashboard.tsx                    ← REEMPLAZAR
-│   ├── categories/
+│   ├── dashboard.tsx
+│   ├── auth/
+│   │   ├── login.tsx                      ← ACTUALIZAR: rediseñar
+│   │   ├── register.tsx                   ← ACTUALIZAR: rediseñar
+│   │   └── ... (7 páginas auth existentes)
+│   ├── categories/                        ← CRUD completo
+│   ├── suppliers/                         ← CRUD completo
+│   ├── products/                          ← CRUD completo
+│   ├── movements/                         ← CRUD parcial
+│   ├── users/                             ← NUEVO: CRUD usuarios
 │   │   ├── index.tsx
 │   │   ├── create.tsx
 │   │   ├── show.tsx
 │   │   └── edit.tsx
-│   ├── suppliers/
+│   ├── reports/                           ← NUEVO: reportes + exportación
 │   │   ├── index.tsx
-│   │   ├── create.tsx
-│   │   ├── show.tsx
-│   │   └── edit.tsx
-│   ├── products/
-│   │   ├── index.tsx                    ← Vista dual lista/grid
-│   │   ├── create.tsx
-│   │   ├── show.tsx
-│   │   └── edit.tsx
-│   └── movements/
-│       ├── index.tsx
-│       ├── create.tsx
-│       └── show.tsx
+│   │   ├── inventory.tsx
+│   │   ├── movements.tsx
+│   │   └── stock-status.tsx
+│   ├── audit/                             ← NUEVO: logs de auditoría
+│   │   ├── index.tsx
+│   │   └── show.tsx
+│   └── settings/
+│       ├── profile.tsx                    ← ACTUALIZAR: rediseñar
+│       ├── security.tsx                   ← ACTUALIZAR: rediseñar
+│       └── appearance.tsx                 ← ACTUALIZAR: rediseñar
 ```
 
 ## Fases de Implementación
@@ -168,6 +160,43 @@ allo completo)
 - Responsive design
 - Toasts de error en formularios
 
+### Fase 11: Tipos TypeScript
+- `auth.ts`: Agregar `role: 'admin' | 'employee'` al tipo `User`
+- `inventory.ts`: Agregar tipos `AuditLog`, `ReportSummary`, `UserFilter`, `AuditEvent`
+
+### Fase 12: Sidebar Actualizado
+- `app-sidebar.tsx`: 3 grupos de navegación:
+  - **Inventario**: Dashboard, Categorías, Proveedores, Productos, Movimientos
+  - **Reportes**: Reportes (acceso todos)
+  - **Administración**: Usuarios, Auditoría (solo admin)
+- `nav-main.tsx`: Soporte para grupos colapsables con label
+
+### Fase 13: Auth Pages Rediseñadas
+- `login.tsx`: Card centrada, iconos en inputs (Mail, Lock), botón con color primario, link "Olvidé contraseña" integrado
+- `register.tsx`: Card centrada, iconos en inputs (User, Mail, Lock), validación visual
+- `auth-simple-layout.tsx`: Mantener centrado, agregar decorative background pattern sutil
+
+### Fase 14: Settings Pages Rediseñadas
+- `profile.tsx`: Card "Información Personal" con avatar de iniciales + Card "Zona de Peligro" (eliminar cuenta) en rojo
+- `security.tsx`: 3 cards separadas — Contraseña, 2FA, Passkeys, cada una con header y estado visual
+- `appearance.tsx`: 3 preview cards grandes (Light/Dark/System) con borde activo y descripción
+
+### Fase 15: Users Pages (4 páginas nuevas)
+- `users/index.tsx`: DataTable con columns: Nombre, Email, Rol (badge), Creado. Filtros: búsqueda + selector de rol
+- `users/create.tsx`: Formulario (Form + Zod): name, email, password, role selector
+- `users/show.tsx`: Card con info del usuario, badge de rol, fecha de creación
+- `users/edit.tsx`: Formulario sin password obligatorio
+
+### Fase 16: Reports Pages (4 páginas nuevas)
+- `reports/index.tsx`: 3 stat cards clickeables (Inventario, Movimientos, Estado Stock) con icono y descripción
+- `reports/inventory.tsx`: Stat cards resumen (total productos, valor total, top categoría) + tabla + filtros + botones export CSV/PDF/XLSX
+- `reports/movements.tsx`: Stat cards por tipo (entradas, salidas, ajustes) + tabla + filtros de fecha
+- `reports/stock-status.tsx`: 3 stat cards (sin stock, bajo, normal) + desglose por categoría
+
+### Fase 17: Audit Pages (2 páginas nuevas)
+- `audit/index.tsx`: DataTable con columns: Usuario, Modelo, Evento (badge colorido), IP, Fecha. Filtros: usuario, evento, fechas
+- `audit/show.tsx`: Card con metadata (usuario, IP, user agent) + JSON formateado de old_values/new_values
+
 ## Backend API
 
 ### Dashboard
@@ -206,6 +235,26 @@ allo completo)
 - `POST /movements` → redirect con toast
 - `GET /movements/{movement}` → movement (con product/user)
 
+### Usuarios (CRUD, admin only)
+- `GET /users` → users (paginada), filters (search, role)
+- `GET /users/create` → roles (UserRole enum)
+- `POST /users` → redirect con toast
+- `GET /users/{user}` → user
+- `GET /users/{user}/edit` → user, roles
+- `PUT /users/{user}` → redirect con toast
+- `DELETE /users/{user}` → redirect con toast
+
+### Reportes
+- `GET /reports` → categories, suppliers
+- `GET /reports/inventory` → products, summary, filters
+- `GET /reports/movements` → movements (paginada), summary, filters
+- `GET /reports/stock-status` → summary, filters
+- `GET /reports/export/{type}` → export (csv/pdf/xlsx)
+
+### Auditoría (admin only)
+- `GET /audit` → logs (paginada), filters (user_id, auditable_type, event, fechas)
+- `GET /audit/{auditLog}` → log (con user)
+
 ## Convenciones
 
 1. **Componentes**: Function declarations, `data-slot`, `React.ComponentProps<>`
@@ -215,3 +264,7 @@ allo completo)
 5. **Toasts**: `toast.success()` / `toast.error()` de sonner
 6. **Inertia**: `<Head>`, `<Link>`, `usePage()`, `useForm()`
 7. **TypeScript**: Tipificar todo, no usar `any`
+
+---
+
+*Última actualización: 2026-09-09*

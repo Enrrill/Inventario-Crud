@@ -88,3 +88,67 @@ export type PaginatedLinks = {
     prev: string | null;
     next: string | null;
 };
+
+export type AuditEvent = 'created' | 'updated' | 'deleted';
+
+export type AuditLog = {
+    id: number;
+    user_id: number | null;
+    auditable_type: string;
+    auditable_id: number;
+    event: AuditEvent;
+    old_values: Record<string, unknown> | null;
+    new_values: Record<string, unknown> | null;
+    ip_address: string | null;
+    user_agent: string | null;
+    user?: User;
+    created_at: string;
+    updated_at: string;
+};
+
+export type ReportSummaryItem = {
+    count: number;
+    value: number;
+};
+
+export type ReportSummary = {
+    total_products: number;
+    total_value: number;
+    by_category: Record<string, ReportSummaryItem>;
+    by_supplier: Record<string, ReportSummaryItem>;
+    top_products: Product[];
+};
+
+export type ReportMovementSummary = {
+    total_movements: number;
+    by_type: Array<{
+        type_movement: StockMovementType;
+        total: number;
+        total_quantity: number;
+    }>;
+};
+
+export type ReportStockStatusSummary = {
+    total_active: number;
+    out_of_stock: Product[];
+    low_stock: Product[];
+    normal_stock: Product[];
+    by_category: Record<string, {
+        total: number;
+        out_of_stock: number;
+        low_stock: number;
+    }>;
+};
+
+export type UserFilter = {
+    search?: string;
+    role?: string;
+};
+
+export type AuditFilter = {
+    user_id?: number;
+    auditable_type?: string;
+    event?: AuditEvent;
+    date_from?: string;
+    date_to?: string;
+};
