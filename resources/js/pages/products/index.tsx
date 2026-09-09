@@ -138,16 +138,14 @@ export default function ProductsIndex({
         },
         {
             accessorKey: 'unit_price_product',
-            header: () => <span className="text-right">Precio</span>,
+            header: 'Precio',
             cell: ({ row }) => (
-                <span className="text-right">
-                    {formatCurrency(row.original.unit_price_product)}
-                </span>
+                <span>{formatCurrency(row.original.unit_price_product)}</span>
             ),
         },
         {
             accessorKey: 'current_stock_product',
-            header: () => <span className="text-center">Stock</span>,
+            header: 'Stock',
             cell: ({ row }) => (
                 <StockBadge
                     currentStock={row.original.current_stock_product}
@@ -157,12 +155,9 @@ export default function ProductsIndex({
         },
         {
             accessorKey: 'is_active_product',
-            header: () => <span className="text-center">Estado</span>,
+            header: 'Estado',
             cell: ({ row }) => (
-                <StatusBadge
-                    active={row.original.is_active_product}
-                    className="justify-center"
-                />
+                <StatusBadge active={row.original.is_active_product} />
             ),
         },
         {

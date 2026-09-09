@@ -99,14 +99,14 @@ export default function MovementsIndex({
         },
         {
             accessorKey: 'quantity_movement',
-            header: () => <span className="text-center">Cantidad</span>,
+            header: 'Cantidad',
             cell: ({ row }) => {
                 const m = row.original;
                 const isEntry = m.type_movement === 'entry';
                 const isExit = m.type_movement === 'exit';
                 return (
                     <span
-                        className={`block text-center font-medium ${
+                        className={`font-medium ${
                             isEntry
                                 ? 'text-emerald-600 dark:text-emerald-400'
                                 : isExit
@@ -122,18 +122,18 @@ export default function MovementsIndex({
         },
         {
             accessorKey: 'previous_stock_movement',
-            header: () => <span className="text-center">Stock Ant.</span>,
+            header: 'Stock Ant.',
             cell: ({ row }) => (
-                <span className="text-muted-foreground block text-center text-sm">
+                <span className="text-muted-foreground text-sm">
                     {row.original.previous_stock_movement}
                 </span>
             ),
         },
         {
             accessorKey: 'new_stock_movement',
-            header: () => <span className="text-center">Stock Nuevo</span>,
+            header: 'Stock Nuevo',
             cell: ({ row }) => (
-                <span className="text-muted-foreground block text-center text-sm">
+                <span className="text-muted-foreground text-sm">
                     {row.original.new_stock_movement}
                 </span>
             ),

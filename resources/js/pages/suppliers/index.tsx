@@ -84,9 +84,9 @@ export default function SuppliersIndex({
         },
         {
             accessorKey: 'products_count',
-            header: () => <span className="text-center">Productos</span>,
+            header: 'Productos',
             cell: ({ row }) => (
-                <span className="text-muted-foreground block text-center">
+                <span className="text-muted-foreground">
                     {row.original.products_count}
                 </span>
             ),
