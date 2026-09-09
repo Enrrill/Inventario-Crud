@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Supplier;
 
+use App\Services\TextNormalizer;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -11,6 +12,17 @@ class UpdateSupplierRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'name_supplier' => isset($this->name_supplier) ? TextNormalizer::normalizeName($this->name_supplier) : $this->name_supplier,
+            'contact_name_supplier' => isset($this->contact_name_supplier) ? TextNormalizer::normalizeName($this->contact_name_supplier) : $this->contact_name_supplier,
+            'email_supplier' => isset($this->email_supplier) ? TextNormalizer::normalizeEmail($this->email_supplier) : $this->email_supplier,
+            'phone_supplier' => isset($this->phone_supplier) ? TextNormalizer::normalizePhone($this->phone_supplier) : $this->phone_supplier,
+            'address_supplier' => isset($this->address_supplier) ? TextNormalizer::normalizeText($this->address_supplier) : $this->address_supplier,
+        ]);
     }
 
     /**

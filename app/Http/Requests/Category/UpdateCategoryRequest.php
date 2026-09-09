@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Category;
 
+use App\Services\TextNormalizer;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -11,6 +12,14 @@ class UpdateCategoryRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'name_category' => isset($this->name_category) ? TextNormalizer::normalizeName($this->name_category) : $this->name_category,
+            'description_category' => isset($this->description_category) ? TextNormalizer::normalizeText($this->description_category) : $this->description_category,
+        ]);
     }
 
     /**

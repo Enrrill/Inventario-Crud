@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Services\TextNormalizer;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -10,6 +11,15 @@ class StoreProductRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'sku_product' => isset($this->sku_product) ? TextNormalizer::normalizeSku($this->sku_product) : $this->sku_product,
+            'name_product' => isset($this->name_product) ? TextNormalizer::normalizeName($this->name_product) : $this->name_product,
+            'description_product' => isset($this->description_product) ? TextNormalizer::normalizeText($this->description_product) : $this->description_product,
+        ]);
     }
 
     /**
