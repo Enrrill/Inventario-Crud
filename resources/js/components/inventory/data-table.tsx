@@ -70,6 +70,7 @@ function DataTable<TData extends RowData, TValue>({
                                     <TableHead
                                         key={header.id}
                                         colSpan={header.colSpan}
+                                        className={(header.column.columnDef as ColumnDef<StockFeatures, TData> & { meta?: { className?: string } }).meta?.className}
                                     >
                                         {header.isPlaceholder
                                             ? null

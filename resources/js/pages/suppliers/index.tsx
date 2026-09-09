@@ -94,6 +94,7 @@ export default function SuppliersIndex({
         {
             id: 'actions',
             header: () => <span className="text-center">Acciones</span>,
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
                 <div className="flex items-center justify-center gap-1">
                     <Button

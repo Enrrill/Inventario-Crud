@@ -159,8 +159,9 @@ export default function MovementsIndex({
         {
             id: 'actions',
             header: () => <span className="text-center">Acciones</span>,
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center gap-1">
                     <Button
                         variant="ghost"
                         size="icon-sm"

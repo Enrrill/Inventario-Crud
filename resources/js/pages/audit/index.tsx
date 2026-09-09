@@ -139,8 +139,9 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
         {
             id: 'actions',
             header: () => <span className="text-center">Acciones</span>,
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
-                <div className="flex justify-center">
+                <div className="flex items-center justify-center">
                     <Button
                         variant="ghost"
                         size="icon-sm"
