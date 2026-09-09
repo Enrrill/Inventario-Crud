@@ -72,18 +72,14 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
         },
         {
             accessorKey: 'role',
-            header: () => <span className="text-center">Rol</span>,
-            cell: ({ row }) => (
-                <span className="flex justify-center">
-                    <RoleBadge role={row.original.role} />
-                </span>
-            ),
+            header: 'Rol',
+            cell: ({ row }) => <RoleBadge role={row.original.role} />,
         },
         {
             accessorKey: 'created_at',
-            header: () => <span className="text-right">Creado</span>,
+            header: 'Creado',
             cell: ({ row }) => (
-                <span className="text-muted-foreground text-right text-sm">
+                <span className="text-muted-foreground text-sm">
                     {new Date(row.original.created_at).toLocaleDateString('es-VE')}
                 </span>
             ),
