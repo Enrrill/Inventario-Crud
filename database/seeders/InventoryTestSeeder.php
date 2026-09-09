@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\StockMovementType;
+use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\StockMovement;
@@ -28,6 +29,7 @@ class InventoryTestSeeder extends Seeder
             'name' => 'Enrrill',
             'email' => 'enrrill@gmail.com',
             'password' => Hash::make('enrrill22'),
+            'role' => UserRole::Admin,
         ]);
 
         $categories = $this->createCategories();
