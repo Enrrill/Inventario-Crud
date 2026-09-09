@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
@@ -20,6 +21,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('movements', StockMovementController::class)->only(['index', 'create', 'store', 'show']);
 
     Route::resource('users', UserController::class)->middleware('role:admin');
+
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/inventory', [ReportController::class, 'inventory'])->name('inventory');
+        Route::get('/movements', [ReportController::class, 'movements'])->name('movements');
+        Route::get('/stock-status', [ReportController::class, 'stockStatus'])->name('stock-status');
+        Route::get('/export/{type}', [ReportController::class, 'export'])->name('export');
+    });
 });
 
 require __DIR__.'/settings.php';
