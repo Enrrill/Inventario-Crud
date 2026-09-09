@@ -13,25 +13,21 @@ export default function Appearance() {
         value: Appearance;
         icon: typeof Sun;
         label: string;
-        description: string;
     }[] = [
         {
             value: 'light',
             icon: Sun,
             label: 'Claro',
-            description: 'Tema claro para ambientes con buena iluminación',
         },
         {
             value: 'dark',
             icon: Moon,
             label: 'Oscuro',
-            description: 'Tema oscuro para reducir la fatiga visual',
         },
         {
             value: 'system',
             icon: Monitor,
             label: 'Sistema',
-            description: 'Se adapta automáticamente a la configuración de tu dispositivo',
         },
     ];
 
@@ -48,32 +44,20 @@ export default function Appearance() {
                         Selecciona el tema de la interfaz que prefieras
                     </p>
 
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        {options.map(({ value, icon: Icon, label, description }) => (
+                    <div className="flex gap-3">
+                        {options.map(({ value, icon: Icon, label }) => (
                             <button
                                 key={value}
                                 onClick={() => updateAppearance(value)}
+                                title={label}
                                 className={cn(
-                                    'rounded-xl border-2 p-4 text-left transition-all hover:border-primary/50',
+                                    'flex size-12 items-center justify-center rounded-xl border-2 transition-all hover:border-primary/50',
                                     appearance === value
-                                        ? 'border-primary bg-primary/5'
-                                        : 'border-border',
+                                        ? 'border-primary bg-primary/10 text-primary'
+                                        : 'border-border bg-muted text-muted-foreground hover:text-foreground',
                                 )}
                             >
-                                <div
-                                    className={cn(
-                                        'mb-3 flex size-10 items-center justify-center rounded-lg',
-                                        appearance === value
-                                            ? 'bg-primary/10 text-primary'
-                                            : 'bg-muted text-muted-foreground',
-                                    )}
-                                >
-                                    <Icon className="size-5" />
-                                </div>
-                                <p className="font-medium">{label}</p>
-                                <p className="text-muted-foreground mt-1 text-xs">
-                                    {description}
-                                </p>
+                                <Icon className="size-5" />
                             </button>
                         ))}
                     </div>
