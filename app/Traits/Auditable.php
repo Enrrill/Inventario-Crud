@@ -15,7 +15,7 @@ trait Auditable
 
         static::updated(function (Model $model) {
             $dirty = $model->getDirty();
-            $original = $model->getOriginal($dirty);
+            $original = collect($model->getOriginal())->only(array_keys($dirty))->toArray();
             static::logAudit($model, 'updated', $original, $dirty);
         });
 

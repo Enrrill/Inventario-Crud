@@ -11,7 +11,7 @@ class TextNormalizer
 
     public static function normalizeName(string $name): string
     {
-        return ucwords(strtolower(trim($name)));
+        return ucwords(preg_replace('/\s+/', ' ', trim($name)));
     }
 
     public static function normalizePhone(string $phone): string
