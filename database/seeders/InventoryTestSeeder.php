@@ -4,12 +4,14 @@ namespace Database\Seeders;
 
 use App\Enums\StockMovementType;
 use App\Enums\UserRole;
+use App\Models\AuditLog;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -21,21 +23,68 @@ class InventoryTestSeeder extends Seeder
         DB::statement('TRUNCATE products CASCADE');
         DB::statement('TRUNCATE categories CASCADE');
         DB::statement('TRUNCATE suppliers CASCADE');
+        DB::statement('TRUNCATE audit_logs CASCADE');
         DB::statement('TRUNCATE sessions CASCADE');
         DB::statement('TRUNCATE password_reset_tokens CASCADE');
         User::where('email', 'enrrill@gmail.com')->delete();
 
-        $user = User::factory()->create([
+        $users = $this->createUsers();
+        $admin = $users['admin'];
+
+        Auth::login($admin);
+
+        $categories = $this->createCategories();
+        $suppliers = $this->createSuppliers();
+        $products = $this->createProducts($categories, $suppliers);
+        $this->createMovements($products, $users);
+        $this->createAuditLogs($users);
+
+        Auth::logout();
+
+        $userCount = count($users);
+        $this->command->info("Se crearon {$userCount} usuarios (1 admin principal + ".($userCount - 1).' adicionales).');
+    }
+
+    private function createUsers(): array
+    {
+        $admin = User::factory()->create([
             'name' => 'Enrrill',
             'email' => 'enrrill@gmail.com',
             'password' => Hash::make('enrrill22'),
             'role' => UserRole::Admin,
         ]);
 
-        $categories = $this->createCategories();
-        $suppliers = $this->createSuppliers();
-        $products = $this->createProducts($categories, $suppliers);
-        $this->createMovements($products, $user);
+        $adminSecundario = User::factory()->admin()->create([
+            'name' => 'Carlos Admin',
+            'email' => 'carlos.admin@gmail.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $empleado1 = User::factory()->create([
+            'name' => 'María Empleada',
+            'email' => 'maria.empleada@gmail.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $empleado2 = User::factory()->create([
+            'name' => 'Pedro Empleado',
+            'email' => 'pedro.empleado@gmail.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $empleado3 = User::factory()->create([
+            'name' => 'Ana Trabajadora',
+            'email' => 'ana.trabajadora@gmail.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        return [
+            'admin' => $admin,
+            'admin_secundario' => $adminSecundario,
+            'empleado1' => $empleado1,
+            'empleado2' => $empleado2,
+            'empleado3' => $empleado3,
+        ];
     }
 
     private function createCategories(): array
@@ -52,7 +101,7 @@ class InventoryTestSeeder extends Seeder
             'Ropa' => [
                 'description' => 'Prendas de vestir y moda',
                 'children' => [
-                    'Camisas' => 'Camisasformales y casuales',
+                    'Camisas' => 'Camisas formales y casuales',
                     'Pantalones' => 'Jeans, pantalones formales y deportivos',
                     'Calzado' => 'Zapatos, tenis y sandalias',
                 ],
@@ -168,31 +217,39 @@ class InventoryTestSeeder extends Seeder
     private function createProducts(array $categories, array $suppliers): array
     {
         $productsData = [
-            // Electrónica > Computadoras (4)
+            // Electrónica > Computadoras (5)
             ['name' => 'Laptop HP Pavilion 15', 'sku' => 'ELEC-COMP-001', 'cat' => 'Computadoras', 'sup' => 0, 'price' => 899.99, 'unit' => 'Pieza', 'min' => 5, 'stock' => 12],
             ['name' => 'Desktop Dell Inspiron', 'sku' => 'ELEC-COMP-002', 'cat' => 'Computadoras', 'sup' => 0, 'price' => 649.99, 'unit' => 'Pieza', 'min' => 3, 'stock' => 8],
             ['name' => 'Monitor LG 24 pulgadas', 'sku' => 'ELEC-COMP-003', 'cat' => 'Computadoras', 'sup' => 6, 'price' => 189.99, 'unit' => 'Pieza', 'min' => 5, 'stock' => 15],
             ['name' => 'Teclado mecánico Redragon', 'sku' => 'ELEC-COMP-004', 'cat' => 'Computadoras', 'sup' => 6, 'price' => 45.99, 'unit' => 'Pieza', 'min' => 10, 'stock' => 25],
+            ['name' => 'Impresora Epson L3250', 'sku' => 'ELEC-COMP-005', 'cat' => 'Computadoras', 'sup' => 0, 'price' => 249.99, 'unit' => 'Pieza', 'min' => 3, 'stock' => 6],
 
             // Electrónica > Celulares (3)
             ['name' => 'Samsung Galaxy A54', 'sku' => 'ELEC-CELL-001', 'cat' => 'Celulares', 'sup' => 1, 'price' => 329.99, 'unit' => 'Pieza', 'min' => 5, 'stock' => 18],
             ['name' => 'iPhone 15 Pro', 'sku' => 'ELEC-CELL-002', 'cat' => 'Celulares', 'sup' => 1, 'price' => 1199.99, 'unit' => 'Pieza', 'min' => 3, 'stock' => 7],
             ['name' => 'Xiaomi Redmi Note 12', 'sku' => 'ELEC-CELL-003', 'cat' => 'Celulares', 'sup' => 1, 'price' => 199.99, 'unit' => 'Pieza', 'min' => 8, 'stock' => 22],
 
-            // Electrónica > Accesorios (3)
+            // Electrónica > Accesorios (7)
             ['name' => 'Cable USB-C 2m', 'sku' => 'ELEC-ACCE-001', 'cat' => 'Accesorios', 'sup' => 6, 'price' => 8.99, 'unit' => 'Pieza', 'min' => 50, 'stock' => 120],
             ['name' => 'Cargador inalámbrico', 'sku' => 'ELEC-ACCE-002', 'cat' => 'Accesorios', 'sup' => 6, 'price' => 24.99, 'unit' => 'Pieza', 'min' => 15, 'stock' => 35],
             ['name' => 'Audífonos Bluetooth JBL', 'sku' => 'ELEC-ACCE-003', 'cat' => 'Accesorios', 'sup' => 0, 'price' => 59.99, 'unit' => 'Pieza', 'min' => 10, 'stock' => 28],
+            ['name' => 'Mouse Logitech G502', 'sku' => 'ELEC-ACCE-004', 'cat' => 'Accesorios', 'sup' => 6, 'price' => 39.99, 'unit' => 'Pieza', 'min' => 10, 'stock' => 22],
+            ['name' => 'Webcam HD 1080p', 'sku' => 'ELEC-ACCE-005', 'cat' => 'Accesorios', 'sup' => 0, 'price' => 34.99, 'unit' => 'Pieza', 'min' => 8, 'stock' => 18],
+            ['name' => 'Memoria USB 64GB', 'sku' => 'ELEC-ACCE-006', 'cat' => 'Accesorios', 'sup' => 6, 'price' => 12.99, 'unit' => 'Pieza', 'min' => 30, 'stock' => 0],
+            ['name' => 'Router WiFi TP-Link', 'sku' => 'ELEC-ACCE-007', 'cat' => 'Accesorios', 'sup' => 0, 'price' => 29.99, 'unit' => 'Pieza', 'min' => 10, 'stock' => 30],
 
-            // Ropa > Camisas (3)
+            // Ropa > Camisas (5)
             ['name' => 'Camisa Blanca Formal', 'sku' => 'ROPA-CAMI-001', 'cat' => 'Camisas', 'sup' => 4, 'price' => 35.99, 'unit' => 'Pieza', 'min' => 10, 'stock' => 40],
             ['name' => 'Camisa Azul Checking', 'sku' => 'ROPA-CAMI-002', 'cat' => 'Camisas', 'sup' => 4, 'price' => 39.99, 'unit' => 'Pieza', 'min' => 8, 'stock' => 30],
             ['name' => 'Camisa Negra Casual', 'sku' => 'ROPA-CAMI-003', 'cat' => 'Camisas', 'sup' => 4, 'price' => 32.99, 'unit' => 'Pieza', 'min' => 10, 'stock' => 35],
+            ['name' => 'Polo Deportivo Adidas', 'sku' => 'ROPA-CAMI-004', 'cat' => 'Camisas', 'sup' => 4, 'price' => 29.99, 'unit' => 'Pieza', 'min' => 10, 'stock' => 0],
+            ['name' => 'Vestido Casual Mujer', 'sku' => 'ROPA-CAMI-005', 'cat' => 'Camisas', 'sup' => 4, 'price' => 55.99, 'unit' => 'Pieza', 'min' => 5, 'stock' => 15],
 
-            // Ropa > Pantalones (3)
+            // Ropa > Pantalones (4)
             ['name' => 'Jeans Clásico Azul', 'sku' => 'ROPA-PANT-001', 'cat' => 'Pantalones', 'sup' => 4, 'price' => 45.99, 'unit' => 'Pieza', 'min' => 8, 'stock' => 25],
             ['name' => 'Pantalón Formal Negro', 'sku' => 'ROPA-PANT-002', 'cat' => 'Pantalones', 'sup' => 4, 'price' => 49.99, 'unit' => 'Pieza', 'min' => 6, 'stock' => 20],
             ['name' => 'Short Deportivo', 'sku' => 'ROPA-PANT-003', 'cat' => 'Pantalones', 'sup' => 7, 'price' => 22.99, 'unit' => 'Pieza', 'min' => 10, 'stock' => 45],
+            ['name' => 'Chaqueta Deportiva', 'sku' => 'ROPA-PANT-004', 'cat' => 'Pantalones', 'sup' => 7, 'price' => 75.99, 'unit' => 'Pieza', 'min' => 4, 'stock' => 3],
 
             // Ropa > Calzado (3)
             ['name' => 'Tenis Nike Air Max', 'sku' => 'ROPA-CALZ-001', 'cat' => 'Calzado', 'sup' => 4, 'price' => 89.99, 'unit' => 'Par', 'min' => 5, 'stock' => 15],
@@ -211,30 +268,20 @@ class InventoryTestSeeder extends Seeder
             ['name' => 'Chocolate Hershey\'s', 'sku' => 'ALIM-SNAC-003', 'cat' => 'Snacks', 'sup' => 3, 'price' => 4.99, 'unit' => 'Pieza', 'min' => 30, 'stock' => 65],
             ['name' => 'Maní Salado 200g', 'sku' => 'ALIM-SNAC-004', 'cat' => 'Snacks', 'sup' => 7, 'price' => 2.99, 'unit' => 'Kilogramo', 'min' => 25, 'stock' => 55],
 
-            // Hogar > Cocina (4)
+            // Hogar > Cocina (6)
             ['name' => 'Sartén Antiadherente 28cm', 'sku' => 'HOGA-COCI-001', 'cat' => 'Cocina', 'sup' => 5, 'price' => 29.99, 'unit' => 'Pieza', 'min' => 8, 'stock' => 18],
             ['name' => 'Juego de Ollas 5 piezas', 'sku' => 'HOGA-COCI-002', 'cat' => 'Cocina', 'sup' => 5, 'price' => 89.99, 'unit' => 'Juego', 'min' => 3, 'stock' => 8],
             ['name' => 'Licuadora Oster 10 vel.', 'sku' => 'HOGA-COCI-003', 'cat' => 'Cocina', 'sup' => 2, 'price' => 55.99, 'unit' => 'Pieza', 'min' => 4, 'stock' => 10],
             ['name' => 'Cuchillo Chef Profesional', 'sku' => 'HOGA-COCI-004', 'cat' => 'Cocina', 'sup' => 5, 'price' => 18.99, 'unit' => 'Pieza', 'min' => 6, 'stock' => 14],
+            ['name' => 'Reloj Digital Sony', 'sku' => 'HOGA-COCI-005', 'cat' => 'Cocina', 'sup' => 2, 'price' => 15.99, 'unit' => 'Pieza', 'min' => 5, 'stock' => 0],
+            ['name' => 'Juego de Sábanas Queen', 'sku' => 'HOGA-COCI-006', 'cat' => 'Cocina', 'sup' => 5, 'price' => 45.99, 'unit' => 'Juego', 'min' => 5, 'stock' => 10],
 
-            // Hogar > Limpieza (4)
+            // Hogar > Limpieza (5)
             ['name' => 'Detergente Líquido 3L', 'sku' => 'HOGA-LIMP-001', 'cat' => 'Limpieza', 'sup' => 2, 'price' => 12.99, 'unit' => 'Litro', 'min' => 30, 'stock' => 75],
             ['name' => 'Suavizante de Ropa 2L', 'sku' => 'HOGA-LIMP-002', 'cat' => 'Limpieza', 'sup' => 2, 'price' => 9.99, 'unit' => 'Litro', 'min' => 25, 'stock' => 50],
             ['name' => 'Cloro 1L', 'sku' => 'HOGA-LIMP-003', 'cat' => 'Limpieza', 'sup' => 2, 'price' => 2.50, 'unit' => 'Litro', 'min' => 40, 'stock' => 100],
             ['name' => 'Esponjas Pack 6 u.', 'sku' => 'HOGA-LIMP-004', 'cat' => 'Limpieza', 'sup' => 2, 'price' => 4.99, 'unit' => 'Caja', 'min' => 20, 'stock' => 60],
-
-            // Extras: productos variados (11)
-            ['name' => 'Mouse Logitech G502', 'sku' => 'ELEC-ACCE-004', 'cat' => 'Accesorios', 'sup' => 6, 'price' => 39.99, 'unit' => 'Pieza', 'min' => 10, 'stock' => 22],
-            ['name' => 'Webcam HD 1080p', 'sku' => 'ELEC-ACCE-005', 'cat' => 'Accesorios', 'sup' => 0, 'price' => 34.99, 'unit' => 'Pieza', 'min' => 8, 'stock' => 18],
-            ['name' => 'Memoria USB 64GB', 'sku' => 'ELEC-ACCE-006', 'cat' => 'Accesorios', 'sup' => 6, 'price' => 12.99, 'unit' => 'Pieza', 'min' => 30, 'stock' => 80],
-            ['name' => 'Impresora Epson L3250', 'sku' => 'ELEC-COMP-005', 'cat' => 'Computadoras', 'sup' => 0, 'price' => 249.99, 'unit' => 'Pieza', 'min' => 3, 'stock' => 6],
-            ['name' => 'Router WiFi TP-Link', 'sku' => 'ELEC-ACCE-007', 'cat' => 'Accesorios', 'sup' => 0, 'price' => 29.99, 'unit' => 'Pieza', 'min' => 10, 'stock' => 30],
-            ['name' => 'Reloj Digital Sony', 'sku' => 'HOGA-COCI-005', 'cat' => 'Cocina', 'sup' => 2, 'price' => 15.99, 'unit' => 'Pieza', 'min' => 5, 'stock' => 12],
             ['name' => 'Toallas de Baño Pack 4', 'sku' => 'HOGA-LIMP-005', 'cat' => 'Limpieza', 'sup' => 7, 'price' => 29.99, 'unit' => 'Caja', 'min' => 10, 'stock' => 25],
-            ['name' => 'Juego de Sábanas Queen', 'sku' => 'HOGA-COCI-006', 'cat' => 'Cocina', 'sup' => 5, 'price' => 45.99, 'unit' => 'Juego', 'min' => 5, 'stock' => 10],
-            ['name' => 'Polo Deportivo Adidas', 'sku' => 'ROPA-CAMI-004', 'cat' => 'Camisas', 'sup' => 4, 'price' => 29.99, 'unit' => 'Pieza', 'min' => 10, 'stock' => 35],
-            ['name' => 'Vestido Casual Mujer', 'sku' => 'ROPA-CAMI-005', 'cat' => 'Camisas', 'sup' => 4, 'price' => 55.99, 'unit' => 'Pieza', 'min' => 5, 'stock' => 15],
-            ['name' => 'Chaqueta Deportiva', 'sku' => 'ROPA-PANT-004', 'cat' => 'Pantalones', 'sup' => 7, 'price' => 75.99, 'unit' => 'Pieza', 'min' => 4, 'stock' => 3],
         ];
 
         $products = [];
@@ -261,7 +308,7 @@ class InventoryTestSeeder extends Seeder
         return $products;
     }
 
-    private function createMovements(array $products, User $user): void
+    private function createMovements(array $products, array $users): void
     {
         $types = [
             StockMovementType::Entry,
@@ -293,6 +340,7 @@ class InventoryTestSeeder extends Seeder
             'REQ-2026-008',
         ];
 
+        $userIds = array_column($users, 'id');
         $movementCount = 0;
 
         foreach ($products as $product) {
@@ -302,6 +350,7 @@ class InventoryTestSeeder extends Seeder
             for ($i = 0; $i < $numMovements; $i++) {
                 $type = $types[array_rand($types)];
                 $quantity = rand(1, min(30, max(1, $currentStock + 20)));
+                $userId = $userIds[array_rand($userIds)];
 
                 $previousStock = $currentStock;
 
@@ -311,6 +360,8 @@ class InventoryTestSeeder extends Seeder
                     StockMovementType::Adjustment => $newStock = max(0, $previousStock + ($quantity % 2 === 0 ? $quantity : -$quantity)),
                 };
 
+                Auth::loginUsingId($userId);
+
                 StockMovement::create([
                     'product_id' => $product->id,
                     'type_movement' => $type,
@@ -319,7 +370,7 @@ class InventoryTestSeeder extends Seeder
                     'new_stock_movement' => $newStock,
                     'reference_movement' => $references[array_rand($references)],
                     'notes_movement' => $notes[array_rand($notes)],
-                    'user_id' => $user->id,
+                    'user_id' => $userId,
                     'created_at' => now()->subDays(rand(0, 30))->subHours(rand(0, 23)),
                 ]);
 
@@ -330,6 +381,60 @@ class InventoryTestSeeder extends Seeder
             $product->update(['current_stock_product' => $currentStock]);
         }
 
+        Auth::loginUsingId($users['admin']['id']);
+
         $this->command->info("Se crearon {$movementCount} movimientos de stock.");
+    }
+
+    private function createAuditLogs(array $users): void
+    {
+        $models = [
+            Product::class,
+            Category::class,
+            Supplier::class,
+            User::class,
+        ];
+        $events = ['created', 'updated', 'deleted'];
+        $ipAddresses = ['192.168.1.100', '10.0.0.50', '172.16.0.25', '192.168.1.200'];
+        $userAgents = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+            'Mozilla/5.0 (X11; Linux x86_64)',
+        ];
+
+        $auditCount = 0;
+        $userIds = array_column($users, 'id');
+
+        for ($i = 0; $i < 50; $i++) {
+            $model = $models[array_rand($models)];
+            $event = $events[array_rand($events)];
+            $userId = $userIds[array_rand($userIds)];
+            $daysAgo = rand(0, 60);
+
+            $oldValues = $event === 'created' ? null : [
+                'name' => fake()->word(),
+                'updated_at' => now()->subDays($daysAgo + 1)->toISOString(),
+            ];
+            $newValues = $event === 'deleted' ? null : [
+                'name' => fake()->word(),
+                'updated_at' => now()->subDays($daysAgo)->toISOString(),
+            ];
+
+            AuditLog::create([
+                'user_id' => $userId,
+                'auditable_type' => $model,
+                'auditable_id' => rand(1, 20),
+                'event' => $event,
+                'old_values' => $oldValues,
+                'new_values' => $newValues,
+                'ip_address' => $ipAddresses[array_rand($ipAddresses)],
+                'user_agent' => $userAgents[array_rand($userAgents)],
+                'created_at' => now()->subDays($daysAgo)->subHours(rand(0, 23)),
+            ]);
+
+            $auditCount++;
+        }
+
+        $this->command->info("Se crearon {$auditCount} registros de auditoría adicionales.");
     }
 }
