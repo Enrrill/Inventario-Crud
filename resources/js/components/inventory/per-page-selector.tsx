@@ -5,15 +5,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 const PER_PAGE_OPTIONS = [8, 10, 15, 20, 25, 50] as const;
 
 function PerPageSelector({
     value,
     onChange,
+    className,
 }: {
     value: number;
     onChange: (value: number) => void;
+    className?: string;
 }) {
     function handleChange(newValue: string) {
         const perPage = parseInt(newValue, 10);
@@ -23,23 +26,25 @@ function PerPageSelector({
     }
 
     return (
-        <div className="flex items-center gap-2">
-            <span className="text-muted-foreground text-sm">Mostrar</span>
+        <div className={cn('inline-flex items-center', className)} data-slot="per-page-selector">
             <Select value={String(value)} onValueChange={handleChange}>
-                <SelectTrigger className="h-8 w-16">
+                <SelectTrigger
+                    size="sm"
+                    className="h-8 min-w-[72px] px-2.5 text-xs font-medium bg-background/50 hover:bg-muted/40 transition-colors"
+                    aria-label="Registros por página"
+                >
                     <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent side="top" align="start" className="min-w-[72px]">
                     {PER_PAGE_OPTIONS.map((option) => (
-                        <SelectItem key={option} value={String(option)}>
+                        <SelectItem key={option} value={String(option)} className="text-xs">
                             {option}
                         </SelectItem>
                     ))}
                 </SelectContent>
             </Select>
-            <span className="text-muted-foreground text-sm">por página</span>
         </div>
     );
 }
 
-export { PerPageSelector };
+export { PerPageSelector, PER_PAGE_OPTIONS };

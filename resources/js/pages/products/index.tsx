@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
+import { AlertTriangleIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -18,6 +18,7 @@ import { StatusBadge } from '@/components/inventory/status-badge';
 import { ViewToggle } from '@/components/inventory/view-toggle';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useQueryParams } from '@/hooks/use-query-params';
+import { cn } from '@/lib/utils';
 import products from '@/routes/products';
 import type {
     Category,
@@ -226,17 +227,32 @@ export default function ProductsIndex({
                         placeholder="Proveedor"
                         className="w-full sm:w-56"
                     />
-                    <label className="flex items-center gap-2 text-sm shrink-0 cursor-pointer select-none">
-                        <input
-                            type="checkbox"
-                            checked={queryFilters.low_stock === '1'}
-                            onChange={(e) =>
-                                handleFilterChange('low_stock', e.target.checked ? '1' : '')
-                            }
-                            className="border-input rounded"
+                    <button
+                        type="button"
+                        aria-pressed={queryFilters.low_stock === '1'}
+                        onClick={() =>
+                            handleFilterChange('low_stock', queryFilters.low_stock === '1' ? '' : '1')
+                        }
+                        className={cn(
+                            'inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm font-medium transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring select-none',
+                            queryFilters.low_stock === '1'
+                                ? 'border-amber-500/50 bg-amber-500/10 text-amber-600 shadow-xs dark:text-amber-400'
+                                : 'border-input bg-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground',
+                        )}
+                    >
+                        <AlertTriangleIcon
+                            className={cn(
+                                'size-3.5 shrink-0 transition-colors',
+                                queryFilters.low_stock === '1'
+                                    ? 'text-amber-500'
+                                    : 'text-muted-foreground',
+                            )}
                         />
                         Stock bajo
-                    </label>
+                        {queryFilters.low_stock === '1' && (
+                            <span className="flex size-1.5 rounded-full bg-amber-500 shadow-[0_0_4px_1px_rgb(245_158_11_/_0.6)]" />
+                        )}
+                    </button>
                     <ViewToggle view={view} onViewChange={setView} />
                     {hasActiveFilters && (
                         <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
