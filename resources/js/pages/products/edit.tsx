@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import InputError from '@/components/input-error';
 import { PageHeader } from '@/components/inventory/page-header';
+import { SearchableSelect } from '@/components/inventory/searchable-select';
 import products from '@/routes/products';
 import type { Category, Product, Supplier } from '@/types/inventory';
 
@@ -38,6 +39,19 @@ export default function ProductsEdit({
     categories,
     suppliers,
 }: ProductsEditProps) {
+    const categoryOptions = categories.map((cat) => ({
+        value: String(cat.id),
+        label: cat.name_category,
+    }));
+
+    const supplierOptions = [
+        { value: 'none', label: 'Sin proveedor' },
+        ...suppliers.map((sup) => ({
+            value: String(sup.id),
+            label: sup.name_supplier,
+        })),
+    ];
+
     return (
         <>
             <Head title={`Editar ${product.name_product}`} />
@@ -58,6 +72,10 @@ export default function ProductsEdit({
                     <Form
                         method="put"
                         action={products.update.url(product.id)}
+                        transform={(data) => ({
+                            ...data,
+                            supplier_id: data.supplier_id === 'none' || !data.supplier_id ? null : data.supplier_id,
+                        })}
                         onError={() => toast.error('Error al guardar los cambios. Verifica los datos.')}
                         className="space-y-6"
                     >
@@ -110,56 +128,29 @@ export default function ProductsEdit({
                                         <Label>
                                             Categoría <span className="text-destructive">*</span>
                                         </Label>
-                                        <input type="hidden" name="category_id" value="" />
-                                        <Select
+                                        <SearchableSelect
                                             name="category_id"
+                                            options={categoryOptions}
                                             defaultValue={String(product.category_id)}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Seleccionar categoría" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {categories.map((cat) => (
-                                                    <SelectItem
-                                                        key={cat.id}
-                                                        value={String(cat.id)}
-                                                    >
-                                                        {cat.name_category}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                            placeholder="Seleccionar categoría"
+                                            searchPlaceholder="Buscar categoría..."
+                                        />
                                         <InputError message={errors.category_id} />
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label>Proveedor</Label>
-                                        <input type="hidden" name="supplier_id" value="" />
-                                        <Select
+                                        <SearchableSelect
                                             name="supplier_id"
+                                            options={supplierOptions}
                                             defaultValue={
                                                 product.supplier_id
                                                     ? String(product.supplier_id)
-                                                    : undefined
+                                                    : 'none'
                                             }
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Seleccionar proveedor" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="none">
-                                                    Sin proveedor
-                                                </SelectItem>
-                                                {suppliers.map((sup) => (
-                                                    <SelectItem
-                                                        key={sup.id}
-                                                        value={String(sup.id)}
-                                                    >
-                                                        {sup.name_supplier}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                            placeholder="Seleccionar proveedor"
+                                            searchPlaceholder="Buscar proveedor..."
+                                        />
                                         <InputError message={errors.supplier_id} />
                                     </div>
                                 </div>

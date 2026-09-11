@@ -109,6 +109,7 @@ export default function MovementsIndex({
         {
             accessorKey: 'quantity_movement',
             header: 'Cantidad',
+            meta: { className: 'text-center' },
             cell: ({ row }) => {
                 const m = row.original;
                 const isEntry = m.type_movement === 'entry';
@@ -132,6 +133,7 @@ export default function MovementsIndex({
         {
             accessorKey: 'previous_stock_movement',
             header: 'Stock Ant.',
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground text-sm">
                     {row.original.previous_stock_movement}
@@ -141,6 +143,7 @@ export default function MovementsIndex({
         {
             accessorKey: 'new_stock_movement',
             header: 'Stock Nuevo',
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground text-sm">
                     {row.original.new_stock_movement}
@@ -167,7 +170,7 @@ export default function MovementsIndex({
         },
         {
             id: 'actions',
-            header: () => <span className="text-center">Acciones</span>,
+            header: 'Acciones',
             meta: { className: 'text-center' },
             cell: ({ row }) => (
                 <div className="flex items-center justify-center gap-1">

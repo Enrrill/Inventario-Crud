@@ -95,21 +95,24 @@ export default function ReportsStockStatus({
         },
         {
             accessorKey: 'current_stock_product',
-            header: () => <span className="text-center">Stock Actual</span>,
+            header: 'Stock Actual',
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
-                <span className="block text-center font-medium">{row.original.current_stock_product}</span>
+                <span className="font-medium">{row.original.current_stock_product}</span>
             ),
         },
         {
             accessorKey: 'minimum_stock_product',
-            header: () => <span className="text-center">Stock Mínimo</span>,
+            header: 'Stock Mínimo',
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
-                <span className="block text-center">{row.original.minimum_stock_product}</span>
+                <span>{row.original.minimum_stock_product}</span>
             ),
         },
         {
             accessorKey: 'status',
-            header: () => <span className="text-center">Estado</span>,
+            header: 'Estado',
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
                 <div className="flex justify-center">
                     <StockBadge
@@ -306,6 +309,7 @@ export default function ReportsStockStatus({
                             <DataTable
                                 columns={columns}
                                 data={problemProducts}
+                                showPerPage
                                 emptyTitle="Sin productos"
                                 emptyDescription="No hay productos que requieran atención."
                             />

@@ -5,15 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import InputError from '@/components/input-error';
 import { PageHeader } from '@/components/inventory/page-header';
+import { SearchableSelect } from '@/components/inventory/searchable-select';
 import categories from '@/routes/categories';
 import type { Category } from '@/types/inventory';
 
@@ -26,6 +20,14 @@ export default function CategoriesEdit({
     category,
     parentCategories,
 }: CategoriesEditProps) {
+    const parentOptions = [
+        { value: 'none', label: 'Sin categoría padre' },
+        ...parentCategories.map((cat) => ({
+            value: String(cat.id),
+            label: cat.name_category,
+        })),
+    ];
+
     return (
         <>
             <Head title={`Editar ${category.name_category}`} />
@@ -84,31 +86,17 @@ export default function CategoriesEdit({
 
                                 <div className="space-y-2">
                                     <Label>Categoría padre</Label>
-                                    <Select
+                                    <SearchableSelect
                                         name="parent_category_id"
+                                        options={parentOptions}
                                         defaultValue={
                                             category.parent_category_id
                                                 ? String(category.parent_category_id)
-                                                : undefined
+                                                : 'none'
                                         }
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Sin categoría padre" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="none">
-                                                Sin categoría padre
-                                            </SelectItem>
-                                            {parentCategories.map((cat) => (
-                                                <SelectItem
-                                                    key={cat.id}
-                                                    value={String(cat.id)}
-                                                >
-                                                    {cat.name_category}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                        placeholder="Sin categoría padre"
+                                        searchPlaceholder="Buscar categoría padre..."
+                                    />
                                     <InputError message={errors.parent_category_id} />
                                 </div>
 

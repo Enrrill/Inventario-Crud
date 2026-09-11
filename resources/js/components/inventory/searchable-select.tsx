@@ -7,27 +7,43 @@ type SearchableSelectOption = {
     label: string;
 };
 
+type SearchableSelectProps = {
+    options: SearchableSelectOption[];
+    value?: string;
+    defaultValue?: string;
+    onValueChange?: (value: string) => void;
+    placeholder?: string;
+    className?: string;
+    searchPlaceholder?: string;
+    name?: string;
+    disabled?: boolean;
+    required?: boolean;
+    id?: string;
+};
+
 function SearchableSelect({
     options,
-    value,
+    value: controlledValue,
+    defaultValue,
     onValueChange,
     placeholder = 'Seleccionar...',
     className,
     searchPlaceholder = 'Buscar...',
-}: {
-    options: SearchableSelectOption[];
-    value: string;
-    onValueChange: (value: string) => void;
-    placeholder?: string;
-    className?: string;
-    searchPlaceholder?: string;
-}) {
+    name,
+    disabled = false,
+    required = false,
+    id,
+}: SearchableSelectProps) {
+    const isControlled = controlledValue !== undefined;
+    const [internalValue, setInternalValue] = useState<string>(defaultValue ?? '');
+    const currentValue = isControlled ? controlledValue : internalValue;
+
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState('');
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const selectedOption = options.find((opt) => opt.value === value);
+    const selectedOption = options.find((opt) => opt.value === currentValue);
 
     const filteredOptions = options.filter((opt) =>
         opt.label.toLowerCase().includes(search.toLowerCase()),
@@ -35,11 +51,14 @@ function SearchableSelect({
 
     const handleSelect = useCallback(
         (newValue: string) => {
-            onValueChange(newValue);
+            if (!isControlled) {
+                setInternalValue(newValue);
+            }
+            onValueChange?.(newValue);
             setOpen(false);
             setSearch('');
         },
-        [onValueChange],
+        [isControlled, onValueChange],
     );
 
     useEffect(() => {
@@ -49,9 +68,19 @@ function SearchableSelect({
                 setSearch('');
             }
         }
+        function handleKeyDown(e: KeyboardEvent) {
+            if (e.key === 'Escape' && open) {
+                setOpen(false);
+                setSearch('');
+            }
+        }
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [open]);
 
     useEffect(() => {
         if (open && inputRef.current) {
@@ -61,8 +90,18 @@ function SearchableSelect({
 
     return (
         <div ref={containerRef} className={cn('relative', className)} data-slot="searchable-select">
+            {name && (
+                <input
+                    type="hidden"
+                    name={name}
+                    value={currentValue}
+                    required={required}
+                />
+            )}
             <button
                 type="button"
+                id={id}
+                disabled={disabled}
                 onClick={() => setOpen(!open)}
                 className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full items-center justify-between rounded-md border px-3 py-2 text-sm shadow-xs transition-colors focus-visible:ring-[3px] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -121,13 +160,13 @@ function SearchableSelect({
                                     onClick={() => handleSelect(option.value)}
                                     className={cn(
                                         'relative flex w-full cursor-pointer items-center gap-2 rounded-sm py-1.5 pr-3 pl-2 text-left text-sm outline-hidden select-none transition-colors hover:bg-accent hover:text-accent-foreground',
-                                        value === option.value && 'bg-accent/80 font-medium text-accent-foreground',
+                                        currentValue === option.value && 'bg-accent/80 font-medium text-accent-foreground',
                                     )}
                                 >
                                     <CheckIcon
                                         className={cn(
                                             'size-4 shrink-0 text-primary',
-                                            value === option.value ? 'opacity-100' : 'opacity-0',
+                                            currentValue === option.value ? 'opacity-100' : 'opacity-0',
                                         )}
                                     />
                                     <span className="flex-1 text-left truncate">
@@ -144,4 +183,4 @@ function SearchableSelect({
 }
 
 export { SearchableSelect };
-export type { SearchableSelectOption };
+export type { SearchableSelectOption, SearchableSelectProps };

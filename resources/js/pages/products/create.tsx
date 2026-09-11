@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import InputError from '@/components/input-error';
 import { PageHeader } from '@/components/inventory/page-header';
+import { SearchableSelect } from '@/components/inventory/searchable-select';
 import products from '@/routes/products';
 import type { Category, Supplier } from '@/types/inventory';
 
@@ -36,6 +37,19 @@ export default function ProductsCreate({
     categories,
     suppliers,
 }: ProductsCreateProps) {
+    const categoryOptions = categories.map((cat) => ({
+        value: String(cat.id),
+        label: cat.name_category,
+    }));
+
+    const supplierOptions = [
+        { value: 'none', label: 'Sin proveedor' },
+        ...suppliers.map((sup) => ({
+            value: String(sup.id),
+            label: sup.name_supplier,
+        })),
+    ];
+
     return (
         <>
             <Head title="Nuevo Producto" />
@@ -112,44 +126,24 @@ export default function ProductsCreate({
                                         <Label>
                                             Categoría <span className="text-destructive">*</span>
                                         </Label>
-                                        <Select name="category_id">
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Seleccionar categoría" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {categories.map((cat) => (
-                                                    <SelectItem
-                                                        key={cat.id}
-                                                        value={String(cat.id)}
-                                                    >
-                                                        {cat.name_category}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                        <SearchableSelect
+                                            name="category_id"
+                                            options={categoryOptions}
+                                            placeholder="Seleccionar categoría"
+                                            searchPlaceholder="Buscar categoría..."
+                                        />
                                         <InputError message={errors.category_id} />
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label>Proveedor</Label>
-                                        <Select name="supplier_id">
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Seleccionar proveedor" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="none">
-                                                    Sin proveedor
-                                                </SelectItem>
-                                                {suppliers.map((sup) => (
-                                                    <SelectItem
-                                                        key={sup.id}
-                                                        value={String(sup.id)}
-                                                    >
-                                                        {sup.name_supplier}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                        <SearchableSelect
+                                            name="supplier_id"
+                                            options={supplierOptions}
+                                            placeholder="Seleccionar proveedor"
+                                            searchPlaceholder="Buscar proveedor..."
+                                            defaultValue="none"
+                                        />
                                         <InputError message={errors.supplier_id} />
                                     </div>
                                 </div>

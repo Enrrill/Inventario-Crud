@@ -16,6 +16,7 @@ import {
 import InputError from '@/components/input-error';
 import { StockBadge } from '@/components/inventory/stock-badge';
 import { PageHeader } from '@/components/inventory/page-header';
+import { SearchableSelect } from '@/components/inventory/searchable-select';
 import movements from '@/routes/movements';
 import type { Product, StockMovementType } from '@/types/inventory';
 
@@ -31,6 +32,11 @@ export default function MovementsCreate({
     const [selectedProductId, setSelectedProductId] = useState<string>('');
     const [selectedType, setSelectedType] = useState<string>('');
     const [quantity, setQuantity] = useState<string>('');
+
+    const productOptions = products.map((p) => ({
+        value: String(p.id),
+        label: `${p.name_product} (${p.sku_product})`,
+    }));
 
     const selectedProduct = products.find(
         (p) => p.id === Number(selectedProductId),
@@ -71,23 +77,14 @@ export default function MovementsCreate({
                                         <Label>
                                             Producto <span className="text-destructive">*</span>
                                         </Label>
-                                        <input type="hidden" name="product_id" value="" />
-                                        <Select
+                                        <SearchableSelect
                                             name="product_id"
+                                            options={productOptions}
                                             value={selectedProductId}
                                             onValueChange={(v) => setSelectedProductId(v)}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Seleccionar producto" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {products.map((p) => (
-                                                    <SelectItem key={p.id} value={String(p.id)}>
-                                                        {p.name_product}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                            placeholder="Seleccionar producto"
+                                            searchPlaceholder="Buscar por nombre o SKU..."
+                                        />
                                         <InputError message={errors.product_id} />
                                     </div>
 

@@ -115,9 +115,10 @@ export default function ReportsMovements({
         },
         {
             accessorKey: 'quantity_movement',
-            header: () => <span className="text-center">Cantidad</span>,
+            header: 'Cantidad',
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
-                <span className="block text-center font-medium">
+                <span className="font-medium">
                     {row.original.type_movement === 'exit' ? '-' : '+'}
                     {row.original.quantity_movement}
                 </span>
@@ -191,50 +192,48 @@ export default function ReportsMovements({
                     />
                 </div>
 
-                <FilterBar>
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-                        <div className="space-y-1">
-                            <Label className="text-xs">Desde</Label>
-                            <Input
-                                type="date"
-                                value={queryFilters.date_from ?? ''}
-                                onChange={(e) => handleFilterChange('date_from', e.target.value)}
-                                className="w-full sm:w-40"
-                            />
-                        </div>
-                        <div className="space-y-1">
-                            <Label className="text-xs">Hasta</Label>
-                            <Input
-                                type="date"
-                                value={queryFilters.date_to ?? ''}
-                                onChange={(e) => handleFilterChange('date_to', e.target.value)}
-                                className="w-full sm:w-40"
-                            />
-                        </div>
-                        <Select
-                            value={queryFilters.type_movement ?? 'all'}
-                            onValueChange={(v) => handleFilterChange('type_movement', v)}
-                        >
-                            <SelectTrigger className="w-full sm:w-40">
-                                <SelectValue placeholder="Todos los tipos" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Todos los tipos</SelectItem>
-                                <SelectItem value="entry">Entradas</SelectItem>
-                                <SelectItem value="exit">Salidas</SelectItem>
-                                <SelectItem value="adjustment">Ajustes</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <SearchableSelect
-                            options={userOptions}
-                            value={queryFilters.user_id ?? 'all'}
-                            onValueChange={(v) => handleFilterChange('user_id', v)}
-                            placeholder="Todos los usuarios"
-                            className="w-full sm:w-56"
+                <FilterBar className="items-end">
+                    <div className="space-y-1">
+                        <Label className="text-xs">Desde</Label>
+                        <Input
+                            type="date"
+                            value={queryFilters.date_from ?? ''}
+                            onChange={(e) => handleFilterChange('date_from', e.target.value)}
+                            className="w-full sm:w-40"
                         />
                     </div>
+                    <div className="space-y-1">
+                        <Label className="text-xs">Hasta</Label>
+                        <Input
+                            type="date"
+                            value={queryFilters.date_to ?? ''}
+                            onChange={(e) => handleFilterChange('date_to', e.target.value)}
+                            className="w-full sm:w-40"
+                        />
+                    </div>
+                    <Select
+                        value={queryFilters.type_movement ?? 'all'}
+                        onValueChange={(v) => handleFilterChange('type_movement', v)}
+                    >
+                        <SelectTrigger className="w-full sm:w-40">
+                            <SelectValue placeholder="Todos los tipos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Todos los tipos</SelectItem>
+                            <SelectItem value="entry">Entradas</SelectItem>
+                            <SelectItem value="exit">Salidas</SelectItem>
+                            <SelectItem value="adjustment">Ajustes</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <SearchableSelect
+                        options={userOptions}
+                        value={queryFilters.user_id ?? 'all'}
+                        onValueChange={(v) => handleFilterChange('user_id', v)}
+                        placeholder="Todos los usuarios"
+                        className="w-full sm:w-56"
+                    />
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
+                        <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 shrink-0">
                             <XIcon className="size-4" />
                             Limpiar filtros
                         </Button>

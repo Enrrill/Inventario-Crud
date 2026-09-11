@@ -143,7 +143,7 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
         },
         {
             id: 'actions',
-            header: () => <span className="text-center">Acciones</span>,
+            header: 'Acciones',
             meta: { className: 'text-center' },
             cell: ({ row }) => (
                 <div className="flex items-center justify-center">
@@ -180,59 +180,57 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
                     />
                 </div>
 
-                <FilterBar>
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-                        <div className="space-y-1">
-                            <Label className="text-xs">Desde</Label>
-                            <Input
-                                type="date"
-                                value={queryFilters.date_from ?? ''}
-                                onChange={(e) => handleFilterChange('date_from', e.target.value)}
-                                className="w-full sm:w-40"
-                            />
-                        </div>
-                        <div className="space-y-1">
-                            <Label className="text-xs">Hasta</Label>
-                            <Input
-                                type="date"
-                                value={queryFilters.date_to ?? ''}
-                                onChange={(e) => handleFilterChange('date_to', e.target.value)}
-                                className="w-full sm:w-40"
-                            />
-                        </div>
-                        <Select
-                            value={queryFilters.event ?? 'all'}
-                            onValueChange={(v) => handleFilterChange('event', v)}
-                        >
-                            <SelectTrigger className="w-full sm:w-40">
-                                <SelectValue placeholder="Todos los eventos" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Todos los eventos</SelectItem>
-                                <SelectItem value="created">Creado</SelectItem>
-                                <SelectItem value="updated">Actualizado</SelectItem>
-                                <SelectItem value="deleted">Eliminado</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <Select
-                            value={queryFilters.auditable_type ?? 'all'}
-                            onValueChange={(v) => handleFilterChange('auditable_type', v)}
-                        >
-                            <SelectTrigger className="w-full sm:w-48">
-                                <SelectValue placeholder="Todos los modelos" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Todos los modelos</SelectItem>
-                                <SelectItem value="App\Models\User">Usuario</SelectItem>
-                                <SelectItem value="App\Models\Product">Producto</SelectItem>
-                                <SelectItem value="App\Models\Category">Categoría</SelectItem>
-                                <SelectItem value="App\Models\Supplier">Proveedor</SelectItem>
-                                <SelectItem value="App\Models\StockMovement">Movimiento</SelectItem>
-                            </SelectContent>
-                        </Select>
+                <FilterBar className="items-end">
+                    <div className="space-y-1">
+                        <Label className="text-xs">Desde</Label>
+                        <Input
+                            type="date"
+                            value={queryFilters.date_from ?? ''}
+                            onChange={(e) => handleFilterChange('date_from', e.target.value)}
+                            className="w-full sm:w-40"
+                        />
                     </div>
+                    <div className="space-y-1">
+                        <Label className="text-xs">Hasta</Label>
+                        <Input
+                            type="date"
+                            value={queryFilters.date_to ?? ''}
+                            onChange={(e) => handleFilterChange('date_to', e.target.value)}
+                            className="w-full sm:w-40"
+                        />
+                    </div>
+                    <Select
+                        value={queryFilters.event ?? 'all'}
+                        onValueChange={(v) => handleFilterChange('event', v)}
+                    >
+                        <SelectTrigger className="w-full sm:w-40">
+                            <SelectValue placeholder="Todos los eventos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Todos los eventos</SelectItem>
+                            <SelectItem value="created">Creado</SelectItem>
+                            <SelectItem value="updated">Actualizado</SelectItem>
+                            <SelectItem value="deleted">Eliminado</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Select
+                        value={queryFilters.auditable_type ?? 'all'}
+                        onValueChange={(v) => handleFilterChange('auditable_type', v)}
+                    >
+                        <SelectTrigger className="w-full sm:w-48">
+                            <SelectValue placeholder="Todos los modelos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Todos los modelos</SelectItem>
+                            <SelectItem value="App\Models\User">Usuario</SelectItem>
+                            <SelectItem value="App\Models\Product">Producto</SelectItem>
+                            <SelectItem value="App\Models\Category">Categoría</SelectItem>
+                            <SelectItem value="App\Models\Supplier">Proveedor</SelectItem>
+                            <SelectItem value="App\Models\StockMovement">Movimiento</SelectItem>
+                        </SelectContent>
+                    </Select>
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
+                        <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 shrink-0">
                             <XIcon className="size-4" />
                             Limpiar filtros
                         </Button>

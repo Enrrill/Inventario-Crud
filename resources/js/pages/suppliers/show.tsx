@@ -1,17 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeftIcon, PencilIcon, Trash2Icon } from 'lucide-react';
+import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
+import { DataTable } from '@/components/inventory/data-table';
 import { EmptyState } from '@/components/inventory/empty-state';
 import { PageHeader } from '@/components/inventory/page-header';
 import { StockBadge } from '@/components/inventory/stock-badge';
@@ -32,6 +26,60 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
     function handleDelete() {
         router.delete(suppliers.destroy.url(supplier.id));
     }
+
+    const productColumns: ColumnDef<StockFeatures, Product>[] = [
+        {
+            accessorKey: 'sku_product',
+            header: 'SKU',
+            cell: ({ row }) => (
+                <span className="font-mono text-sm">{row.original.sku_product}</span>
+            ),
+        },
+        {
+            accessorKey: 'name_product',
+            header: 'Nombre',
+            cell: ({ row }) => (
+                <Link
+                    href={products.show.url(row.original.id)}
+                    className="hover:text-primary font-medium"
+                >
+                    {row.original.name_product}
+                </Link>
+            ),
+        },
+        {
+            accessorKey: 'category',
+            header: 'Categoría',
+            cell: ({ row }) => (
+                <Link
+                    href={categories.show.url(row.original.category_id)}
+                    className="hover:text-primary text-muted-foreground"
+                >
+                    {row.original.category?.name_category ?? '—'}
+                </Link>
+            ),
+        },
+        {
+            accessorKey: 'current_stock_product',
+            header: 'Stock',
+            meta: { className: 'text-center' },
+            cell: ({ row }) => <span>{row.original.current_stock_product}</span>,
+        },
+        {
+            accessorKey: 'status',
+            header: 'Estado',
+            meta: { className: 'text-center' },
+            cell: ({ row }) => (
+                <div className="flex justify-center">
+                    <StockBadge
+                        currentStock={row.original.current_stock_product}
+                        minimumStock={row.original.minimum_stock_product}
+                        showValue={false}
+                    />
+                </div>
+            ),
+        },
+    ];
 
     return (
         <>
@@ -110,73 +158,13 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {!supplier.products || supplier.products.length === 0 ? (
-                                <EmptyState
-                                    icon={ArrowLeftIcon}
-                                    title="Sin productos"
-                                    description="Este proveedor no tiene productos asociados."
-                                />
-                            ) : (
-                                <div className="rounded-md border">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>SKU</TableHead>
-                                                <TableHead>Nombre</TableHead>
-                                                <TableHead>Categoría</TableHead>
-                                                <TableHead className="text-center">
-                                                    Stock
-                                                </TableHead>
-                                                <TableHead className="text-center">
-                                                    Estado
-                                                </TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {supplier.products.map((product) => (
-                                                <TableRow key={product.id}>
-                                                    <TableCell className="font-mono text-sm">
-                                                        {product.sku_product}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Link
-                                                            href={products.show.url(product.id)}
-                                                            className="hover:text-primary font-medium"
-                                                        >
-                                                            {product.name_product}
-                                                        </Link>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Link
-                                                            href={categories.show.url(
-                                                                product.category_id,
-                                                            )}
-                                                            className="hover:text-primary text-muted-foreground"
-                                                        >
-                                                            {product.category?.name_category ??
-                                                                '—'}
-                                                        </Link>
-                                                    </TableCell>
-                                                    <TableCell className="text-center">
-                                                        {product.current_stock_product}
-                                                    </TableCell>
-                                                    <TableCell className="text-center">
-                                                        <StockBadge
-                                                            currentStock={
-                                                                product.current_stock_product
-                                                            }
-                                                            minimumStock={
-                                                                product.minimum_stock_product
-                                                            }
-                                                            showValue={false}
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            )}
+                            <DataTable
+                                columns={productColumns}
+                                data={supplier.products ?? []}
+                                showPerPage
+                                emptyTitle="Sin productos"
+                                emptyDescription="Este proveedor no tiene productos asociados."
+                            />
                         </CardContent>
                     </Card>
                 </div>

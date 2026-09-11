@@ -117,21 +117,24 @@ export default function ReportsInventory({
         },
         {
             accessorKey: 'current_stock_product',
-            header: () => <span className="text-center">Stock</span>,
+            header: 'Stock',
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
-                <span className="block text-center">{row.original.current_stock_product}</span>
+                <span>{row.original.current_stock_product}</span>
             ),
         },
         {
             accessorKey: 'unit_price_product',
-            header: () => <span className="text-center">Precio</span>,
+            header: 'Precio',
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
-                <span className="block text-center">{formatCurrency(row.original.unit_price_product)}</span>
+                <span>{formatCurrency(row.original.unit_price_product)}</span>
             ),
         },
         {
             accessorKey: 'status',
-            header: () => <span className="text-center">Estado</span>,
+            header: 'Estado',
+            meta: { className: 'text-center' },
             cell: ({ row }) => (
                 <div className="flex justify-center">
                     <StockBadge

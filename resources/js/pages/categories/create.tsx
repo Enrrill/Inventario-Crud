@@ -5,15 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import InputError from '@/components/input-error';
 import { PageHeader } from '@/components/inventory/page-header';
+import { SearchableSelect } from '@/components/inventory/searchable-select';
 import categories from '@/routes/categories';
 import type { Category } from '@/types/inventory';
 
@@ -24,6 +18,14 @@ type CategoriesCreateProps = {
 export default function CategoriesCreate({
     parentCategories,
 }: CategoriesCreateProps) {
+    const parentOptions = [
+        { value: 'none', label: 'Sin categoría padre' },
+        ...parentCategories.map((category) => ({
+            value: String(category.id),
+            label: category.name_category,
+        })),
+    ];
+
     return (
         <>
             <Head title="Nueva Categoría" />
@@ -82,24 +84,13 @@ export default function CategoriesCreate({
 
                                 <div className="space-y-2">
                                     <Label>Categoría padre</Label>
-                                    <Select name="parent_category_id">
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Sin categoría padre" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="none">
-                                                Sin categoría padre
-                                            </SelectItem>
-                                            {parentCategories.map((category) => (
-                                                <SelectItem
-                                                    key={category.id}
-                                                    value={String(category.id)}
-                                                >
-                                                    {category.name_category}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <SearchableSelect
+                                        name="parent_category_id"
+                                        options={parentOptions}
+                                        defaultValue="none"
+                                        placeholder="Sin categoría padre"
+                                        searchPlaceholder="Buscar categoría padre..."
+                                    />
                                     <InputError message={errors.parent_category_id} />
                                 </div>
 

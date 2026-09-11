@@ -78,7 +78,7 @@ export default function CategoriesIndex({ categories: pagination }: CategoriesIn
         },
         {
             id: 'actions',
-            header: () => <span className="text-center">Acciones</span>,
+            header: 'Acciones',
             meta: { className: 'text-center' },
             cell: ({ row }) => (
                 <div className="flex items-center justify-center gap-1">

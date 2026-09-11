@@ -6,6 +6,7 @@ import {
     type RowData,
     type StockFeatures,
 } from '@tanstack/react-table';
+import { useState, useMemo } from 'react';
 import {
     Table,
     TableBody,
@@ -17,8 +18,15 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/inventory/empty-state';
 import { Pagination } from '@/components/inventory/pagination';
+import { cn } from '@/lib/utils';
 import type { PaginatedData } from '@/types/inventory';
 import type { LucideIcon } from 'lucide-react';
+
+export type ColumnMeta = {
+    className?: string;
+    headerClassName?: string;
+    cellClassName?: string;
+};
 
 function DataTable<TData extends RowData, TValue>({
     columns,
@@ -35,6 +43,8 @@ function DataTable<TData extends RowData, TValue>({
     loading = false,
     showPerPage = false,
     onPerPageChange,
+    enablePagination = true,
+    defaultPerPage = 10,
 }: {
     columns: ColumnDef<StockFeatures, TData, TValue>[];
     data: TData[];
@@ -50,19 +60,52 @@ function DataTable<TData extends RowData, TValue>({
     loading?: boolean;
     showPerPage?: boolean;
     onPerPageChange?: (value: number) => void;
+    enablePagination?: boolean;
+    defaultPerPage?: number;
 }) {
+    const isServerPagination = pagination !== undefined;
+    const [clientPage, setClientPage] = useState(1);
+    const [clientPerPage, setClientPerPage] = useState(defaultPerPage);
+
+    const clientTotalPages = Math.max(1, Math.ceil(data.length / clientPerPage));
+
+    // Reset client page if data shrinks below current page
+    const safeClientPage = Math.min(clientPage, clientTotalPages);
+
+    const displayData = useMemo(() => {
+        if (isServerPagination || !enablePagination) {
+            return data;
+        }
+        const start = (safeClientPage - 1) * clientPerPage;
+        return data.slice(start, start + clientPerPage);
+    }, [isServerPagination, enablePagination, data, safeClientPage, clientPerPage]);
+
     const table = useTable({
         features: stockFeatures,
-        data,
+        data: displayData,
         columns: columns as ColumnDef<StockFeatures, TData>[],
         manualPagination: true,
-        pageCount: pagination?.last_page ?? 1,
+        pageCount: isServerPagination ? pagination.last_page : clientTotalPages,
     });
+
+    const clientPaginationData: PaginatedData<TData> | undefined = useMemo(() => {
+        if (isServerPagination || !enablePagination) return undefined;
+        return {
+            data: displayData,
+            current_page: safeClientPage,
+            last_page: clientTotalPages,
+            per_page: clientPerPage,
+            total: data.length,
+            from: data.length === 0 ? 0 : (safeClientPage - 1) * clientPerPage + 1,
+            to: data.length === 0 ? 0 : Math.min(safeClientPage * clientPerPage, data.length),
+            links: [],
+        };
+    }, [isServerPagination, enablePagination, displayData, safeClientPage, clientTotalPages, clientPerPage, data.length]);
 
     const showEmpty = !loading && data.length === 0;
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4" data-slot="data-table">
             {toolbar && <div>{toolbar}</div>}
 
             <div className="rounded-md border">
@@ -70,20 +113,23 @@ function DataTable<TData extends RowData, TValue>({
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                        className={(header.column.columnDef as ColumnDef<StockFeatures, TData> & { meta?: { className?: string } }).meta?.className}
-                                    >
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                  header.column.columnDef.header,
-                                                  header.getContext(),
-                                              )}
-                                    </TableHead>
-                                ))}
+                                {headerGroup.headers.map((header) => {
+                                    const meta = (header.column.columnDef as { meta?: ColumnMeta }).meta;
+                                    return (
+                                        <TableHead
+                                            key={header.id}
+                                            colSpan={header.colSpan}
+                                            className={cn(meta?.className, meta?.headerClassName)}
+                                        >
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                      header.column.columnDef.header,
+                                                      header.getContext(),
+                                                  )}
+                                        </TableHead>
+                                    );
+                                })}
                             </TableRow>
                         ))}
                     </TableHeader>
@@ -115,14 +161,20 @@ function DataTable<TData extends RowData, TValue>({
                         ) : (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id}>
-                                    {row.getAllCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </TableCell>
-                                    ))}
+                                    {row.getAllCells().map((cell) => {
+                                        const meta = (cell.column.columnDef as { meta?: ColumnMeta }).meta;
+                                        return (
+                                            <TableCell
+                                                key={cell.id}
+                                                className={cn(meta?.className, meta?.cellClassName)}
+                                            >
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext(),
+                                                )}
+                                            </TableCell>
+                                        );
+                                    })}
                                 </TableRow>
                             ))
                         )}
@@ -130,11 +182,23 @@ function DataTable<TData extends RowData, TValue>({
                 </Table>
             </div>
 
-            {pagination && (
+            {isServerPagination && pagination && (
                 <Pagination
                     data={pagination}
                     showPerPage={showPerPage}
                     onPerPageChange={onPerPageChange}
+                />
+            )}
+
+            {!isServerPagination && enablePagination && clientPaginationData && (
+                <Pagination
+                    data={clientPaginationData}
+                    showPerPage={showPerPage}
+                    onPageChange={(page) => setClientPage(page)}
+                    onPerPageChange={(perPage) => {
+                        setClientPerPage(perPage);
+                        setClientPage(1);
+                    }}
                 />
             )}
         </div>

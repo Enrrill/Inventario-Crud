@@ -14,12 +14,14 @@ function Pagination({
     data,
     preserveScroll = true,
     showPerPage = false,
+    onPageChange,
     onPerPageChange,
     className,
 }: {
     data: PaginatedData<unknown>;
     preserveScroll?: boolean;
     showPerPage?: boolean;
+    onPageChange?: (page: number) => void;
     onPerPageChange?: (value: number) => void;
     className?: string;
 }) {
@@ -30,6 +32,10 @@ function Pagination({
 
     function goToPage(page: number) {
         if (isSinglePageOrEmpty || page === current_page) return;
+        if (onPageChange) {
+            onPageChange(page);
+            return;
+        }
         const url = new URL(window.location.href);
         url.searchParams.set('page', String(page));
         router.get(url.pathname + url.search, {}, {
