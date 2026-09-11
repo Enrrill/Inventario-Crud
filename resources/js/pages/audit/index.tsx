@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { EyeIcon, ClipboardList } from 'lucide-react';
+import { EyeIcon, ClipboardList, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -78,12 +78,17 @@ function getModelName(type: string): string {
 }
 
 export default function AuditIndex({ logs, filters }: AuditIndexProps) {
-    const [queryFilters, setQueryFilters] = useQueryParams<{
+    const [queryFilters, setQueryFilters, clearFilters] = useQueryParams<{
         event: string;
         auditable_type: string;
         date_from: string;
         date_to: string;
+        per_page: string;
     }>();
+
+    const hasActiveFilters = Boolean(
+        queryFilters.event || queryFilters.auditable_type || queryFilters.date_from || queryFilters.date_to,
+    );
 
     const handleFilterChange = useCallback(
         (key: string, value: string) => {
@@ -226,12 +231,20 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
                             </SelectContent>
                         </Select>
                     </div>
+                    {hasActiveFilters && (
+                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                            <XIcon className="size-4" />
+                            Limpiar
+                        </Button>
+                    )}
                 </FilterBar>
 
                 <DataTable
                     columns={columns}
                     data={logs.data}
                     pagination={logs}
+                    showPerPage
+                    onPerPageChange={(perPage) => setQueryFilters({ per_page: String(perPage) })}
                     emptyTitle="Sin registros"
                     emptyDescription="No se encontraron registros de auditoría con los filtros seleccionados."
                 />

@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\Supplier;
+use App\Models\User;
 use App\Services\ReportExportService;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -89,13 +90,22 @@ class ReportController extends Controller
             $query->where('type_movement', $typeMovement);
         }
 
-        $movements = $query->latest('created_at')->paginate(25);
+        if ($userId = $request->input('user_id')) {
+            $query->where('user_id', $userId);
+        }
+
+        $movements = $query->latest('created_at')->paginate($request->input('per_page', 25));
+
+        $summaryQuery = StockMovement::query()
+            ->when($request->filled('date_from'), fn ($q) => $q->where('created_at', '>=', $request->input('date_from')))
+            ->when($request->filled('date_to'), fn ($q) => $q->where('created_at', '<=', $request->input('date_to').' 23:59:59'))
+            ->when($request->filled('product_id'), fn ($q) => $q->where('product_id', $request->input('product_id')))
+            ->when($request->filled('type_movement'), fn ($q) => $q->where('type_movement', $request->input('type_movement')))
+            ->when($request->filled('user_id'), fn ($q) => $q->where('user_id', $request->input('user_id')));
 
         $summary = [
-            'total_movements' => $movements->total(),
-            'by_type' => StockMovement::query()
-                ->when($request->filled('date_from'), fn ($q) => $q->where('created_at', '>=', $request->input('date_from')))
-                ->when($request->filled('date_to'), fn ($q) => $q->where('created_at', '<=', $request->input('date_to').' 23:59:59'))
+            'total_movements' => (clone $summaryQuery)->count(),
+            'by_type' => (clone $summaryQuery)
                 ->select('type_movement', DB::raw('count(*) as total'), DB::raw('sum(quantity_movement) as total_quantity'))
                 ->groupBy('type_movement')
                 ->get(),
@@ -104,7 +114,8 @@ class ReportController extends Controller
         return Inertia::render('reports/movements', [
             'movements' => $movements,
             'summary' => $summary,
-            'filters' => $request->only(['date_from', 'date_to', 'product_id', 'type_movement']),
+            'filters' => $request->only(['date_from', 'date_to', 'product_id', 'type_movement', 'user_id', 'per_page']),
+            'users' => User::orderBy('name')->get(['id', 'name']),
         ]);
     }
 

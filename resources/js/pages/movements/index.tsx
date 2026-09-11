@@ -1,5 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { EyeIcon, PlusIcon } from 'lucide-react';
+import { EyeIcon, PlusIcon, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { DataTable } from '@/components/inventory/data-table';
 import { EmptyState } from '@/components/inventory/empty-state';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
+import { SearchableSelect } from '@/components/inventory/searchable-select';
 import { TypeBadge } from '@/components/inventory/type-badge';
 import { useQueryParams } from '@/hooks/use-query-params';
 import movements from '@/routes/movements';
@@ -37,9 +38,10 @@ export default function MovementsIndex({
     movements: pagination,
     products,
 }: MovementsIndexProps) {
-    const [filters, setFilters] = useQueryParams<{
+    const [filters, setFilters, clearFilters] = useQueryParams<{
         product_id: string;
         type: string;
+        per_page: string;
     }>();
     const page = usePage();
     const filterTypes: StockMovementType[] = (page.props.filterTypes as StockMovementType[]) ?? [
@@ -53,12 +55,19 @@ export default function MovementsIndex({
         adjustment: 'Ajuste',
     };
 
+    const hasActiveFilters = Boolean(filters.product_id || filters.type);
+
     const handleFilter = useCallback(
         (key: string, value: string) => {
-            setFilters({ [key]: value === 'all' ? '' : value } as Partial<{ product_id: string; type: string }>);
+            setFilters({ [key]: value === 'all' ? '' : value } as Partial<{ product_id: string; type: string; per_page: string }>);
         },
         [setFilters],
     );
+
+    const productOptions = [
+        { value: 'all', label: 'Todos los productos' },
+        ...products.map((p) => ({ value: String(p.id), label: p.name_product })),
+    ];
 
     function formatDate(date: string) {
         return new Date(date).toLocaleDateString('es-MX', {
@@ -194,22 +203,13 @@ export default function MovementsIndex({
                 </PageHeader>
 
                 <FilterBar>
-                    <Select
+                    <SearchableSelect
+                        options={productOptions}
                         value={filters.product_id ?? 'all'}
                         onValueChange={(v) => handleFilter('product_id', v)}
-                    >
-                        <SelectTrigger className="w-full sm:w-56">
-                            <SelectValue placeholder="Todos los productos" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Todos los productos</SelectItem>
-                            {products.map((p) => (
-                                <SelectItem key={p.id} value={String(p.id)}>
-                                    {p.name_product}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                        placeholder="Todos los productos"
+                        className="w-full sm:w-56"
+                    />
 
                     <Select
                         value={filters.type ?? 'all'}
@@ -227,12 +227,21 @@ export default function MovementsIndex({
                             ))}
                         </SelectContent>
                     </Select>
+
+                    {hasActiveFilters && (
+                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                            <XIcon className="size-4" />
+                            Limpiar
+                        </Button>
+                    )}
                 </FilterBar>
 
                 <DataTable
                     columns={columns}
                     data={pagination.data}
                     pagination={pagination}
+                    showPerPage
+                    onPerPageChange={(perPage) => setFilters({ per_page: String(perPage) })}
                     emptyTitle="Sin movimientos"
                     emptyDescription="No se encontraron movimientos. Registra uno nuevo para comenzar."
                     emptyAction={{

@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon, DownloadIcon, AlertTriangle, CheckCircle, XCircle, Package } from 'lucide-react';
+import { ArrowLeftIcon, DownloadIcon, AlertTriangle, CheckCircle, XCircle, Package, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -38,9 +38,11 @@ export default function ReportsStockStatus({
     filters,
     categories,
 }: ReportsStockStatusProps) {
-    const [queryFilters, setQueryFilters] = useQueryParams<{
+    const [queryFilters, setQueryFilters, clearFilters] = useQueryParams<{
         category_id: string;
     }>();
+
+    const hasActiveFilters = Boolean(queryFilters.category_id);
 
     const handleCategoryChange = useCallback(
         (value: string) => {
@@ -198,6 +200,12 @@ export default function ReportsStockStatus({
                         placeholder="Todas las categorías"
                         className="w-full sm:w-56"
                     />
+                    {hasActiveFilters && (
+                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                            <XIcon className="size-4" />
+                            Limpiar
+                        </Button>
+                    )}
                 </FilterBar>
 
                 <div className="grid gap-4 lg:grid-cols-3">

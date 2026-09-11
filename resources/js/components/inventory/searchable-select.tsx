@@ -59,12 +59,6 @@ function SearchableSelect({
         }
     }, [open]);
 
-    function handleClear(e: React.MouseEvent) {
-        e.stopPropagation();
-        onValueChange('');
-        setSearch('');
-    }
-
     return (
         <div ref={containerRef} className={cn('relative', className)}>
             <button
@@ -75,31 +69,31 @@ function SearchableSelect({
                 <span className={cn(!selectedOption && 'text-muted-foreground')}>
                     {selectedOption?.label ?? placeholder}
                 </span>
-                <div className="flex items-center gap-1">
-                    {selectedOption && (
-                        <button
-                            type="button"
-                            onClick={handleClear}
-                            className="text-muted-foreground hover:text-foreground rounded-sm p-0.5 hover:bg-muted"
-                        >
-                            <XIcon className="size-3.5" />
-                        </button>
-                    )}
-                    <ChevronDownIcon className={cn('text-muted-foreground size-4 transition-transform', open && 'rotate-180')} />
-                </div>
+                <ChevronDownIcon className={cn('text-muted-foreground size-4 transition-transform', open && 'rotate-180')} />
             </button>
 
             {open && (
                 <div className="bg-popover absolute z-50 mt-1 w-full min-w-[200px] overflow-hidden rounded-md border shadow-md">
                     <div className="border-b p-1">
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder={searchPlaceholder}
-                            className="placeholder:text-muted-foreground flex h-8 w-full rounded-md bg-transparent px-2 py-1 text-sm outline-none"
-                        />
+                        <div className="relative flex items-center">
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder={searchPlaceholder}
+                                className="placeholder:text-muted-foreground flex h-8 w-full rounded-md bg-transparent px-2 py-1 pr-6 text-sm outline-none"
+                            />
+                            {search && (
+                                <button
+                                    type="button"
+                                    onClick={() => setSearch('')}
+                                    className="text-muted-foreground hover:text-foreground absolute right-1 rounded-sm p-0.5 hover:bg-muted"
+                                >
+                                    <XIcon className="size-3" />
+                                </button>
+                            )}
+                        </div>
                     </div>
                     <div className="max-h-60 overflow-y-auto p-1">
                         {filteredOptions.length === 0 ? (

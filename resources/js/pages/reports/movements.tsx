@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon, DownloadIcon, ArrowLeftRight, ArrowDownCircle, ArrowUpCircle, RefreshCw } from 'lucide-react';
+import { ArrowLeftIcon, DownloadIcon, ArrowLeftRight, ArrowDownCircle, ArrowUpCircle, RefreshCw, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
@@ -17,11 +17,14 @@ import { DataTable } from '@/components/inventory/data-table';
 import { EmptyState } from '@/components/inventory/empty-state';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
+import { SearchableSelect } from '@/components/inventory/searchable-select';
 import { StatCard } from '@/components/inventory/stat-card';
 import { TypeBadge } from '@/components/inventory/type-badge';
 import { useQueryParams } from '@/hooks/use-query-params';
 import reports from '@/routes/reports';
 import type { PaginatedData, StockMovement, StockMovementType } from '@/types/inventory';
+
+type UserOption = { id: number; name: string };
 
 type ReportsMovementsProps = {
     movements: PaginatedData<StockMovement>;
@@ -33,7 +36,8 @@ type ReportsMovementsProps = {
             total_quantity: number;
         }>;
     };
-    filters: { date_from?: string; date_to?: string; product_id?: string; type_movement?: string };
+    filters: { date_from?: string; date_to?: string; product_id?: string; type_movement?: string; user_id?: string; per_page?: string };
+    users: UserOption[];
 };
 
 const formatDate = (date: string) =>
@@ -43,12 +47,20 @@ export default function ReportsMovements({
     movements,
     summary,
     filters,
+    users,
 }: ReportsMovementsProps) {
-    const [queryFilters, setQueryFilters] = useQueryParams<{
+    const [queryFilters, setQueryFilters, clearFilters] = useQueryParams<{
         date_from: string;
         date_to: string;
         type_movement: string;
+        product_id: string;
+        user_id: string;
+        per_page: string;
     }>();
+
+    const hasActiveFilters = Boolean(
+        queryFilters.date_from || queryFilters.date_to || queryFilters.type_movement || queryFilters.product_id || queryFilters.user_id,
+    );
 
     const handleFilterChange = useCallback(
         (key: string, value: string) => {
@@ -64,6 +76,7 @@ export default function ReportsMovements({
         if (filters.date_to) params.set('date_to', filters.date_to);
         if (filters.product_id) params.set('product_id', filters.product_id);
         if (filters.type_movement) params.set('type_movement', filters.type_movement);
+        if (filters.user_id) params.set('user_id', filters.user_id);
         try {
             const response = await fetch(reports.export.url(type) + '?' + params.toString());
             const blob = await response.blob();
@@ -123,6 +136,11 @@ export default function ReportsMovements({
                 <span className="text-muted-foreground">{row.original.user?.name ?? '—'}</span>
             ),
         },
+    ];
+
+    const userOptions = [
+        { value: 'all', label: 'Todos los usuarios' },
+        ...users.map((u) => ({ value: String(u.id), label: u.name })),
     ];
 
     return (
@@ -213,13 +231,28 @@ export default function ReportsMovements({
                                 <SelectItem value="adjustment">Ajustes</SelectItem>
                             </SelectContent>
                         </Select>
+                        <SearchableSelect
+                            options={userOptions}
+                            value={queryFilters.user_id ?? 'all'}
+                            onValueChange={(v) => handleFilterChange('user_id', v)}
+                            placeholder="Todos los usuarios"
+                            className="w-full sm:w-48"
+                        />
                     </div>
+                    {hasActiveFilters && (
+                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                            <XIcon className="size-4" />
+                            Limpiar
+                        </Button>
+                    )}
                 </FilterBar>
 
                 <DataTable
                     columns={columns}
                     data={movements.data}
                     pagination={movements}
+                    showPerPage
+                    onPerPageChange={(perPage) => setQueryFilters({ per_page: String(perPage) })}
                     emptyTitle="Sin movimientos"
                     emptyDescription="No se encontraron movimientos con los filtros seleccionados."
                 />

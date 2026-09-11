@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { DataTable } from '@/components/inventory/data-table';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
 import { SearchInput } from '@/components/inventory/search-input';
+import { useQueryParams } from '@/hooks/use-query-params';
 import suppliers from '@/routes/suppliers';
 import type { PaginatedData, Supplier } from '@/types/inventory';
 
@@ -18,21 +19,17 @@ type SuppliersIndexProps = {
 
 export default function SuppliersIndex({
     suppliers: pagination,
-    filters,
 }: SuppliersIndexProps) {
-    const [search, setSearch] = useState(filters.search ?? '');
+    const [filters, setFilters, clearFilters] = useQueryParams<{ search: string; per_page: string }>();
     const [deleteSupplier, setDeleteSupplier] = useState<Supplier | null>(null);
+
+    const hasActiveFilters = Boolean(filters.search);
 
     const handleSearch = useCallback(
         (value: string) => {
-            setSearch(value);
-            router.get(
-                suppliers.index.url(),
-                { search: value },
-                { preserveScroll: true, preserveState: true },
-            );
+            setFilters({ search: value });
         },
-        [],
+        [setFilters],
     );
 
     function handleDelete() {
@@ -142,20 +139,25 @@ export default function SuppliersIndex({
 
                 <FilterBar>
                     <SearchInput
-                        value={search}
+                        value={filters.search ?? ''}
                         onChange={handleSearch}
                         placeholder="Buscar proveedor..."
                         className="w-full sm:w-80"
                     />
+                    {hasActiveFilters && (
+                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                            <XIcon className="size-4" />
+                            Limpiar
+                        </Button>
+                    )}
                 </FilterBar>
 
                 <DataTable
                     columns={columns}
                     data={pagination.data}
                     pagination={pagination}
-                    searchValue={search}
-                    onSearchChange={handleSearch}
-                    searchPlaceholder="Buscar proveedor..."
+                    showPerPage
+                    onPerPageChange={(perPage) => setFilters({ per_page: String(perPage) })}
                     emptyTitle="Sin proveedores"
                     emptyDescription="No se encontraron proveedores. Crea uno nuevo para comenzar."
                     emptyAction={{

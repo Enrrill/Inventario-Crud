@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react';
 export function useQueryParams<T extends Record<string, string>>(): [
     T,
     (params: Partial<T>) => void,
+    () => void,
 ] {
     const page = usePage();
 
@@ -37,6 +38,8 @@ export function useQueryParams<T extends Record<string, string>>(): [
                 }
             });
 
+            merged['page'] = '1';
+
             router.get(url.pathname, merged, {
                 preserveScroll: true,
                 preserveState: true,
@@ -45,5 +48,13 @@ export function useQueryParams<T extends Record<string, string>>(): [
         [],
     );
 
-    return [currentParams, setParams];
+    const clearParams = useCallback(() => {
+        const url = new URL(window.location.origin + page.url);
+        router.get(url.pathname, {}, {
+            preserveScroll: true,
+            preserveState: true,
+        });
+    }, []);
+
+    return [currentParams, setParams, clearParams];
 }

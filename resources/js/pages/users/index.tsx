@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,7 @@ import { useQueryParams } from '@/hooks/use-query-params';
 import users from '@/routes/users';
 import type { User, UserRole } from '@/types/auth';
 import type { PaginatedData } from '@/types/inventory';
+import { cn } from '@/lib/utils';
 
 type UsersIndexProps = {
     users: PaginatedData<User>;
@@ -33,8 +34,10 @@ function RoleBadge({ role }: { role: UserRole }) {
 export default function UsersIndex({ users: pagination }: UsersIndexProps) {
     const { auth } = usePage().props;
     const currentUser = auth.user;
-    const [filters, setFilters] = useQueryParams<{ search: string; role: string }>();
+    const [filters, setFilters, clearFilters] = useQueryParams<{ search: string; role: string; per_page: string }>();
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
+
+    const hasActiveFilters = Boolean(filters.search || filters.role);
 
     const handleSearch = useCallback(
         (value: string) => {
@@ -103,19 +106,19 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
                         <PencilIcon className="size-4" />
                         <span className="sr-only">Editar</span>
                     </Button>
-                    {row.original.id !== currentUser.id && (
-                        <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setDeleteUser(row.original);
-                            }}
-                        >
-                            <Trash2Icon className="text-destructive size-4" />
-                            <span className="sr-only">Eliminar</span>
-                        </Button>
-                    )}
+                    <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        disabled={row.original.id === currentUser.id}
+                        title={row.original.id === currentUser.id ? 'No puedes eliminar tu propio usuario' : 'Eliminar'}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteUser(row.original);
+                        }}
+                    >
+                        <Trash2Icon className={cn('size-4', row.original.id === currentUser.id && 'opacity-30')} />
+                        <span className="sr-only">Eliminar</span>
+                    </Button>
                 </div>
             ),
         },
@@ -144,6 +147,12 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
                         placeholder="Buscar usuario..."
                         className="w-full sm:w-80"
                     />
+                    {hasActiveFilters && (
+                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                            <XIcon className="size-4" />
+                            Limpiar
+                        </Button>
+                    )}
                 </FilterBar>
 
                 <DataTable
@@ -153,6 +162,8 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
                     searchValue={filters.search ?? ''}
                     onSearchChange={handleSearch}
                     searchPlaceholder="Buscar usuario..."
+                    showPerPage
+                    onPerPageChange={(perPage) => setFilters({ per_page: String(perPage) })}
                     emptyTitle="Sin usuarios"
                     emptyDescription="No se encontraron usuarios. Crea uno nuevo para comenzar."
                     emptyAction={{

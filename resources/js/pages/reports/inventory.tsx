@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon, DownloadIcon, Package, DollarSign, Tags } from 'lucide-react';
+import { ArrowLeftIcon, DownloadIcon, Package, DollarSign, Tags, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
@@ -42,11 +42,13 @@ export default function ReportsInventory({
     categories,
     suppliers,
 }: ReportsInventoryProps) {
-    const [queryFilters, setQueryFilters] = useQueryParams<{
+    const [queryFilters, setQueryFilters, clearFilters] = useQueryParams<{
         category_id: string;
         supplier_id: string;
         per_page: string;
     }>();
+
+    const hasActiveFilters = Boolean(queryFilters.category_id || queryFilters.supplier_id);
 
     const handleCategoryChange = useCallback(
         (value: string) => {
@@ -223,6 +225,12 @@ export default function ReportsInventory({
                         placeholder="Todos los proveedores"
                         className="w-full sm:w-56"
                     />
+                    {hasActiveFilters && (
+                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                            <XIcon className="size-4" />
+                            Limpiar
+                        </Button>
+                    )}
                 </FilterBar>
 
                 <div className="grid gap-4 lg:grid-cols-2">
@@ -286,6 +294,7 @@ export default function ReportsInventory({
                     data={productsPagination.data}
                     pagination={productsPagination}
                     showPerPage
+                    onPerPageChange={(perPage) => setQueryFilters({ per_page: String(perPage) })}
                     emptyTitle="Sin productos"
                     emptyDescription="No se encontraron productos con los filtros seleccionados."
                 />

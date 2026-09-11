@@ -8,8 +8,10 @@ use App\Models\Product;
 use App\Models\StockMovement;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
+use OpenSpout\Common\Entity\Cell;
+use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\Style;
-use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
+use OpenSpout\Writer\XLSX\Writer;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ReportExportService
@@ -158,26 +160,22 @@ class ReportExportService
     private function exportXlsx(Collection $data, string $filename, array $headers): SymfonyResponse
     {
         $callback = function () use ($data, $headers) {
-            $writer = WriterEntityFactory::createXLSXWriter();
+            $writer = new Writer;
 
             $writer->openToBrowser("{$filename}.xlsx");
 
             $headerStyle = (new Style)->setBold(true);
-
-            $headerRow = WriterEntityFactory::createRow();
-            foreach ($headers as $header) {
-                $cell = WriterEntityFactory::createCell($header);
-                $cell->setStyle($headerStyle);
-                $headerRow->addCell($cell);
-            }
+            $headerRow = new Row(array_map(
+                fn (string $header) => Cell::fromValue($header, $headerStyle),
+                $headers,
+            ));
             $writer->addRow($headerRow);
 
             foreach ($data as $row) {
-                $dataRow = WriterEntityFactory::createRow();
-                foreach (array_values($row) as $value) {
-                    $dataRow->addCell(WriterEntityFactory::createCell((string) $value));
-                }
-                $writer->addRow($dataRow);
+                $writer->addRow(new Row(array_map(
+                    fn ($value) => Cell::fromValue((string) $value),
+                    array_values($row),
+                )));
             }
 
             $writer->close();

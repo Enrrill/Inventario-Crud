@@ -1,16 +1,9 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
 import { DataGrid } from '@/components/inventory/data-grid';
 import { DataTable } from '@/components/inventory/data-table';
@@ -19,10 +12,12 @@ import { Pagination } from '@/components/inventory/pagination';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
 import { SearchInput } from '@/components/inventory/search-input';
+import { SearchableSelect } from '@/components/inventory/searchable-select';
 import { StockBadge } from '@/components/inventory/stock-badge';
 import { StatusBadge } from '@/components/inventory/status-badge';
 import { ViewToggle } from '@/components/inventory/view-toggle';
 import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useQueryParams } from '@/hooks/use-query-params';
 import products from '@/routes/products';
 import type {
     Category,
@@ -44,16 +39,6 @@ type ProductsIndexProps = {
     };
 };
 
-const UNIDADES = [
-    'Pieza',
-    'Kilogramo',
-    'Litro',
-    'Metro',
-    'Caja',
-    'Par',
-    'Juego',
-];
-
 function formatCurrency(value: number) {
     return new Intl.NumberFormat('es-VE', {
         style: 'currency',
@@ -65,29 +50,40 @@ export default function ProductsIndex({
     products: pagination,
     categories,
     suppliers,
-    filters,
 }: ProductsIndexProps) {
     const [view, setView] = useLocalStorage<'list' | 'grid'>(
         'products-view',
         'list',
     );
+    const [queryFilters, setQueryFilters, clearFilters] = useQueryParams<{
+        search: string;
+        category_id: string;
+        supplier_id: string;
+        low_stock: string;
+        per_page: string;
+    }>();
     const [deleteProduct, setDeleteProduct] = useState<Product | null>(null);
 
-    function applyFilters(overrides: Record<string, string | undefined>) {
-        const params: Record<string, string> = {};
-        const merged = { ...filters, ...overrides };
+    const hasActiveFilters = Boolean(
+        queryFilters.search || queryFilters.category_id || queryFilters.supplier_id || queryFilters.low_stock,
+    );
 
-        for (const [key, value] of Object.entries(merged)) {
-            if (value && value !== '' && value !== 'all') {
-                params[key] = value;
-            }
-        }
+    const handleFilterChange = useCallback(
+        (key: string, value: string) => {
+            setQueryFilters({ [key]: value === 'all' ? '' : value });
+        },
+        [setQueryFilters],
+    );
 
-        router.get(products.index.url(), params, {
-            preserveScroll: true,
-            preserveState: true,
-        });
-    }
+    const categoryOptions = [
+        { value: 'all', label: 'Todas las categorías' },
+        ...categories.map((cat) => ({ value: String(cat.id), label: cat.name_category })),
+    ];
+
+    const supplierOptions = [
+        { value: 'all', label: 'Todos los proveedores' },
+        ...suppliers.map((sup) => ({ value: String(sup.id), label: sup.name_supplier })),
+    ];
 
     function handleDelete() {
         if (!deleteProduct) return;
@@ -211,61 +207,43 @@ export default function ProductsIndex({
 
                 <FilterBar>
                     <SearchInput
-                        value={filters.search ?? ''}
-                        onChange={(value) => applyFilters({ search: value })}
+                        value={queryFilters.search ?? ''}
+                        onChange={(value) => handleFilterChange('search', value)}
                         placeholder="Buscar producto..."
                         className="w-full sm:w-80"
                     />
-                    <Select
-                        value={filters.category_id ?? 'all'}
-                        onValueChange={(value) =>
-                            applyFilters({ category_id: value })
-                        }
-                    >
-                        <SelectTrigger className="w-full sm:w-48">
-                            <SelectValue placeholder="Categoría" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Todas las categorías</SelectItem>
-                            {categories.map((cat) => (
-                                <SelectItem key={cat.id} value={String(cat.id)}>
-                                    {cat.name_category}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <Select
-                        value={filters.supplier_id ?? 'all'}
-                        onValueChange={(value) =>
-                            applyFilters({ supplier_id: value })
-                        }
-                    >
-                        <SelectTrigger className="w-full sm:w-48">
-                            <SelectValue placeholder="Proveedor" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Todos los proveedores</SelectItem>
-                            {suppliers.map((sup) => (
-                                <SelectItem key={sup.id} value={String(sup.id)}>
-                                    {sup.name_supplier}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <SearchableSelect
+                        options={categoryOptions}
+                        value={queryFilters.category_id ?? 'all'}
+                        onValueChange={(v) => handleFilterChange('category_id', v)}
+                        placeholder="Categoría"
+                        className="w-full sm:w-48"
+                    />
+                    <SearchableSelect
+                        options={supplierOptions}
+                        value={queryFilters.supplier_id ?? 'all'}
+                        onValueChange={(v) => handleFilterChange('supplier_id', v)}
+                        placeholder="Proveedor"
+                        className="w-full sm:w-48"
+                    />
                     <label className="flex items-center gap-2 text-sm">
                         <input
                             type="checkbox"
-                            checked={filters.low_stock === '1'}
+                            checked={queryFilters.low_stock === '1'}
                             onChange={(e) =>
-                                applyFilters({
-                                    low_stock: e.target.checked ? '1' : undefined,
-                                })
+                                handleFilterChange('low_stock', e.target.checked ? '1' : '')
                             }
                             className="border-input rounded"
                         />
                         Stock bajo
                     </label>
                     <ViewToggle view={view} onViewChange={setView} />
+                    {hasActiveFilters && (
+                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                            <XIcon className="size-4" />
+                            Limpiar
+                        </Button>
+                    )}
                 </FilterBar>
 
                 {view === 'list' ? (
@@ -273,6 +251,8 @@ export default function ProductsIndex({
                         columns={columns}
                         data={pagination.data}
                         pagination={pagination}
+                        showPerPage
+                        onPerPageChange={(perPage) => setQueryFilters({ per_page: String(perPage) })}
                         emptyTitle="Sin productos"
                         emptyDescription="No se encontraron productos. Crea uno nuevo para comenzar."
                         emptyAction={{

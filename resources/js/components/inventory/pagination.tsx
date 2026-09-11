@@ -26,11 +26,12 @@ function Pagination({
     const to = Math.min(current_page * per_page, total);
 
     function goToPage(page: number) {
-        router.get(
-            window.location.pathname,
-            { page },
-            { preserveScroll, preserveState: true },
-        );
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', String(page));
+        router.get(url.pathname + url.search, {}, {
+            preserveScroll,
+            preserveState: true,
+        });
     }
 
     function getVisiblePages(): (number | '...')[] {
@@ -70,7 +71,7 @@ function Pagination({
 
     return (
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:gap-4">
                 <p className="text-muted-foreground text-sm">
                     Mostrando <span className="font-medium">{from}</span> a{' '}
                     <span className="font-medium">{to}</span> de{' '}
