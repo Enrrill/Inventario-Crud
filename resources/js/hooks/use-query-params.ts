@@ -8,7 +8,7 @@ export function useQueryParams<T extends Record<string, string>>(): [
     const page = usePage();
 
     const currentParams = useMemo(() => {
-        const url = new URL(window.location.href);
+        const url = new URL(window.location.origin + page.url);
         const params: Record<string, string> = {};
 
         url.searchParams.forEach((value, key) => {
@@ -22,7 +22,7 @@ export function useQueryParams<T extends Record<string, string>>(): [
 
     const setParams = useCallback(
         (newParams: Partial<T>) => {
-            const url = new URL(window.location.href);
+            const url = new URL(window.location.origin + page.url);
             const merged: Record<string, string> = {};
 
             url.searchParams.forEach((value, key) => {

@@ -57,14 +57,27 @@ export default function ReportsMovements({
         [setQueryFilters],
     );
 
-    function handleExport(type: string) {
+    async function handleExport(type: string) {
         const params = new URLSearchParams();
         params.set('report', 'movements');
         if (filters.date_from) params.set('date_from', filters.date_from);
         if (filters.date_to) params.set('date_to', filters.date_to);
         if (filters.product_id) params.set('product_id', filters.product_id);
         if (filters.type_movement) params.set('type_movement', filters.type_movement);
-        window.location.href = reports.export.url(type) + '?' + params.toString();
+        try {
+            const response = await fetch(reports.export.url(type) + '?' + params.toString());
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `reporte_movimientos.${type === 'xlsx' ? 'xlsx' : type}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch {
+            window.location.href = reports.export.url(type) + '?' + params.toString();
+        }
     }
 
     const hasData = movements.data.length > 0;

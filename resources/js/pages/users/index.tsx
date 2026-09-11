@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
@@ -31,6 +31,8 @@ function RoleBadge({ role }: { role: UserRole }) {
 }
 
 export default function UsersIndex({ users: pagination }: UsersIndexProps) {
+    const { auth } = usePage().props;
+    const currentUser = auth.user;
     const [filters, setFilters] = useQueryParams<{ search: string; role: string }>();
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
 
@@ -101,17 +103,19 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
                         <PencilIcon className="size-4" />
                         <span className="sr-only">Editar</span>
                     </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteUser(row.original);
-                        }}
-                    >
-                        <Trash2Icon className="text-destructive size-4" />
-                        <span className="sr-only">Eliminar</span>
-                    </Button>
+                    {row.original.id !== currentUser.id && (
+                        <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteUser(row.original);
+                            }}
+                        >
+                            <Trash2Icon className="text-destructive size-4" />
+                            <span className="sr-only">Eliminar</span>
+                        </Button>
+                    )}
                 </div>
             ),
         },

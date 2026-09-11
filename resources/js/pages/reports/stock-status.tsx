@@ -1,21 +1,15 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { ArrowLeftIcon, DownloadIcon, AlertTriangle, CheckCircle, XCircle, Package } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { DataTable } from '@/components/inventory/data-table';
 import { EmptyState } from '@/components/inventory/empty-state';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
+import { SearchableSelect } from '@/components/inventory/searchable-select';
 import { StatCard } from '@/components/inventory/stat-card';
 import { StockBadge } from '@/components/inventory/stock-badge';
 import { useQueryParams } from '@/hooks/use-query-params';
@@ -55,11 +49,24 @@ export default function ReportsStockStatus({
         [setQueryFilters],
     );
 
-    function handleExport(type: string) {
+    async function handleExport(type: string) {
         const params = new URLSearchParams();
         params.set('report', 'stock-status');
         if (filters.category_id) params.set('category_id', filters.category_id);
-        window.location.href = reports.export.url(type) + '?' + params.toString();
+        try {
+            const response = await fetch(reports.export.url(type) + '?' + params.toString());
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `reporte_estado_stock.${type === 'xlsx' ? 'xlsx' : type}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch {
+            window.location.href = reports.export.url(type) + '?' + params.toString();
+        }
     }
 
     const hasData = summary.total_active > 0;
@@ -124,6 +131,11 @@ export default function ReportsStockStatus({
         },
     ];
 
+    const categoryOptions = [
+        { value: 'all', label: 'Todas las categorías' },
+        ...categories.map((cat) => ({ value: String(cat.id), label: cat.name_category })),
+    ];
+
     return (
         <>
             <Head title="Estado de Stock" />
@@ -179,22 +191,13 @@ export default function ReportsStockStatus({
                 </div>
 
                 <FilterBar>
-                    <Select
+                    <SearchableSelect
+                        options={categoryOptions}
                         value={queryFilters.category_id ?? 'all'}
                         onValueChange={handleCategoryChange}
-                    >
-                        <SelectTrigger className="w-full sm:w-48">
-                            <SelectValue placeholder="Todas las categorías" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Todas las categorías</SelectItem>
-                            {categories.map((cat) => (
-                                <SelectItem key={cat.id} value={String(cat.id)}>
-                                    {cat.name_category}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                        placeholder="Todas las categorías"
+                        className="w-full sm:w-56"
+                    />
                 </FilterBar>
 
                 <div className="grid gap-4 lg:grid-cols-3">

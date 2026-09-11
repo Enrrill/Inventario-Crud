@@ -33,6 +33,8 @@ function DataTable<TData extends RowData, TValue>({
     emptyDescription = 'No se encontraron registros.',
     emptyAction,
     loading = false,
+    showPerPage = false,
+    onPerPageChange,
 }: {
     columns: ColumnDef<StockFeatures, TData, TValue>[];
     data: TData[];
@@ -46,6 +48,8 @@ function DataTable<TData extends RowData, TValue>({
     emptyDescription?: string;
     emptyAction?: { label: string; href: string };
     loading?: boolean;
+    showPerPage?: boolean;
+    onPerPageChange?: (value: number) => void;
 }) {
     const table = useTable({
         features: stockFeatures,
@@ -126,7 +130,13 @@ function DataTable<TData extends RowData, TValue>({
                 </Table>
             </div>
 
-            {pagination && <Pagination data={pagination} />}
+            {pagination && (
+                <Pagination
+                    data={pagination}
+                    showPerPage={showPerPage}
+                    onPerPageChange={onPerPageChange}
+                />
+            )}
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SearchIcon } from 'lucide-react';
+import { SearchIcon, XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 function SearchInput({
@@ -23,13 +23,16 @@ function SearchInput({
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (localValue !== value) {
-                onChange(localValue);
-            }
+            onChange(localValue);
         }, debounceMs);
 
         return () => clearTimeout(timer);
-    }, [localValue, debounceMs, onChange, value]);
+    }, [localValue, debounceMs]);
+
+    function handleClear() {
+        setLocalValue('');
+        onChange('');
+    }
 
     return (
         <div className={cn('relative', className)}>
@@ -39,8 +42,18 @@ function SearchInput({
                 value={localValue}
                 onChange={(e) => setLocalValue(e.target.value)}
                 placeholder={placeholder}
-                className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring h-9 w-full rounded-md border py-1 pr-4 pl-9 text-sm shadow-xs transition-colors focus-visible:ring-[3px] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring h-9 w-full rounded-md border py-1 pr-8 pl-9 text-sm shadow-xs transition-colors focus-visible:ring-[3px] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             />
+            {localValue && (
+                <button
+                    type="button"
+                    onClick={handleClear}
+                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2 rounded-sm p-0.5 hover:bg-muted"
+                >
+                    <XIcon className="size-3.5" />
+                    <span className="sr-only">Limpiar búsqueda</span>
+                </button>
+            )}
         </div>
     );
 }

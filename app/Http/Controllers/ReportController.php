@@ -37,22 +37,25 @@ class ReportController extends Controller
             $query->where('supplier_id', $supplierId);
         }
 
-        $products = $query->orderBy('name_product')->get();
+        $allProducts = $query->orderBy('name_product')->get();
+
+        $products = $query->orderBy('name_product')
+            ->paginate($request->input('per_page', 25));
 
         $summary = [
-            'total_products' => $products->count(),
-            'total_value' => $products->sum(fn ($p) => $p->current_stock_product * $p->unit_price_product),
-            'by_category' => $products->groupBy(fn ($p) => $p->category?->name_category ?? 'Sin categoría')
+            'total_products' => $allProducts->count(),
+            'total_value' => $allProducts->sum(fn ($p) => $p->current_stock_product * $p->unit_price_product),
+            'by_category' => $allProducts->groupBy(fn ($p) => $p->category?->name_category ?? 'Sin categoría')
                 ->map(fn ($items) => [
                     'count' => $items->count(),
                     'value' => $items->sum(fn ($p) => $p->current_stock_product * $p->unit_price_product),
                 ]),
-            'by_supplier' => $products->groupBy(fn ($p) => $p->supplier?->name_supplier ?? 'Sin proveedor')
+            'by_supplier' => $allProducts->groupBy(fn ($p) => $p->supplier?->name_supplier ?? 'Sin proveedor')
                 ->map(fn ($items) => [
                     'count' => $items->count(),
                     'value' => $items->sum(fn ($p) => $p->current_stock_product * $p->unit_price_product),
                 ]),
-            'top_products' => $products->sortByDesc(fn ($p) => $p->current_stock_product * $p->unit_price_product)
+            'top_products' => $allProducts->sortByDesc(fn ($p) => $p->current_stock_product * $p->unit_price_product)
                 ->take(10)
                 ->values(),
         ];
@@ -60,7 +63,7 @@ class ReportController extends Controller
         return Inertia::render('reports/inventory', [
             'products' => $products,
             'summary' => $summary,
-            'filters' => $request->only(['category_id', 'supplier_id']),
+            'filters' => $request->only(['category_id', 'supplier_id', 'per_page']),
             'categories' => Category::orderBy('name_category')->get(),
             'suppliers' => Supplier::orderBy('name_supplier')->get(),
         ]);
@@ -117,9 +120,9 @@ class ReportController extends Controller
 
         $summary = [
             'total_active' => $products->count(),
-            'out_of_stock' => $products->where('current_stock_product', 0),
-            'low_stock' => $products->filter(fn ($p) => $p->current_stock_product > 0 && $p->current_stock_product <= $p->minimum_stock_product),
-            'normal_stock' => $products->filter(fn ($p) => $p->current_stock_product > $p->minimum_stock_product),
+            'out_of_stock' => $products->where('current_stock_product', 0)->values()->all(),
+            'low_stock' => $products->filter(fn ($p) => $p->current_stock_product > 0 && $p->current_stock_product <= $p->minimum_stock_product)->values()->all(),
+            'normal_stock' => $products->filter(fn ($p) => $p->current_stock_product > $p->minimum_stock_product)->values()->all(),
             'by_category' => $products->groupBy(fn ($p) => $p->category?->name_category ?? 'Sin categoría')
                 ->map(fn ($items) => [
                     'total' => $items->count(),

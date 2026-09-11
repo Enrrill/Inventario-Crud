@@ -1,36 +1,30 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { ArrowLeftIcon, DownloadIcon, Package, DollarSign, Tags } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { DataTable } from '@/components/inventory/data-table';
 import { EmptyState } from '@/components/inventory/empty-state';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
+import { SearchableSelect } from '@/components/inventory/searchable-select';
 import { StatCard } from '@/components/inventory/stat-card';
 import { StockBadge } from '@/components/inventory/stock-badge';
 import { useQueryParams } from '@/hooks/use-query-params';
 import products from '@/routes/products';
 import reports from '@/routes/reports';
-import type { Category, Product, Supplier } from '@/types/inventory';
+import type { Category, PaginatedData, Product, Supplier } from '@/types/inventory';
 
 type ReportsInventoryProps = {
-    products: Product[];
+    products: PaginatedData<Product>;
     summary: {
         total_products: number;
         total_value: number;
         by_category: Record<string, { count: number; value: number }>;
         by_supplier: Record<string, { count: number; value: number }>;
     };
-    filters: { category_id?: string; supplier_id?: string };
+    filters: { category_id?: string; supplier_id?: string; per_page?: string };
     categories: Category[];
     suppliers: Supplier[];
 };
@@ -42,7 +36,7 @@ const formatCurrency = (value: number) =>
     }).format(value);
 
 export default function ReportsInventory({
-    products: productsList,
+    products: productsPagination,
     summary,
     filters,
     categories,
@@ -51,6 +45,7 @@ export default function ReportsInventory({
     const [queryFilters, setQueryFilters] = useQueryParams<{
         category_id: string;
         supplier_id: string;
+        per_page: string;
     }>();
 
     const handleCategoryChange = useCallback(
@@ -67,15 +62,28 @@ export default function ReportsInventory({
         [setQueryFilters],
     );
 
-    function handleExport(type: string) {
+    async function handleExport(type: string) {
         const params = new URLSearchParams();
         params.set('report', 'inventory');
         if (filters.category_id) params.set('category_id', filters.category_id);
         if (filters.supplier_id) params.set('supplier_id', filters.supplier_id);
-        window.location.href = reports.export.url(type) + '?' + params.toString();
+        try {
+            const response = await fetch(reports.export.url(type) + '?' + params.toString());
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `reporte_inventario.${type === 'xlsx' ? 'xlsx' : type}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch {
+            window.location.href = reports.export.url(type) + '?' + params.toString();
+        }
     }
 
-    const hasData = productsList.length > 0;
+    const hasData = productsPagination.total > 0;
 
     const columns: ColumnDef<StockFeatures, Product>[] = [
         {
@@ -144,6 +152,16 @@ export default function ReportsInventory({
         },
     ];
 
+    const categoryOptions = [
+        { value: 'all', label: 'Todas las categorías' },
+        ...categories.map((cat) => ({ value: String(cat.id), label: cat.name_category })),
+    ];
+
+    const supplierOptions = [
+        { value: 'all', label: 'Todos los proveedores' },
+        ...suppliers.map((sup) => ({ value: String(sup.id), label: sup.name_supplier })),
+    ];
+
     return (
         <>
             <Head title="Reporte de Inventario" />
@@ -191,38 +209,20 @@ export default function ReportsInventory({
                 </div>
 
                 <FilterBar>
-                    <Select
+                    <SearchableSelect
+                        options={categoryOptions}
                         value={queryFilters.category_id ?? 'all'}
                         onValueChange={handleCategoryChange}
-                    >
-                        <SelectTrigger className="w-full sm:w-48">
-                            <SelectValue placeholder="Todas las categorías" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Todas las categorías</SelectItem>
-                            {categories.map((cat) => (
-                                <SelectItem key={cat.id} value={String(cat.id)}>
-                                    {cat.name_category}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <Select
+                        placeholder="Todas las categorías"
+                        className="w-full sm:w-56"
+                    />
+                    <SearchableSelect
+                        options={supplierOptions}
                         value={queryFilters.supplier_id ?? 'all'}
                         onValueChange={handleSupplierChange}
-                    >
-                        <SelectTrigger className="w-full sm:w-48">
-                            <SelectValue placeholder="Todos los proveedores" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Todos los proveedores</SelectItem>
-                            {suppliers.map((sup) => (
-                                <SelectItem key={sup.id} value={String(sup.id)}>
-                                    {sup.name_supplier}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                        placeholder="Todos los proveedores"
+                        className="w-full sm:w-56"
+                    />
                 </FilterBar>
 
                 <div className="grid gap-4 lg:grid-cols-2">
@@ -283,7 +283,9 @@ export default function ReportsInventory({
 
                 <DataTable
                     columns={columns}
-                    data={productsList}
+                    data={productsPagination.data}
+                    pagination={productsPagination}
+                    showPerPage
                     emptyTitle="Sin productos"
                     emptyDescription="No se encontraron productos con los filtros seleccionados."
                 />
