@@ -18,19 +18,22 @@ class CategoryController extends Controller
         $query = Category::with('parent', 'children', 'products')
             ->withCount('products');
 
-        if ($search = $request->string('search')) {
+        if ($request->filled('search')) {
+            $search = $request->string('search')->toString();
             $query->where(function ($q) use ($search) {
                 $q->where('name_category', 'ilike', "%{$search}%")
                     ->orWhere('description_category', 'ilike', "%{$search}%");
             });
         }
 
+        $perPage = max(1, min(100, $request->integer('per_page', 15)));
         $categories = $query->orderBy('name_category')
-            ->paginate(15);
+            ->paginate($perPage)
+            ->withQueryString();
 
         return Inertia::render('categories/index', [
             'categories' => $categories,
-            'filters' => $request->only(['search']),
+            'filters' => $request->only(['search', 'per_page']),
         ]);
     }
 

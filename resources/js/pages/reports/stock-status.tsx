@@ -51,24 +51,13 @@ export default function ReportsStockStatus({
         [setQueryFilters],
     );
 
-    async function handleExport(type: string) {
+    function handleExport(type: string) {
         const params = new URLSearchParams();
         params.set('report', 'stock-status');
-        if (filters.category_id) params.set('category_id', filters.category_id);
-        try {
-            const response = await fetch(reports.export.url(type) + '?' + params.toString());
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `reporte_estado_stock.${type === 'xlsx' ? 'xlsx' : type}`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        } catch {
-            window.location.href = reports.export.url(type) + '?' + params.toString();
-        }
+        const catId = queryFilters.category_id || filters.category_id;
+        if (catId && catId !== 'all') params.set('category_id', catId);
+        
+        window.location.href = reports.export.url(type) + '?' + params.toString();
     }
 
     const hasData = summary.total_active > 0;
@@ -198,12 +187,12 @@ export default function ReportsStockStatus({
                         value={queryFilters.category_id ?? 'all'}
                         onValueChange={handleCategoryChange}
                         placeholder="Todas las categorías"
-                        className="w-full sm:w-56"
+                        className="w-full sm:w-64"
                     />
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
                             <XIcon className="size-4" />
-                            Limpiar
+                            Limpiar filtros
                         </Button>
                     )}
                 </FilterBar>

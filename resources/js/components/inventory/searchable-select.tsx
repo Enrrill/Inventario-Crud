@@ -35,11 +35,11 @@ function SearchableSelect({
 
     const handleSelect = useCallback(
         (newValue: string) => {
-            onValueChange(newValue === value ? '' : newValue);
+            onValueChange(newValue);
             setOpen(false);
             setSearch('');
         },
-        [onValueChange, value],
+        [onValueChange],
     );
 
     useEffect(() => {
@@ -60,21 +60,32 @@ function SearchableSelect({
     }, [open]);
 
     return (
-        <div ref={containerRef} className={cn('relative', className)}>
+        <div ref={containerRef} className={cn('relative', className)} data-slot="searchable-select">
             <button
                 type="button"
                 onClick={() => setOpen(!open)}
                 className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full items-center justify-between rounded-md border px-3 py-2 text-sm shadow-xs transition-colors focus-visible:ring-[3px] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             >
-                <span className={cn(!selectedOption && 'text-muted-foreground')}>
+                <span
+                    className={cn(
+                        'flex-1 text-left truncate mr-2',
+                        !selectedOption && 'text-muted-foreground',
+                    )}
+                    title={selectedOption?.label}
+                >
                     {selectedOption?.label ?? placeholder}
                 </span>
-                <ChevronDownIcon className={cn('text-muted-foreground size-4 transition-transform', open && 'rotate-180')} />
+                <ChevronDownIcon
+                    className={cn(
+                        'text-muted-foreground size-4 shrink-0 transition-transform duration-200',
+                        open && 'rotate-180',
+                    )}
+                />
             </button>
 
             {open && (
-                <div className="bg-popover absolute z-50 mt-1 w-full min-w-[200px] overflow-hidden rounded-md border shadow-md">
-                    <div className="border-b p-1">
+                <div className="bg-popover text-popover-foreground absolute left-0 z-50 mt-1 min-w-[240px] sm:min-w-[280px] w-full max-w-sm overflow-hidden rounded-md border shadow-lg animate-in fade-in-0 zoom-in-95 duration-100">
+                    <div className="border-b p-1.5 bg-muted/30">
                         <div className="relative flex items-center">
                             <input
                                 ref={inputRef}
@@ -82,22 +93,23 @@ function SearchableSelect({
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 placeholder={searchPlaceholder}
-                                className="placeholder:text-muted-foreground flex h-8 w-full rounded-md bg-transparent px-2 py-1 pr-6 text-sm outline-none"
+                                className="placeholder:text-muted-foreground flex h-8 w-full rounded-sm bg-transparent px-2.5 py-1 pr-7 text-sm outline-none"
                             />
                             {search && (
                                 <button
                                     type="button"
                                     onClick={() => setSearch('')}
-                                    className="text-muted-foreground hover:text-foreground absolute right-1 rounded-sm p-0.5 hover:bg-muted"
+                                    className="text-muted-foreground hover:text-foreground absolute right-1.5 rounded-xs p-0.5 hover:bg-muted"
                                 >
-                                    <XIcon className="size-3" />
+                                    <XIcon className="size-3.5" />
+                                    <span className="sr-only">Limpiar búsqueda</span>
                                 </button>
                             )}
                         </div>
                     </div>
                     <div className="max-h-60 overflow-y-auto p-1">
                         {filteredOptions.length === 0 ? (
-                            <div className="text-muted-foreground py-2 text-center text-sm">
+                            <div className="text-muted-foreground py-3 text-center text-sm">
                                 Sin resultados
                             </div>
                         ) : (
@@ -105,19 +117,22 @@ function SearchableSelect({
                                 <button
                                     key={option.value}
                                     type="button"
+                                    title={option.label}
                                     onClick={() => handleSelect(option.value)}
                                     className={cn(
-                                        'relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none hover:bg-accent hover:text-accent-foreground',
-                                        value === option.value && 'bg-accent',
+                                        'relative flex w-full cursor-pointer items-center gap-2 rounded-sm py-1.5 pr-3 pl-2 text-left text-sm outline-hidden select-none transition-colors hover:bg-accent hover:text-accent-foreground',
+                                        value === option.value && 'bg-accent/80 font-medium text-accent-foreground',
                                     )}
                                 >
                                     <CheckIcon
                                         className={cn(
-                                            'size-4',
+                                            'size-4 shrink-0 text-primary',
                                             value === option.value ? 'opacity-100' : 'opacity-0',
                                         )}
                                     />
-                                    {option.label}
+                                    <span className="flex-1 text-left truncate">
+                                        {option.label}
+                                    </span>
                                 </button>
                             ))
                         )}

@@ -21,22 +21,23 @@ class StockMovementController extends Controller
         $query = StockMovement::with('product', 'user')
             ->latest('created_at');
 
-        if ($productId = $request->integer('product_id')) {
+        if ($request->filled('product_id') && ($productId = $request->integer('product_id'))) {
             $query->forProduct($productId);
         }
 
-        if ($type = $request->input('type')) {
+        if ($request->filled('type') && ($type = $request->input('type'))) {
             $query->ofType(StockMovementType::from($type));
         }
 
-        $movements = $query->paginate(15);
+        $perPage = max(1, min(100, $request->integer('per_page', 15)));
+        $movements = $query->paginate($perPage)->withQueryString();
 
         $products = Product::active()->orderBy('name_product')->get();
 
         return Inertia::render('movements/index', [
             'movements' => $movements,
             'products' => $products,
-            'filters' => $request->only(['product_id', 'type']),
+            'filters' => $request->only(['product_id', 'type', 'per_page']),
         ]);
     }
 

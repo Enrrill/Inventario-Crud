@@ -232,9 +232,9 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
                         </Select>
                     </div>
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
                             <XIcon className="size-4" />
-                            Limpiar
+                            Limpiar filtros
                         </Button>
                     )}
                 </FilterBar>

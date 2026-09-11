@@ -1,4 +1,3 @@
-import { router } from '@inertiajs/react';
 import {
     Select,
     SelectContent,
@@ -18,14 +17,9 @@ function PerPageSelector({
 }) {
     function handleChange(newValue: string) {
         const perPage = parseInt(newValue, 10);
-        onChange(perPage);
-        const url = new URL(window.location.href);
-        url.searchParams.set('per_page', String(perPage));
-        url.searchParams.delete('page');
-        router.get(url.pathname + url.search, {}, {
-            preserveScroll: true,
-            preserveState: true,
-        });
+        if (!isNaN(perPage)) {
+            onChange(perPage);
+        }
     }
 
     return (

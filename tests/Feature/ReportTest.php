@@ -58,3 +58,36 @@ test('reporte de movimientos muestra movimientos', function () {
         ->get(route('reports.movements'))
         ->assertOk();
 });
+
+test('un usuario autenticado puede exportar reporte de inventario en csv', function () {
+    $user = User::factory()->create();
+    Product::factory()->count(2)->create();
+
+    $response = $this->actingAs($user)
+        ->get(route('reports.export', ['type' => 'csv', 'report' => 'inventory']));
+
+    $response->assertOk();
+    $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+});
+
+test('un usuario autenticado puede exportar reporte de inventario en xlsx', function () {
+    $user = User::factory()->create();
+    Product::factory()->count(2)->create();
+
+    $response = $this->actingAs($user)
+        ->get(route('reports.export', ['type' => 'xlsx', 'report' => 'inventory']));
+
+    $response->assertOk();
+    $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+});
+
+test('un usuario autenticado puede exportar reporte de movimientos en xlsx', function () {
+    $user = User::factory()->create();
+    StockMovement::factory()->count(2)->create();
+
+    $response = $this->actingAs($user)
+        ->get(route('reports.export', ['type' => 'xlsx', 'report' => 'movements']));
+
+    $response->assertOk();
+    $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+});

@@ -64,25 +64,15 @@ export default function ReportsInventory({
         [setQueryFilters],
     );
 
-    async function handleExport(type: string) {
+    function handleExport(type: string) {
         const params = new URLSearchParams();
         params.set('report', 'inventory');
-        if (filters.category_id) params.set('category_id', filters.category_id);
-        if (filters.supplier_id) params.set('supplier_id', filters.supplier_id);
-        try {
-            const response = await fetch(reports.export.url(type) + '?' + params.toString());
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `reporte_inventario.${type === 'xlsx' ? 'xlsx' : type}`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        } catch {
-            window.location.href = reports.export.url(type) + '?' + params.toString();
-        }
+        const catId = queryFilters.category_id || filters.category_id;
+        const supId = queryFilters.supplier_id || filters.supplier_id;
+        if (catId && catId !== 'all') params.set('category_id', catId);
+        if (supId && supId !== 'all') params.set('supplier_id', supId);
+        
+        window.location.href = reports.export.url(type) + '?' + params.toString();
     }
 
     const hasData = productsPagination.total > 0;
@@ -216,19 +206,19 @@ export default function ReportsInventory({
                         value={queryFilters.category_id ?? 'all'}
                         onValueChange={handleCategoryChange}
                         placeholder="Todas las categorías"
-                        className="w-full sm:w-56"
+                        className="w-full sm:w-64"
                     />
                     <SearchableSelect
                         options={supplierOptions}
                         value={queryFilters.supplier_id ?? 'all'}
                         onValueChange={handleSupplierChange}
                         placeholder="Todos los proveedores"
-                        className="w-full sm:w-56"
+                        className="w-full sm:w-64"
                     />
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
                             <XIcon className="size-4" />
-                            Limpiar
+                            Limpiar filtros
                         </Button>
                     )}
                 </FilterBar>

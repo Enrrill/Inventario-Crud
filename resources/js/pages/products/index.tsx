@@ -210,23 +210,23 @@ export default function ProductsIndex({
                         value={queryFilters.search ?? ''}
                         onChange={(value) => handleFilterChange('search', value)}
                         placeholder="Buscar producto..."
-                        className="w-full sm:w-80"
+                        className="w-full sm:w-72"
                     />
                     <SearchableSelect
                         options={categoryOptions}
                         value={queryFilters.category_id ?? 'all'}
                         onValueChange={(v) => handleFilterChange('category_id', v)}
                         placeholder="Categoría"
-                        className="w-full sm:w-48"
+                        className="w-full sm:w-56"
                     />
                     <SearchableSelect
                         options={supplierOptions}
                         value={queryFilters.supplier_id ?? 'all'}
                         onValueChange={(v) => handleFilterChange('supplier_id', v)}
                         placeholder="Proveedor"
-                        className="w-full sm:w-48"
+                        className="w-full sm:w-56"
                     />
-                    <label className="flex items-center gap-2 text-sm">
+                    <label className="flex items-center gap-2 text-sm shrink-0 cursor-pointer select-none">
                         <input
                             type="checkbox"
                             checked={queryFilters.low_stock === '1'}
@@ -239,9 +239,9 @@ export default function ProductsIndex({
                     </label>
                     <ViewToggle view={view} onViewChange={setView} />
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
                             <XIcon className="size-4" />
-                            Limpiar
+                            Limpiar filtros
                         </Button>
                     )}
                 </FilterBar>
@@ -318,7 +318,13 @@ export default function ProductsIndex({
                                         </Link>
                                     ))}
                                 </DataGrid>
-                                <Pagination data={pagination} />
+                                <Pagination
+                                    data={pagination}
+                                    showPerPage
+                                    onPerPageChange={(perPage) =>
+                                        setQueryFilters({ per_page: String(perPage) })
+                                    }
+                                />
                             </>
                         )}
                     </div>

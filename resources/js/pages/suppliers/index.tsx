@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
+import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -14,16 +14,14 @@ import type { PaginatedData, Supplier } from '@/types/inventory';
 
 type SuppliersIndexProps = {
     suppliers: PaginatedData<Supplier>;
-    filters: { search?: string };
+    filters: { search?: string; per_page?: string };
 };
 
 export default function SuppliersIndex({
     suppliers: pagination,
 }: SuppliersIndexProps) {
-    const [filters, setFilters, clearFilters] = useQueryParams<{ search: string; per_page: string }>();
+    const [filters, setFilters] = useQueryParams<{ search: string; per_page: string }>();
     const [deleteSupplier, setDeleteSupplier] = useState<Supplier | null>(null);
-
-    const hasActiveFilters = Boolean(filters.search);
 
     const handleSearch = useCallback(
         (value: string) => {
@@ -144,12 +142,6 @@ export default function SuppliersIndex({
                         placeholder="Buscar proveedor..."
                         className="w-full sm:w-80"
                     />
-                    {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
-                            <XIcon className="size-4" />
-                            Limpiar
-                        </Button>
-                    )}
                 </FilterBar>
 
                 <DataTable

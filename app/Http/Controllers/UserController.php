@@ -19,7 +19,7 @@ class UserController extends Controller
         $query = User::query();
 
         if ($request->filled('search')) {
-            $search = $request->string('search');
+            $search = $request->string('search')->toString();
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'ilike', "%{$search}%")
                     ->orWhere('email', 'ilike', "%{$search}%");
@@ -27,15 +27,17 @@ class UserController extends Controller
         }
 
         if ($request->filled('role')) {
-            $query->where('role', $request->string('role'));
+            $query->where('role', $request->string('role')->toString());
         }
 
+        $perPage = max(1, min(100, $request->integer('per_page', 15)));
         $users = $query->orderBy('name')
-            ->paginate(15);
+            ->paginate($perPage)
+            ->withQueryString();
 
         return Inertia::render('users/index', [
             'users' => $users,
-            'filters' => $request->only(['search', 'role']),
+            'filters' => $request->only(['search', 'role', 'per_page']),
         ]);
     }
 

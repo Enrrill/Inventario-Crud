@@ -69,28 +69,22 @@ export default function ReportsMovements({
         [setQueryFilters],
     );
 
-    async function handleExport(type: string) {
+    function handleExport(type: string) {
         const params = new URLSearchParams();
         params.set('report', 'movements');
-        if (filters.date_from) params.set('date_from', filters.date_from);
-        if (filters.date_to) params.set('date_to', filters.date_to);
-        if (filters.product_id) params.set('product_id', filters.product_id);
-        if (filters.type_movement) params.set('type_movement', filters.type_movement);
-        if (filters.user_id) params.set('user_id', filters.user_id);
-        try {
-            const response = await fetch(reports.export.url(type) + '?' + params.toString());
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `reporte_movimientos.${type === 'xlsx' ? 'xlsx' : type}`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        } catch {
-            window.location.href = reports.export.url(type) + '?' + params.toString();
-        }
+        const dateFrom = queryFilters.date_from || filters.date_from;
+        const dateTo = queryFilters.date_to || filters.date_to;
+        const prodId = queryFilters.product_id || filters.product_id;
+        const typeMov = queryFilters.type_movement || filters.type_movement;
+        const userId = queryFilters.user_id || filters.user_id;
+
+        if (dateFrom) params.set('date_from', dateFrom);
+        if (dateTo) params.set('date_to', dateTo);
+        if (prodId && prodId !== 'all') params.set('product_id', prodId);
+        if (typeMov && typeMov !== 'all') params.set('type_movement', typeMov);
+        if (userId && userId !== 'all') params.set('user_id', userId);
+
+        window.location.href = reports.export.url(type) + '?' + params.toString();
     }
 
     const hasData = movements.data.length > 0;
@@ -236,13 +230,13 @@ export default function ReportsMovements({
                             value={queryFilters.user_id ?? 'all'}
                             onValueChange={(v) => handleFilterChange('user_id', v)}
                             placeholder="Todos los usuarios"
-                            className="w-full sm:w-48"
+                            className="w-full sm:w-56"
                         />
                     </div>
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
                             <XIcon className="size-4" />
-                            Limpiar
+                            Limpiar filtros
                         </Button>
                     )}
                 </FilterBar>

@@ -118,6 +118,10 @@ class ReportExportService
 
     private function export(string $type, Collection $data, array $headers, string $filename): SymfonyResponse
     {
+        if (app()->bound('debugbar')) {
+            app('debugbar')->disable();
+        }
+
         return match ($type) {
             'csv' => $this->exportCsv($data, $filename, $headers),
             'pdf' => $this->exportPdf($data, $filename, $headers),
@@ -140,9 +144,8 @@ class ReportExportService
             fclose($handle);
         };
 
-        return response()->stream($callback, 200, [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}.csv\"",
+        return response()->streamDownload($callback, "{$filename}.csv", [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 
@@ -159,31 +162,29 @@ class ReportExportService
 
     private function exportXlsx(Collection $data, string $filename, array $headers): SymfonyResponse
     {
-        $callback = function () use ($data, $headers) {
-            $writer = new Writer;
+        $tempFile = tempnam(sys_get_temp_dir(), 'xlsx_export_').'.xlsx';
 
-            $writer->openToBrowser("{$filename}.xlsx");
+        $writer = new Writer;
+        $writer->openToFile($tempFile);
 
-            $headerStyle = (new Style)->setBold(true);
-            $headerRow = new Row(array_map(
-                fn (string $header) => Cell::fromValue($header, $headerStyle),
-                $headers,
-            ));
-            $writer->addRow($headerRow);
+        $headerStyle = new Style(fontBold: true);
+        $headerRow = new Row(array_map(
+            fn (string $header) => Cell::fromValue($header, $headerStyle),
+            $headers,
+        ));
+        $writer->addRow($headerRow);
 
-            foreach ($data as $row) {
-                $writer->addRow(new Row(array_map(
-                    fn ($value) => Cell::fromValue((string) $value),
-                    array_values($row),
-                )));
-            }
+        foreach ($data as $row) {
+            $writer->addRow(new Row(array_map(
+                fn ($value) => Cell::fromValue((string) $value),
+                array_values($row),
+            )));
+        }
 
-            $writer->close();
-        };
+        $writer->close();
 
-        return response()->stream($callback, 200, [
+        return response()->download($tempFile, "{$filename}.xlsx", [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => "attachment; filename=\"{$filename}.xlsx\"",
-        ]);
+        ])->deleteFileAfterSend(true);
     }
 }

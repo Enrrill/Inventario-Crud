@@ -19,15 +19,15 @@ class ProductController extends Controller
         $query = Product::with('category', 'supplier')
             ->orderBy('name_product');
 
-        if ($search = $request->string('search')) {
-            $query->search($search);
+        if ($request->filled('search')) {
+            $query->search($request->string('search')->toString());
         }
 
-        if ($categoryId = $request->integer('category_id')) {
+        if ($request->filled('category_id') && ($categoryId = $request->integer('category_id'))) {
             $query->inCategory($categoryId);
         }
 
-        if ($supplierId = $request->integer('supplier_id')) {
+        if ($request->filled('supplier_id') && ($supplierId = $request->integer('supplier_id'))) {
             $query->fromSupplier($supplierId);
         }
 
@@ -41,7 +41,8 @@ class ProductController extends Controller
             $query->active();
         }
 
-        $products = $query->paginate(15);
+        $perPage = max(1, min(100, $request->integer('per_page', 15)));
+        $products = $query->paginate($perPage)->withQueryString();
 
         $categories = Category::orderBy('name_category')->get();
         $suppliers = Supplier::orderBy('name_supplier')->get();
@@ -50,7 +51,7 @@ class ProductController extends Controller
             'products' => $products,
             'categories' => $categories,
             'suppliers' => $suppliers,
-            'filters' => $request->only(['search', 'category_id', 'supplier_id', 'low_stock', 'inactive']),
+            'filters' => $request->only(['search', 'category_id', 'supplier_id', 'low_stock', 'inactive', 'per_page']),
         ]);
     }
 

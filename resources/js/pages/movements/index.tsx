@@ -208,14 +208,14 @@ export default function MovementsIndex({
                         value={filters.product_id ?? 'all'}
                         onValueChange={(v) => handleFilter('product_id', v)}
                         placeholder="Todos los productos"
-                        className="w-full sm:w-56"
+                        className="w-full sm:w-64"
                     />
 
                     <Select
                         value={filters.type ?? 'all'}
                         onValueChange={(v) => handleFilter('type', v)}
                     >
-                        <SelectTrigger className="w-full sm:w-44">
+                        <SelectTrigger className="w-full sm:w-48">
                             <SelectValue placeholder="Todos los tipos" />
                         </SelectTrigger>
                         <SelectContent>
@@ -229,9 +229,9 @@ export default function MovementsIndex({
                     </Select>
 
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
                             <XIcon className="size-4" />
-                            Limpiar
+                            Limpiar filtros
                         </Button>
                     )}
                 </FilterBar>

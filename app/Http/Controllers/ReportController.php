@@ -40,8 +40,10 @@ class ReportController extends Controller
 
         $allProducts = $query->orderBy('name_product')->get();
 
+        $perPage = max(1, min(100, $request->integer('per_page', 25)));
         $products = $query->orderBy('name_product')
-            ->paginate($request->input('per_page', 25));
+            ->paginate($perPage)
+            ->withQueryString();
 
         $summary = [
             'total_products' => $allProducts->count(),
@@ -94,7 +96,8 @@ class ReportController extends Controller
             $query->where('user_id', $userId);
         }
 
-        $movements = $query->latest('created_at')->paginate($request->input('per_page', 25));
+        $perPage = max(1, min(100, $request->integer('per_page', 25)));
+        $movements = $query->latest('created_at')->paginate($perPage)->withQueryString();
 
         $summaryQuery = StockMovement::query()
             ->when($request->filled('date_from'), fn ($q) => $q->where('created_at', '>=', $request->input('date_from')))

@@ -27,7 +27,9 @@ export function useQueryParams<T extends Record<string, string>>(): [
             const merged: Record<string, string> = {};
 
             url.searchParams.forEach((value, key) => {
-                merged[key] = value;
+                if (value !== '' && value !== null && value !== undefined) {
+                    merged[key] = value;
+                }
             });
 
             Object.entries(newParams).forEach(([key, value]) => {
@@ -45,7 +47,7 @@ export function useQueryParams<T extends Record<string, string>>(): [
                 preserveState: true,
             });
         },
-        [],
+        [page.url],
     );
 
     const clearParams = useCallback(() => {
@@ -54,7 +56,7 @@ export function useQueryParams<T extends Record<string, string>>(): [
             preserveScroll: true,
             preserveState: true,
         });
-    }, []);
+    }, [page.url]);
 
     return [currentParams, setParams, clearParams];
 }

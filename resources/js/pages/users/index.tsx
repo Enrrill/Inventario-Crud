@@ -4,6 +4,13 @@ import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
 import { DataTable } from '@/components/inventory/data-table';
 import { FilterBar } from '@/components/inventory/filter-bar';
@@ -147,10 +154,23 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
                         placeholder="Buscar usuario..."
                         className="w-full sm:w-80"
                     />
+                    <Select
+                        value={filters.role ?? 'all'}
+                        onValueChange={(v) => setFilters({ role: v === 'all' ? '' : v })}
+                    >
+                        <SelectTrigger className="w-full sm:w-44">
+                            <SelectValue placeholder="Todos los roles" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Todos los roles</SelectItem>
+                            <SelectItem value="admin">Administrador</SelectItem>
+                            <SelectItem value="employee">Empleado</SelectItem>
+                        </SelectContent>
+                    </Select>
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
+                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
                             <XIcon className="size-4" />
-                            Limpiar
+                            Limpiar filtros
                         </Button>
                     )}
                 </FilterBar>
@@ -159,9 +179,6 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
                     columns={columns}
                     data={pagination.data}
                     pagination={pagination}
-                    searchValue={filters.search ?? ''}
-                    onSearchChange={handleSearch}
-                    searchPlaceholder="Buscar usuario..."
                     showPerPage
                     onPerPageChange={(perPage) => setFilters({ per_page: String(perPage) })}
                     emptyTitle="Sin usuarios"

@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
+import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -15,14 +15,12 @@ import type { Category, PaginatedData } from '@/types/inventory';
 
 type CategoriesIndexProps = {
     categories: PaginatedData<Category>;
-    filters: { search?: string };
+    filters: { search?: string; per_page?: string };
 };
 
 export default function CategoriesIndex({ categories: pagination }: CategoriesIndexProps) {
-    const [filters, setFilters, clearFilters] = useQueryParams<{ search: string; per_page: string }>();
+    const [filters, setFilters] = useQueryParams<{ search: string; per_page: string }>();
     const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
-
-    const hasActiveFilters = Boolean(filters.search);
 
     const handleSearch = useCallback(
         (value: string) => {
@@ -134,12 +132,6 @@ export default function CategoriesIndex({ categories: pagination }: CategoriesIn
                         placeholder="Buscar categoría..."
                         className="w-full sm:w-80"
                     />
-                    {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters}>
-                            <XIcon className="size-4" />
-                            Limpiar
-                        </Button>
-                    )}
                 </FilterBar>
 
                 <DataTable

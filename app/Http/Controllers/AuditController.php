@@ -33,11 +33,14 @@ class AuditController extends Controller
             $query->where('created_at', '<=', $dateTo.' 23:59:59');
         }
 
-        $logs = $query->latest('created_at')->paginate(25);
+        $perPage = max(1, min(100, $request->integer('per_page', 25)));
+        $logs = $query->latest('created_at')
+            ->paginate($perPage)
+            ->withQueryString();
 
         return Inertia::render('audit/index', [
             'logs' => $logs,
-            'filters' => $request->only(['user_id', 'auditable_type', 'event', 'date_from', 'date_to']),
+            'filters' => $request->only(['user_id', 'auditable_type', 'event', 'date_from', 'date_to', 'per_page']),
         ]);
     }
 
