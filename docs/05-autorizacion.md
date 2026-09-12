@@ -97,9 +97,9 @@ El middleware valida que el usuario autenticado tenga al menos uno de los roles 
 | Método | Admin | Employee |
 |--------|-------|----------|
 | `viewAny($user)` | ✅ | ✅ |
-| `view($user, $model)` | ✅ | ✅ (solo自身) |
+| `view($user, $model)` | ✅ | ✅ (solo propio) |
 | `create($user)` | ✅ | ❌ |
-| `update($user, $model)` | ✅ | ✅ (solo自身) |
+| `update($user, $model)` | ✅ | ✅ (solo propio) |
 | `delete($user, $model)` | ✅ | ❌ |
 
 ### CategoryPolicy

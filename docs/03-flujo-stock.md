@@ -130,9 +130,9 @@ flowchart LR
 ```mermaid
 flowchart TD
     A[Eliminar categoría] --> B{Tiene productos?}
-    B -->|Sí| C[Crear/obtener "Sin categoría"]
-    C --> D[Mover productos a "Sin categoría"]
-    D --> E[Mover subcategorías a "Sin categoría"]
+    B -->|Sí| C[Crear/obtener Sin categoría]
+    C --> D[Mover productos a Sin categoría]
+    D --> E[Mover subcategorías a Sin categoría]
     B -->|No| F[Verificar subcategorías]
     E --> G[Eliminar categoría]
     F -->|Sí| C
