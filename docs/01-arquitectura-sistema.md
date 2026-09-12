@@ -37,7 +37,8 @@ erDiagram
         varchar name UK
         text description
         bigint parent_id FK "nullable"
-        timestamps
+        datetime created_at
+        datetime updated_at
     }
 
     suppliers {
@@ -47,7 +48,8 @@ erDiagram
         varchar email
         varchar phone
         text address
-        timestamps
+        datetime created_at
+        datetime updated_at
     }
 
     products {
@@ -62,7 +64,8 @@ erDiagram
         int minimum_stock
         int current_stock
         boolean is_active
-        timestamps
+        datetime created_at
+        datetime updated_at
     }
 
     stock_movements {
@@ -75,7 +78,8 @@ erDiagram
         varchar reference
         text notes
         bigint user_id FK
-        timestamps
+        datetime created_at
+        datetime updated_at
     }
 
     users {
@@ -83,7 +87,8 @@ erDiagram
         varchar name
         varchar email UK
         varchar role "admin|employee"
-        timestamps
+        datetime created_at
+        datetime updated_at
     }
 
     audit_logs {
@@ -96,7 +101,8 @@ erDiagram
         json new_values
         varchar ip_address
         varchar user_agent
-        timestamps
+        datetime created_at
+        datetime updated_at
     }
 ```
 
