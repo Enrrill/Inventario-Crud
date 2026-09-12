@@ -1,9 +1,10 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeftIcon, CalendarIcon, GlobeIcon, MonitorIcon, UserIcon } from 'lucide-react';
+import { Head, Link, setLayoutProps } from '@inertiajs/react';
+import { ArrowLeftIcon, CalendarIcon, GlobeIcon, HomeIcon, MonitorIcon, UserIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/inventory/page-header';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import audit from '@/routes/audit';
 import type { AuditEvent, AuditLog } from '@/types/inventory';
 
@@ -77,6 +78,16 @@ function JsonViewer({ data, title }: { data: Record<string, unknown> | null; tit
 }
 
 export default function AuditShow({ log }: AuditShowProps) {
+    const back = useBackNavigation(audit.index.url());
+
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'Auditoría', href: audit.index.url() },
+            { title: `Registro #${log.id}`, href: audit.show.url(log.id) },
+        ],
+    });
+
     return (
         <>
             <Head title={`Auditoría #${log.id}`} />
@@ -85,11 +96,9 @@ export default function AuditShow({ log }: AuditShowProps) {
                     title={`Registro de Auditoría #${log.id}`}
                     description={`${getModelName(log.auditable_type)} — ${log.event}`}
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={audit.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                 </PageHeader>
 
@@ -181,7 +190,7 @@ export default function AuditShow({ log }: AuditShowProps) {
 
 AuditShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Auditoría', href: audit.index.url() },
     ],
 };

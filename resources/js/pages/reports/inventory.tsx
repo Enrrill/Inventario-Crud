@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon, DownloadIcon, Package, DollarSign, Tags, XIcon } from 'lucide-react';
+import { ArrowLeftIcon, DownloadIcon, Package, DollarSign, HomeIcon, Tags, XIcon } from 'lucide-react';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
@@ -12,8 +13,10 @@ import { SearchableSelect } from '@/components/inventory/searchable-select';
 import { StatCard } from '@/components/inventory/stat-card';
 import { StockBadge } from '@/components/inventory/stock-badge';
 import { useQueryParams } from '@/hooks/use-query-params';
-import products from '@/routes/products';
+import categoriesRoute from '@/routes/categories';
+import productsRoute from '@/routes/products';
 import reports from '@/routes/reports';
+import suppliersRoute from '@/routes/suppliers';
 import type { Category, PaginatedData, Product, Supplier } from '@/types/inventory';
 
 type ReportsInventoryProps = {
@@ -42,6 +45,7 @@ export default function ReportsInventory({
     categories,
     suppliers,
 }: ReportsInventoryProps) {
+    const back = useBackNavigation(reports.index.url());
     const [queryFilters, setQueryFilters, clearFilters] = useQueryParams<{
         category_id: string;
         supplier_id: string;
@@ -90,7 +94,7 @@ export default function ReportsInventory({
             header: 'Nombre',
             cell: ({ row }) => (
                 <Link
-                    href={products.show.url(row.original.id)}
+                    href={productsRoute.show.url(row.original.id)}
                     className="hover:text-primary font-medium"
                 >
                     {row.original.name_product}
@@ -100,20 +104,32 @@ export default function ReportsInventory({
         {
             accessorKey: 'category',
             header: 'Categoría',
-            cell: ({ row }) => (
-                <span className="text-muted-foreground">
-                    {row.original.category?.name_category ?? '—'}
-                </span>
-            ),
+            cell: ({ row }) =>
+                row.original.category ? (
+                    <Link
+                        href={categoriesRoute.show.url(row.original.category.id)}
+                        className="hover:text-primary text-muted-foreground"
+                    >
+                        {row.original.category.name_category}
+                    </Link>
+                ) : (
+                    <span className="text-muted-foreground">—</span>
+                ),
         },
         {
             accessorKey: 'supplier',
             header: 'Proveedor',
-            cell: ({ row }) => (
-                <span className="text-muted-foreground">
-                    {row.original.supplier?.name_supplier ?? '—'}
-                </span>
-            ),
+            cell: ({ row }) =>
+                row.original.supplier ? (
+                    <Link
+                        href={suppliersRoute.show.url(row.original.supplier.id)}
+                        className="hover:text-primary text-muted-foreground"
+                    >
+                        {row.original.supplier.name_supplier}
+                    </Link>
+                ) : (
+                    <span className="text-muted-foreground">—</span>
+                ),
         },
         {
             accessorKey: 'current_stock_product',
@@ -165,11 +181,9 @@ export default function ReportsInventory({
                     title="Reporte de Inventario"
                     description="Detalle de productos, valor y distribución"
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={reports.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                     <Button variant="outline" onClick={() => handleExport('csv')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
@@ -298,7 +312,7 @@ export default function ReportsInventory({
 
 ReportsInventory.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Reportes', href: reports.index.url() },
         { title: 'Inventario', href: '' },
     ],

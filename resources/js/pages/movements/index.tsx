@@ -1,5 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { EyeIcon, PlusIcon, XIcon } from 'lucide-react';
+import { EyeIcon, HomeIcon, PlusIcon, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,7 @@ import { SearchableSelect } from '@/components/inventory/searchable-select';
 import { TypeBadge } from '@/components/inventory/type-badge';
 import { useQueryParams } from '@/hooks/use-query-params';
 import movements from '@/routes/movements';
+import productsRoute from '@/routes/products';
 import type {
     PaginatedData,
     Product,
@@ -94,7 +95,7 @@ export default function MovementsIndex({
             header: 'Producto',
             cell: ({ row }) => (
                 <Link
-                    href={`/products/${row.original.product_id}`}
+                    href={productsRoute.show.url(row.original.product_id)}
                     className="hover:text-primary font-medium"
                 >
                     {row.original.product?.name_product}
@@ -259,7 +260,7 @@ export default function MovementsIndex({
 
 MovementsIndex.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Movimientos', href: movements.index.url() },
     ],
 };

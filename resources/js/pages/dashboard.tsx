@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import {
     AlertTriangle,
     DollarSign,
+    HomeIcon,
     Package,
     Tags,
     Truck,
@@ -267,6 +268,7 @@ Dashboard.layout = {
         {
             title: 'Dashboard',
             href: dashboard(),
+            icon: HomeIcon,
         },
     ],
 };

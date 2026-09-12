@@ -1,5 +1,5 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeftIcon, PencilIcon, Trash2Icon } from 'lucide-react';
+import { Head, Link, router, setLayoutProps } from '@inertiajs/react';
+import { ArrowLeftIcon, HomeIcon, PencilIcon, Trash2Icon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { DataTable } from '@/components/inventory/data-table';
 import { EmptyState } from '@/components/inventory/empty-state';
 import { PageHeader } from '@/components/inventory/page-header';
 import { StockBadge } from '@/components/inventory/stock-badge';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import categories from '@/routes/categories';
 import products from '@/routes/products';
 import suppliers from '@/routes/suppliers';
@@ -22,6 +23,15 @@ type SuppliersShowProps = {
 
 export default function SuppliersShow({ supplier }: SuppliersShowProps) {
     const [showDelete, setShowDelete] = useState(false);
+    const back = useBackNavigation(suppliers.index.url());
+
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'Proveedores', href: suppliers.index.url() },
+            { title: supplier.name_supplier, href: suppliers.show.url(supplier.id) },
+        ],
+    });
 
     function handleDelete() {
         router.delete(suppliers.destroy.url(supplier.id));
@@ -89,11 +99,9 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                     title={supplier.name_supplier}
                     description={supplier.contact_name_supplier ?? 'Sin contacto registrado'}
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={suppliers.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                     <Button variant="outline" asChild>
                         <Link href={suppliers.edit.url(supplier.id)}>
@@ -189,7 +197,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
 
 SuppliersShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Proveedores', href: suppliers.index.url() },
     ],
 };

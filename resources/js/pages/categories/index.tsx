@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { HomeIcon, PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -163,7 +163,7 @@ export default function CategoriesIndex({ categories: pagination }: CategoriesIn
 
 CategoriesIndex.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Categorías', href: categories.index.url() },
     ],
 };

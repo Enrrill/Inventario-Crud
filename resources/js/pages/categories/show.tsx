@@ -1,5 +1,5 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeftIcon, PencilIcon, Trash2Icon } from 'lucide-react';
+import { Head, Link, router, setLayoutProps } from '@inertiajs/react';
+import { ArrowLeftIcon, HomeIcon, PencilIcon, Trash2Icon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { DataTable } from '@/components/inventory/data-table';
 import { EmptyState } from '@/components/inventory/empty-state';
 import { PageHeader } from '@/components/inventory/page-header';
 import { StockBadge } from '@/components/inventory/stock-badge';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import categories from '@/routes/categories';
 import products from '@/routes/products';
 import type { Category, Product } from '@/types/inventory';
@@ -23,6 +24,15 @@ type CategoriesShowProps = {
 
 export default function CategoriesShow({ category }: CategoriesShowProps) {
     const [showDelete, setShowDelete] = useState(false);
+    const back = useBackNavigation(categories.index.url());
+
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'Categorías', href: categories.index.url() },
+            { title: category.name_category, href: categories.show.url(category.id) },
+        ],
+    });
 
     function handleDelete() {
         router.delete(categories.destroy.url(category.id));
@@ -78,11 +88,9 @@ export default function CategoriesShow({ category }: CategoriesShowProps) {
                     title={category.name_category}
                     description={category.description_category ?? 'Sin descripción'}
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={categories.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                     <Button variant="outline" asChild>
                         <Link href={categories.edit.url(category.id)}>
@@ -210,7 +218,7 @@ export default function CategoriesShow({ category }: CategoriesShowProps) {
 
 CategoriesShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Categorías', href: categories.index.url() },
     ],
 };

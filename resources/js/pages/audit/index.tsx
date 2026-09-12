@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { EyeIcon, ClipboardList, XIcon } from 'lucide-react';
+import { EyeIcon, ClipboardList, HomeIcon, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -253,7 +253,7 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
 
 AuditIndex.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Auditoría', href: audit.index.url() },
     ],
 };

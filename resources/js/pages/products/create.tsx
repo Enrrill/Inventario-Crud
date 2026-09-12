@@ -1,5 +1,6 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +38,7 @@ export default function ProductsCreate({
     categories,
     suppliers,
 }: ProductsCreateProps) {
+    const back = useBackNavigation(products.index.url());
     const categoryOptions = categories.map((cat) => ({
         value: String(cat.id),
         label: cat.name_category,
@@ -58,11 +60,9 @@ export default function ProductsCreate({
                     title="Nuevo Producto"
                     description="Registra un nuevo producto en el inventario"
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={products.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                 </PageHeader>
 
@@ -228,10 +228,8 @@ export default function ProductsCreate({
                                     <Button type="submit" disabled={processing}>
                                         {processing ? 'Creando...' : 'Crear producto'}
                                     </Button>
-                                    <Button variant="outline" asChild>
-                                        <Link href={products.index.url()}>
-                                            Cancelar
-                                        </Link>
+                                    <Button type="button" variant="outline" onClick={back}>
+                                        Cancelar
                                     </Button>
                                 </div>
                             </>
@@ -245,7 +243,7 @@ export default function ProductsCreate({
 
 ProductsCreate.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Productos', href: products.index.url() },
         { title: 'Nuevo', href: products.create.url() },
     ],

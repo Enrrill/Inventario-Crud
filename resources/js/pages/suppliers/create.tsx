@@ -1,5 +1,6 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,7 @@ import { PageHeader } from '@/components/inventory/page-header';
 import suppliers from '@/routes/suppliers';
 
 export default function SuppliersCreate() {
+    const back = useBackNavigation(suppliers.index.url());
     return (
         <>
             <Head title="Nuevo Proveedor" />
@@ -18,11 +20,9 @@ export default function SuppliersCreate() {
                     title="Nuevo Proveedor"
                     description="Registra un nuevo proveedor para el inventario"
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={suppliers.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                 </PageHeader>
 
@@ -98,10 +98,8 @@ export default function SuppliersCreate() {
                                     <Button type="submit" disabled={processing}>
                                         {processing ? 'Creando...' : 'Crear proveedor'}
                                     </Button>
-                                    <Button variant="outline" asChild>
-                                        <Link href={suppliers.index.url()}>
-                                            Cancelar
-                                        </Link>
+                                    <Button type="button" variant="outline" onClick={back}>
+                                        Cancelar
                                     </Button>
                                 </div>
                             </>
@@ -115,7 +113,7 @@ export default function SuppliersCreate() {
 
 SuppliersCreate.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Proveedores', href: suppliers.index.url() },
         { title: 'Nuevo', href: suppliers.create.url() },
     ],

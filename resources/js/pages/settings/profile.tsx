@@ -1,6 +1,6 @@
 import { Form, Head, usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
-import { Mail, User } from 'lucide-react';
+import { HomeIcon, Mail, User } from 'lucide-react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
 import InputError from '@/components/input-error';
@@ -151,9 +151,7 @@ export default function Profile({
 
 Profile.layout = {
     breadcrumbs: [
-        {
-            title: 'Perfil',
-            href: edit(),
-        },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'Perfil', href: edit() },
     ],
 };

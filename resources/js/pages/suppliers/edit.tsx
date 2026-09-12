@@ -1,5 +1,6 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +16,7 @@ type SuppliersEditProps = {
 };
 
 export default function SuppliersEdit({ supplier }: SuppliersEditProps) {
+    const back = useBackNavigation(suppliers.show.url(supplier.id));
     return (
         <>
             <Head title={`Editar ${supplier.name_supplier}`} />
@@ -23,11 +25,9 @@ export default function SuppliersEdit({ supplier }: SuppliersEditProps) {
                     title="Editar Proveedor"
                     description={`Editando "${supplier.name_supplier}"`}
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={suppliers.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                 </PageHeader>
 
@@ -103,10 +103,8 @@ export default function SuppliersEdit({ supplier }: SuppliersEditProps) {
                                     <Button type="submit" disabled={processing}>
                                         {processing ? 'Guardando...' : 'Guardar cambios'}
                                     </Button>
-                                    <Button variant="outline" asChild>
-                                        <Link href={suppliers.index.url()}>
-                                            Cancelar
-                                        </Link>
+                                    <Button type="button" variant="outline" onClick={back}>
+                                        Cancelar
                                     </Button>
                                 </div>
                             </>
@@ -120,7 +118,7 @@ export default function SuppliersEdit({ supplier }: SuppliersEditProps) {
 
 SuppliersEdit.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Proveedores', href: suppliers.index.url() },
         { title: 'Editar', href: '' },
     ],

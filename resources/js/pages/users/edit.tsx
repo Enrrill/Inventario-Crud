@@ -1,5 +1,6 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,7 @@ type UsersEditProps = {
 };
 
 export default function UsersEdit({ user }: UsersEditProps) {
+    const back = useBackNavigation(users.show.url(user.id));
     return (
         <>
             <Head title={`Editar ${user.name}`} />
@@ -29,11 +31,9 @@ export default function UsersEdit({ user }: UsersEditProps) {
                     title="Editar Usuario"
                     description={`Editando "${user.name}"`}
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={users.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                 </PageHeader>
 
@@ -122,10 +122,8 @@ export default function UsersEdit({ user }: UsersEditProps) {
                                     <Button type="submit" disabled={processing}>
                                         {processing ? 'Guardando...' : 'Guardar cambios'}
                                     </Button>
-                                    <Button variant="outline" asChild>
-                                        <Link href={users.index.url()}>
-                                            Cancelar
-                                        </Link>
+                                    <Button type="button" variant="outline" onClick={back}>
+                                        Cancelar
                                     </Button>
                                 </div>
                             </>
@@ -139,7 +137,7 @@ export default function UsersEdit({ user }: UsersEditProps) {
 
 UsersEdit.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Usuarios', href: users.index.url() },
         { title: 'Editar', href: '' },
     ],

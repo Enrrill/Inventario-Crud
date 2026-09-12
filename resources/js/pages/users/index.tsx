@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
+import { HomeIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -204,7 +204,7 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
 
 UsersIndex.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Usuarios', href: users.index.url() },
     ],
 };

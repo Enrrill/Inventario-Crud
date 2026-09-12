@@ -4,6 +4,8 @@ import type { LucideIcon } from 'lucide-react';
 export type BreadcrumbItem = {
     title: string;
     href: NonNullable<InertiaLinkProps['href']>;
+    /** Optional icon rendered in place of the title (e.g. HomeIcon for the first breadcrumb). */
+    icon?: LucideIcon;
 };
 
 export type NavItem = {

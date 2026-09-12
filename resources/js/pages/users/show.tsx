@@ -1,11 +1,12 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeftIcon, CalendarIcon, MailIcon, PencilIcon, ShieldIcon, Trash2Icon, UserIcon } from 'lucide-react';
+import { Head, Link, router, setLayoutProps } from '@inertiajs/react';
+import { ArrowLeftIcon, CalendarIcon, HomeIcon, MailIcon, PencilIcon, ShieldIcon, Trash2Icon, UserIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
 import { PageHeader } from '@/components/inventory/page-header';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import users from '@/routes/users';
 import type { User, UserRole } from '@/types/auth';
 
@@ -35,6 +36,15 @@ function getInitials(name: string): string {
 
 export default function UsersShow({ user }: UsersShowProps) {
     const [showDelete, setShowDelete] = useState(false);
+    const back = useBackNavigation(users.index.url());
+
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'Usuarios', href: users.index.url() },
+            { title: user.name, href: users.show.url(user.id) },
+        ],
+    });
 
     function handleDelete() {
         router.delete(users.destroy.url(user.id));
@@ -48,11 +58,9 @@ export default function UsersShow({ user }: UsersShowProps) {
                     title={user.name}
                     description={user.email}
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={users.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                     <Button variant="outline" asChild>
                         <Link href={users.edit.url(user.id)}>
@@ -176,7 +184,7 @@ export default function UsersShow({ user }: UsersShowProps) {
 
 UsersShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Usuarios', href: users.index.url() },
     ],
 };

@@ -1,5 +1,5 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeftIcon, PencilIcon, Trash2Icon } from 'lucide-react';
+import { Head, Link, router, setLayoutProps } from '@inertiajs/react';
+import { ArrowLeftIcon, HomeIcon, PencilIcon, Trash2Icon } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
 import { PageHeader } from '@/components/inventory/page-header';
 import { StockBadge } from '@/components/inventory/stock-badge';
 import { StatusBadge } from '@/components/inventory/status-badge';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import categories from '@/routes/categories';
 import products from '@/routes/products';
 import suppliers from '@/routes/suppliers';
@@ -28,6 +29,15 @@ function formatCurrency(value: number) {
 
 export default function ProductsShow({ product }: ProductsShowProps) {
     const [showDelete, setShowDelete] = useState(false);
+    const back = useBackNavigation(products.index.url());
+
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'Productos', href: products.index.url() },
+            { title: product.name_product, href: products.show.url(product.id) },
+        ],
+    });
 
     function handleDelete() {
         router.delete(products.destroy.url(product.id));
@@ -46,11 +56,9 @@ export default function ProductsShow({ product }: ProductsShowProps) {
                         currentStock={product.current_stock_product}
                         minimumStock={product.minimum_stock_product}
                     />
-                    <Button variant="outline" asChild>
-                        <Link href={products.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                     <Button variant="outline" asChild>
                         <Link href={products.edit.url(product.id)}>
@@ -243,7 +251,7 @@ export default function ProductsShow({ product }: ProductsShowProps) {
 
 ProductsShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Productos', href: products.index.url() },
     ],
 };

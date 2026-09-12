@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
-import { AlertTriangleIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
+import { AlertTriangleIcon, HomeIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,7 +19,9 @@ import { ViewToggle } from '@/components/inventory/view-toggle';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useQueryParams } from '@/hooks/use-query-params';
 import { cn } from '@/lib/utils';
+import categoriesRoute from '@/routes/categories';
 import products from '@/routes/products';
+import suppliersRoute from '@/routes/suppliers';
 import type {
     Category,
     PaginatedData,
@@ -118,20 +120,32 @@ export default function ProductsIndex({
         {
             accessorKey: 'category.name_category',
             header: 'Categoría',
-            cell: ({ row }) => (
-                <span className="text-muted-foreground">
-                    {row.original.category?.name_category ?? '—'}
-                </span>
-            ),
+            cell: ({ row }) =>
+                row.original.category ? (
+                    <Link
+                        href={categoriesRoute.show.url(row.original.category.id)}
+                        className="hover:text-primary text-muted-foreground"
+                    >
+                        {row.original.category.name_category}
+                    </Link>
+                ) : (
+                    <span className="text-muted-foreground">—</span>
+                ),
         },
         {
             accessorKey: 'supplier.name_supplier',
             header: 'Proveedor',
-            cell: ({ row }) => (
-                <span className="text-muted-foreground">
-                    {row.original.supplier?.name_supplier ?? '—'}
-                </span>
-            ),
+            cell: ({ row }) =>
+                row.original.supplier ? (
+                    <Link
+                        href={suppliersRoute.show.url(row.original.supplier.id)}
+                        className="hover:text-primary text-muted-foreground"
+                    >
+                        {row.original.supplier.name_supplier}
+                    </Link>
+                ) : (
+                    <span className="text-muted-foreground">—</span>
+                ),
         },
         {
             accessorKey: 'unit_price_product',
@@ -366,7 +380,7 @@ export default function ProductsIndex({
 
 ProductsIndex.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Productos', href: products.index.url() },
     ],
 };

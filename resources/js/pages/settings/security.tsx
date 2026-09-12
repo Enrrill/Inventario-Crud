@@ -1,5 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
-import { KeyRound, Shield, Smartphone } from 'lucide-react';
+import { HomeIcon, KeyRound, Shield, Smartphone } from 'lucide-react';
 import { useRef } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import InputError from '@/components/input-error';
@@ -168,9 +168,7 @@ export default function Security(props: Props) {
 
 Security.layout = {
     breadcrumbs: [
-        {
-            title: 'Seguridad',
-            href: edit(),
-        },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'Seguridad', href: edit() },
     ],
 };

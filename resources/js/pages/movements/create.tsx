@@ -1,5 +1,6 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ export default function MovementsCreate({
     products,
     types,
 }: MovementsCreateProps) {
+    const back = useBackNavigation(movements.index.url());
     const [selectedProductId, setSelectedProductId] = useState<string>('');
     const [selectedType, setSelectedType] = useState<string>('');
     const [quantity, setQuantity] = useState<string>('');
@@ -55,11 +57,9 @@ export default function MovementsCreate({
                     title="Nuevo Movimiento"
                     description="Registrar entrada, salida o ajuste de stock"
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={movements.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                 </PageHeader>
 
@@ -201,10 +201,8 @@ export default function MovementsCreate({
                                             ? 'Registrando...'
                                             : 'Registrar movimiento'}
                                     </Button>
-                                    <Button variant="outline" asChild>
-                                        <Link href={movements.index.url()}>
-                                            Cancelar
-                                        </Link>
+                                    <Button type="button" variant="outline" onClick={back}>
+                                        Cancelar
                                     </Button>
                                 </div>
                             </>
@@ -218,7 +216,7 @@ export default function MovementsCreate({
 
 MovementsCreate.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Movimientos', href: movements.index.url() },
         { title: 'Nuevo', href: '' },
     ],

@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon, DownloadIcon, ArrowLeftRight, ArrowDownCircle, ArrowUpCircle, RefreshCw, XIcon } from 'lucide-react';
+import { ArrowLeftIcon, DownloadIcon, ArrowLeftRight, ArrowDownCircle, ArrowUpCircle, HomeIcon, RefreshCw, XIcon } from 'lucide-react';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ import { StatCard } from '@/components/inventory/stat-card';
 import { TypeBadge } from '@/components/inventory/type-badge';
 import { useQueryParams } from '@/hooks/use-query-params';
 import reports from '@/routes/reports';
+import products from '@/routes/products';
 import type { PaginatedData, StockMovement, StockMovementType } from '@/types/inventory';
 
 type UserOption = { id: number; name: string };
@@ -49,6 +51,7 @@ export default function ReportsMovements({
     filters,
     users,
 }: ReportsMovementsProps) {
+    const back = useBackNavigation(reports.index.url());
     const [queryFilters, setQueryFilters, clearFilters] = useQueryParams<{
         date_from: string;
         date_to: string;
@@ -104,9 +107,17 @@ export default function ReportsMovements({
         {
             accessorKey: 'product',
             header: 'Producto',
-            cell: ({ row }) => (
-                <span className="font-medium">{row.original.product?.name_product ?? '—'}</span>
-            ),
+            cell: ({ row }) =>
+                row.original.product ? (
+                    <Link
+                        href={products.show.url(row.original.product_id)}
+                        className="hover:text-primary font-medium"
+                    >
+                        {row.original.product.name_product}
+                    </Link>
+                ) : (
+                    <span className="text-muted-foreground">—</span>
+                ),
         },
         {
             accessorKey: 'type_movement',
@@ -146,11 +157,9 @@ export default function ReportsMovements({
                     title="Reporte de Movimientos"
                     description="Análisis de movimientos de entrada, salida y ajuste"
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={reports.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                     <Button variant="outline" onClick={() => handleExport('csv')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
@@ -256,7 +265,7 @@ export default function ReportsMovements({
 
 ReportsMovements.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Reportes', href: reports.index.url() },
         { title: 'Movimientos', href: '' },
     ],

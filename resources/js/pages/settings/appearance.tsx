@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { HomeIcon, Monitor, Moon, Sun } from 'lucide-react';
 import Heading from '@/components/heading';
 import { useAppearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
@@ -69,9 +69,7 @@ export default function Appearance() {
 
 Appearance.layout = {
     breadcrumbs: [
-        {
-            title: 'Apariencia',
-            href: editAppearance(),
-        },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'Apariencia', href: editAppearance() },
     ],
 };

@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon, DownloadIcon, AlertTriangle, CheckCircle, XCircle, Package, XIcon } from 'lucide-react';
+import { ArrowLeftIcon, DownloadIcon, AlertTriangle, CheckCircle, HomeIcon, XCircle, Package, XIcon } from 'lucide-react';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +14,8 @@ import { SearchableSelect } from '@/components/inventory/searchable-select';
 import { StatCard } from '@/components/inventory/stat-card';
 import { StockBadge } from '@/components/inventory/stock-badge';
 import { useQueryParams } from '@/hooks/use-query-params';
-import products from '@/routes/products';
+import categoriesRoute from '@/routes/categories';
+import productsRoute from '@/routes/products';
 import reports from '@/routes/reports';
 import type { Category, Product } from '@/types/inventory';
 
@@ -35,9 +37,10 @@ type ReportsStockStatusProps = {
 
 export default function ReportsStockStatus({
     summary,
-    filters,
     categories,
+    filters,
 }: ReportsStockStatusProps) {
+    const back = useBackNavigation(reports.index.url());
     const [queryFilters, setQueryFilters, clearFilters] = useQueryParams<{
         category_id: string;
     }>();
@@ -77,7 +80,7 @@ export default function ReportsStockStatus({
             header: 'Nombre',
             cell: ({ row }) => (
                 <Link
-                    href={products.show.url(row.original.id)}
+                    href={productsRoute.show.url(row.original.id)}
                     className="hover:text-primary font-medium"
                 >
                     {row.original.name_product}
@@ -87,11 +90,17 @@ export default function ReportsStockStatus({
         {
             accessorKey: 'category',
             header: 'Categoría',
-            cell: ({ row }) => (
-                <span className="text-muted-foreground">
-                    {row.original.category?.name_category ?? '—'}
-                </span>
-            ),
+            cell: ({ row }) =>
+                row.original.category ? (
+                    <Link
+                        href={categoriesRoute.show.url(row.original.category.id)}
+                        className="hover:text-primary text-muted-foreground"
+                    >
+                        {row.original.category.name_category}
+                    </Link>
+                ) : (
+                    <span className="text-muted-foreground">—</span>
+                ),
         },
         {
             accessorKey: 'current_stock_product',
@@ -138,11 +147,9 @@ export default function ReportsStockStatus({
                     title="Estado de Stock"
                     description="Resumen del estado del stock por categoría"
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={reports.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                     <Button variant="outline" onClick={() => handleExport('csv')} disabled={!hasData}>
                         <DownloadIcon className="size-4" />
@@ -323,7 +330,7 @@ export default function ReportsStockStatus({
 
 ReportsStockStatus.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Reportes', href: reports.index.url() },
         { title: 'Estado de Stock', href: '' },
     ],

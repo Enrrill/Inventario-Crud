@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowDownCircle, ArrowLeftRight, BarChart3, Package } from 'lucide-react';
+import { ArrowDownCircle, ArrowLeftRight, BarChart3, HomeIcon, Package } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/inventory/page-header';
 import reports from '@/routes/reports';
@@ -67,7 +67,7 @@ export default function ReportsIndex() {
 
 ReportsIndex.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Reportes', href: reports.index.url() },
     ],
 };

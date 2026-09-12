@@ -1,5 +1,6 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +21,7 @@ export default function CategoriesEdit({
     category,
     parentCategories,
 }: CategoriesEditProps) {
+    const back = useBackNavigation(categories.show.url(category.id));
     const parentOptions = [
         { value: 'none', label: 'Sin categoría padre' },
         ...parentCategories.map((cat) => ({
@@ -36,11 +38,9 @@ export default function CategoriesEdit({
                     title="Editar Categoría"
                     description={`Editando "${category.name_category}"`}
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={categories.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                 </PageHeader>
 
@@ -104,10 +104,8 @@ export default function CategoriesEdit({
                                     <Button type="submit" disabled={processing}>
                                         {processing ? 'Guardando...' : 'Guardar cambios'}
                                     </Button>
-                                    <Button variant="outline" asChild>
-                                        <Link href={categories.index.url()}>
-                                            Cancelar
-                                        </Link>
+                                    <Button type="button" variant="outline" onClick={back}>
+                                        Cancelar
                                     </Button>
                                 </div>
                             </>
@@ -121,7 +119,7 @@ export default function CategoriesEdit({
 
 CategoriesEdit.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Categorías', href: categories.index.url() },
         { title: 'Editar', href: '' },
     ],

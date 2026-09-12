@@ -1,9 +1,11 @@
-import { Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon } from 'lucide-react';
+import { Head, Link, setLayoutProps } from '@inertiajs/react';
+import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/inventory/page-header';
 import { TypeBadge } from '@/components/inventory/type-badge';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import movements from '@/routes/movements';
+import products from '@/routes/products';
 import type { StockMovement } from '@/types/inventory';
 
 type MovementsShowProps = {
@@ -11,6 +13,16 @@ type MovementsShowProps = {
 };
 
 export default function MovementsShow({ movement }: MovementsShowProps) {
+    const back = useBackNavigation(movements.index.url());
+
+    setLayoutProps({
+        breadcrumbs: [
+            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'Movimientos', href: movements.index.url() },
+            { title: `Movimiento #${movement.id}`, href: movements.show.url(movement.id) },
+        ],
+    });
+
     const typeLabels: Record<string, string> = {
         entry: 'Entrada',
         exit: 'Salida',
@@ -36,11 +48,9 @@ export default function MovementsShow({ movement }: MovementsShowProps) {
                     description={typeLabels[movement.type_movement]}
                 >
                     <TypeBadge type={movement.type_movement} />
-                    <Button variant="outline" asChild>
-                        <Link href={movements.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                 </PageHeader>
 
@@ -53,7 +63,7 @@ export default function MovementsShow({ movement }: MovementsShowProps) {
                                     Producto
                                 </span>
                                 <Link
-                                    href={`/products/${movement.product_id}`}
+                                    href={products.show.url(movement.product_id)}
                                     className="hover:text-primary font-medium"
                                 >
                                     {movement.product?.name_product}
@@ -137,7 +147,7 @@ export default function MovementsShow({ movement }: MovementsShowProps) {
 
 MovementsShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Movimientos', href: movements.index.url() },
         { title: 'Detalle', href: '' },
     ],

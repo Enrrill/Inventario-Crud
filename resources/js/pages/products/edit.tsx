@@ -1,5 +1,6 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
+import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,6 +40,7 @@ export default function ProductsEdit({
     categories,
     suppliers,
 }: ProductsEditProps) {
+    const back = useBackNavigation(products.show.url(product.id));
     const categoryOptions = categories.map((cat) => ({
         value: String(cat.id),
         label: cat.name_category,
@@ -60,11 +62,9 @@ export default function ProductsEdit({
                     title="Editar Producto"
                     description={`Editando "${product.name_product}"`}
                 >
-                    <Button variant="outline" asChild>
-                        <Link href={products.index.url()}>
-                            <ArrowLeftIcon className="size-4" />
-                            Volver
-                        </Link>
+                    <Button variant="outline" onClick={back}>
+                        <ArrowLeftIcon className="size-4" />
+                        Volver
                     </Button>
                 </PageHeader>
 
@@ -249,10 +249,8 @@ export default function ProductsEdit({
                                     <Button type="submit" disabled={processing}>
                                         {processing ? 'Guardando...' : 'Guardar cambios'}
                                     </Button>
-                                    <Button variant="outline" asChild>
-                                        <Link href={products.index.url()}>
-                                            Cancelar
-                                        </Link>
+                                    <Button type="button" variant="outline" onClick={back}>
+                                        Cancelar
                                     </Button>
                                 </div>
                             </>
@@ -266,7 +264,7 @@ export default function ProductsEdit({
 
 ProductsEdit.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard' },
+        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
         { title: 'Productos', href: products.index.url() },
         { title: 'Editar', href: '' },
     ],
