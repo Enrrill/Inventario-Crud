@@ -112,6 +112,7 @@ export type AuditLog = {
     user_id: number | null;
     auditable_type: string;
     auditable_id: number;
+    batch_id: string | null;
     event: AuditEvent;
     old_values: Record<string, unknown> | null;
     new_values: Record<string, unknown> | null;

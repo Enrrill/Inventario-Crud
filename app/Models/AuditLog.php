@@ -30,6 +30,7 @@ class AuditLog extends Model
         'user_id',
         'auditable_type',
         'auditable_id',
+        'batch_id',
         'event',
         'old_values',
         'new_values',
@@ -74,6 +75,11 @@ class AuditLog extends Model
     public function scopeForUser(Builder $query, int $userId): Builder
     {
         return $query->where('user_id', $userId);
+    }
+
+    public function scopeForBatch(Builder $query, string $batchId): Builder
+    {
+        return $query->where('batch_id', $batchId);
     }
 
     public function scopeRecent(Builder $query, int $days = 30): Builder

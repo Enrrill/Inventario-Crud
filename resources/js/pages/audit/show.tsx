@@ -1,5 +1,13 @@
-import { Head, Link, setLayoutProps } from '@inertiajs/react';
-import { ArrowLeftIcon, CalendarIcon, GlobeIcon, HomeIcon, MonitorIcon, UserIcon } from 'lucide-react';
+import { Head, Link, router, setLayoutProps } from '@inertiajs/react';
+import {
+    ArrowLeftIcon,
+    CalendarIcon,
+    GlobeIcon,
+    HomeIcon,
+    LayersIcon,
+    MonitorIcon,
+    UserIcon,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +18,7 @@ import type { AuditEvent, AuditLog } from '@/types/inventory';
 
 type AuditShowProps = {
     log: AuditLog;
+    batchSiblings?: AuditLog[];
 };
 
 const eventConfig: Record<AuditEvent, { label: string; className: string }> = {
@@ -77,7 +86,7 @@ function JsonViewer({ data, title }: { data: Record<string, unknown> | null; tit
     );
 }
 
-export default function AuditShow({ log }: AuditShowProps) {
+export default function AuditShow({ log, batchSiblings = [] }: AuditShowProps) {
     const back = useBackNavigation(audit.index.url());
 
     setLayoutProps({
@@ -154,6 +163,23 @@ export default function AuditShow({ log }: AuditShowProps) {
                                     </div>
                                 </div>
                             </div>
+
+                            {log.batch_id && (
+                                <div className="border-t pt-4">
+                                    <div className="flex items-center gap-2">
+                                        <LayersIcon className="size-4 text-violet-600 dark:text-violet-400" />
+                                        <div>
+                                            <p className="text-muted-foreground text-xs">Lote</p>
+                                            <p className="font-mono text-sm font-medium">{log.batch_id}</p>
+                                        </div>
+                                    </div>
+                                    {batchSiblings.length > 1 && (
+                                        <p className="text-muted-foreground mt-2 text-xs">
+                                            Parte de un lote con {batchSiblings.length} registros
+                                        </p>
+                                    )}
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
@@ -178,6 +204,52 @@ export default function AuditShow({ log }: AuditShowProps) {
                                         data={log.event === 'created' ? log.new_values : log.old_values}
                                         title={log.event === 'created' ? 'Datos Creados' : 'Datos Eliminados'}
                                     />
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {batchSiblings.length > 1 && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <LayersIcon className="size-4 text-violet-600 dark:text-violet-400" />
+                                        Registros del Mismo Lote
+                                        <Badge variant="secondary" className="text-xs">
+                                            {batchSiblings.length}
+                                        </Badge>
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-0">
+                                    <div className="divide-y">
+                                        {batchSiblings.map((sibling) => (
+                                            <div
+                                                key={sibling.id}
+                                                className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${
+                                                    sibling.id === log.id
+                                                        ? 'bg-muted/80 font-medium'
+                                                        : 'hover:bg-muted/50 cursor-pointer'
+                                                }`}
+                                                onClick={() => {
+                                                    if (sibling.id !== log.id) {
+                                                        router.get(audit.show.url(sibling.id));
+                                                    }
+                                                }}
+                                            >
+                                                <EventBadge event={sibling.event as AuditEvent} />
+                                                <span className="text-sm">
+                                                    {getModelName(sibling.auditable_type)}
+                                                </span>
+                                                <span className="text-xs text-muted-foreground font-mono">
+                                                    #{sibling.auditable_id}
+                                                </span>
+                                                {sibling.id === log.id && (
+                                                    <Badge variant="outline" className="ml-auto text-xs">
+                                                        Actual
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </CardContent>
                             </Card>
                         )}

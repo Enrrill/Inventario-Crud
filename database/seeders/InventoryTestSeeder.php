@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Enums\StockMovementType;
 use App\Enums\UserRole;
-use App\Models\AuditLog;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\StockMovement;
@@ -37,7 +36,6 @@ class InventoryTestSeeder extends Seeder
         $suppliers = $this->createSuppliers();
         $products = $this->createProducts($categories, $suppliers);
         $this->createMovements($products, $users);
-        $this->createAuditLogs($users);
 
         Auth::logout();
 
@@ -124,23 +122,25 @@ class InventoryTestSeeder extends Seeder
 
         $categories = [];
 
-        foreach ($data as $name => $info) {
-            $parent = Category::create([
-                'name_category' => $name,
-                'description_category' => $info['description'],
-                'parent_category_id' => null,
-            ]);
-            $categories[$name] = $parent;
-
-            foreach ($info['children'] as $childName => $childDesc) {
-                $child = Category::create([
-                    'name_category' => $childName,
-                    'description_category' => $childDesc,
-                    'parent_category_id' => $parent->id,
+        Category::withoutEvents(function () use ($data, &$categories) {
+            foreach ($data as $name => $info) {
+                $parent = Category::create([
+                    'name_category' => $name,
+                    'description_category' => $info['description'],
+                    'parent_category_id' => null,
                 ]);
-                $categories[$childName] = $child;
+                $categories[$name] = $parent;
+
+                foreach ($info['children'] as $childName => $childDesc) {
+                    $child = Category::create([
+                        'name_category' => $childName,
+                        'description_category' => $childDesc,
+                        'parent_category_id' => $parent->id,
+                    ]);
+                    $categories[$childName] = $child;
+                }
             }
-        }
+        });
 
         return $categories;
     }
@@ -207,9 +207,12 @@ class InventoryTestSeeder extends Seeder
         ];
 
         $suppliers = [];
-        foreach ($suppliersData as $data) {
-            $suppliers[] = Supplier::create($data);
-        }
+
+        Supplier::withoutEvents(function () use ($suppliersData, &$suppliers) {
+            foreach ($suppliersData as $data) {
+                $suppliers[] = Supplier::create($data);
+            }
+        });
 
         return $suppliers;
     }
@@ -285,25 +288,28 @@ class InventoryTestSeeder extends Seeder
         ];
 
         $products = [];
-        foreach ($productsData as $data) {
-            $product = Product::create([
-                'sku_product' => $data['sku'],
-                'name_product' => $data['name'],
-                'description_product' => "Descripción de {$data['name']}",
-                'category_id' => $categories[$data['cat']]->id,
-                'supplier_id' => $suppliers[$data['sup']]->id,
-                'unit_price_product' => $data['price'],
-                'unit_of_measure_product' => $data['unit'],
-                'minimum_stock_product' => $data['min'],
-                'current_stock_product' => $data['stock'],
-                'is_active_product' => true,
-            ]);
-            $products[] = $product;
-        }
 
-        Product::where('sku_product', 'HOGA-COCI-005')->update(['is_active_product' => false]);
-        Product::where('sku_product', 'ROPA-CAMI-004')->update(['is_active_product' => false]);
-        Product::where('sku_product', 'ELEC-ACCE-006')->update(['is_active_product' => false]);
+        Product::withoutEvents(function () use ($productsData, $categories, $suppliers, &$products) {
+            foreach ($productsData as $data) {
+                $product = Product::create([
+                    'sku_product' => $data['sku'],
+                    'name_product' => $data['name'],
+                    'description_product' => "Descripción de {$data['name']}",
+                    'category_id' => $categories[$data['cat']]->id,
+                    'supplier_id' => $suppliers[$data['sup']]->id,
+                    'unit_price_product' => $data['price'],
+                    'unit_of_measure_product' => $data['unit'],
+                    'minimum_stock_product' => $data['min'],
+                    'current_stock_product' => $data['stock'],
+                    'is_active_product' => true,
+                ]);
+                $products[] = $product;
+            }
+
+            Product::where('sku_product', 'HOGA-COCI-005')->update(['is_active_product' => false]);
+            Product::where('sku_product', 'ROPA-CAMI-004')->update(['is_active_product' => false]);
+            Product::where('sku_product', 'ELEC-ACCE-006')->update(['is_active_product' => false]);
+        });
 
         return $products;
     }
@@ -362,79 +368,31 @@ class InventoryTestSeeder extends Seeder
 
                 Auth::loginUsingId($userId);
 
-                StockMovement::create([
-                    'product_id' => $product->id,
-                    'type_movement' => $type,
-                    'quantity_movement' => $quantity,
-                    'previous_stock_movement' => $previousStock,
-                    'new_stock_movement' => $newStock,
-                    'reference_movement' => $references[array_rand($references)],
-                    'notes_movement' => $notes[array_rand($notes)],
-                    'user_id' => $userId,
-                    'created_at' => now()->subDays(rand(0, 30))->subHours(rand(0, 23)),
-                ]);
+                StockMovement::withoutEvents(function () use ($product, $type, $quantity, $previousStock, $newStock, $references, $notes, $userId) {
+                    StockMovement::create([
+                        'product_id' => $product->id,
+                        'type_movement' => $type,
+                        'quantity_movement' => $quantity,
+                        'previous_stock_movement' => $previousStock,
+                        'new_stock_movement' => $newStock,
+                        'reference_movement' => $references[array_rand($references)],
+                        'notes_movement' => $notes[array_rand($notes)],
+                        'user_id' => $userId,
+                        'created_at' => now()->subDays(rand(0, 30))->subHours(rand(0, 23)),
+                    ]);
+                });
 
                 $currentStock = $newStock;
                 $movementCount++;
             }
 
-            $product->update(['current_stock_product' => $currentStock]);
+            Product::withoutEvents(function () use ($product, $currentStock) {
+                $product->update(['current_stock_product' => $currentStock]);
+            });
         }
 
         Auth::loginUsingId($users['admin']['id']);
 
         $this->command->info("Se crearon {$movementCount} movimientos de stock.");
-    }
-
-    private function createAuditLogs(array $users): void
-    {
-        $models = [
-            Product::class,
-            Category::class,
-            Supplier::class,
-            User::class,
-        ];
-        $events = ['created', 'updated', 'deleted'];
-        $ipAddresses = ['192.168.1.100', '10.0.0.50', '172.16.0.25', '192.168.1.200'];
-        $userAgents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
-            'Mozilla/5.0 (X11; Linux x86_64)',
-        ];
-
-        $auditCount = 0;
-        $userIds = array_column($users, 'id');
-
-        for ($i = 0; $i < 50; $i++) {
-            $model = $models[array_rand($models)];
-            $event = $events[array_rand($events)];
-            $userId = $userIds[array_rand($userIds)];
-            $daysAgo = rand(0, 60);
-
-            $oldValues = $event === 'created' ? null : [
-                'name' => fake()->word(),
-                'updated_at' => now()->subDays($daysAgo + 1)->toISOString(),
-            ];
-            $newValues = $event === 'deleted' ? null : [
-                'name' => fake()->word(),
-                'updated_at' => now()->subDays($daysAgo)->toISOString(),
-            ];
-
-            AuditLog::create([
-                'user_id' => $userId,
-                'auditable_type' => $model,
-                'auditable_id' => rand(1, 20),
-                'event' => $event,
-                'old_values' => $oldValues,
-                'new_values' => $newValues,
-                'ip_address' => $ipAddresses[array_rand($ipAddresses)],
-                'user_agent' => $userAgents[array_rand($userAgents)],
-                'created_at' => now()->subDays($daysAgo)->subHours(rand(0, 23)),
-            ]);
-
-            $auditCount++;
-        }
-
-        $this->command->info("Se crearon {$auditCount} registros de auditoría adicionales.");
     }
 }

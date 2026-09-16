@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\AuditLog;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Context;
 
 trait Auditable
 {
@@ -30,6 +31,7 @@ trait Auditable
             'user_id' => auth()->id(),
             'auditable_type' => get_class($model),
             'auditable_id' => $model->getKey(),
+            'batch_id' => Context::get('audit_batch_id'),
             'event' => $event,
             'old_values' => $old,
             'new_values' => $new,

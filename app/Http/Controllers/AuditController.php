@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuditRequest;
 use App\Models\AuditLog;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -44,12 +45,21 @@ class AuditController extends Controller
         ]);
     }
 
-    public function show(AuditLog $auditLog): Response
+    public function show(AuditLog $auditLog, Request $request): Response
     {
         $auditLog->load('user');
 
+        $batchSiblings = collect();
+        if ($auditLog->batch_id) {
+            $batchSiblings = AuditLog::with('user')
+                ->forBatch($auditLog->batch_id)
+                ->orderBy('created_at')
+                ->get();
+        }
+
         return Inertia::render('audit/show', [
             'log' => $auditLog,
+            'batchSiblings' => $batchSiblings,
         ]);
     }
 }

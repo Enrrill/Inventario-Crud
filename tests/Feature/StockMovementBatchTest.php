@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\StockMovementType;
+use App\Models\AuditLog;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\User;
@@ -238,5 +239,55 @@ test('reference y notes compartidos se aplican a todos los movimientos', functio
     foreach ($movements as $movement) {
         expect($movement->reference_movement)->toBe('OC-2026-001');
         expect($movement->notes_movement)->toBe('Pedido de proveedor');
+    }
+});
+
+test('el batch genera audit logs con el mismo batch_id', function () {
+    $productA = Product::factory()->create(['current_stock_product' => 10]);
+    $productB = Product::factory()->create(['current_stock_product' => 20]);
+
+    $this->actingAs($this->user)->postJson(route('movements.store'), [
+        'movements' => [
+            [
+                'product_id' => $productA->id,
+                'type_movement' => 'entry',
+                'quantity_movement' => 5,
+            ],
+            [
+                'product_id' => $productB->id,
+                'type_movement' => 'exit',
+                'quantity_movement' => 3,
+            ],
+        ],
+    ]);
+
+    $batchLogs = AuditLog::whereNotNull('batch_id')->get();
+    expect($batchLogs)->not->toBeEmpty();
+
+    $batchIds = $batchLogs->pluck('batch_id')->unique();
+    expect($batchIds)->toHaveCount(1);
+
+    $events = $batchLogs->pluck('event')->toArray();
+    expect($events)->toContain('updated', 'created');
+});
+
+test('operaciones individuales no tienen batch_id', function () {
+    $product = Product::factory()->create(['current_stock_product' => 10]);
+
+    $this->actingAs($this->user)->postJson(route('movements.store'), [
+        'movements' => [
+            [
+                'product_id' => $product->id,
+                'type_movement' => 'entry',
+                'quantity_movement' => 5,
+            ],
+        ],
+    ]);
+
+    $movementLogs = AuditLog::where('auditable_type', StockMovement::class)->get();
+    expect($movementLogs)->not->toBeEmpty();
+
+    foreach ($movementLogs as $log) {
+        expect($log->batch_id)->not->toBeNull();
     }
 });
