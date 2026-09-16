@@ -65,6 +65,22 @@ export type StockMovementTypeOption = {
     label: string;
 };
 
+export type MovementFormData = {
+    product_id: string;
+    type_movement: StockMovementType | '';
+    quantity_movement: string;
+};
+
+export type BatchMovementsPayload = {
+    movements: Array<{
+        product_id: number;
+        type_movement: StockMovementType;
+        quantity_movement: number;
+    }>;
+    reference_movement: string;
+    notes_movement: string;
+};
+
 export type DashboardStats = {
     total_products: number;
     low_stock_products: number;

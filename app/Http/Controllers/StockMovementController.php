@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Stock\RegisterAdjustmentAction;
-use App\Actions\Stock\RegisterEntryAction;
-use App\Actions\Stock\RegisterExitAction;
+use App\Actions\Stock\RegisterBatchMovementsAction;
 use App\Enums\StockMovementType;
-use App\Http\Requests\StockMovement\StoreStockMovementRequest;
+use App\Http\Requests\StockMovement\StoreBatchMovementsRequest;
 use App\Models\Product;
 use App\Models\StockMovement;
 use Illuminate\Http\RedirectResponse;
@@ -55,40 +53,24 @@ class StockMovementController extends Controller
     }
 
     public function store(
-        StoreStockMovementRequest $request,
-        RegisterEntryAction $registerEntry,
-        RegisterExitAction $registerExit,
-        RegisterAdjustmentAction $registerAdjustment,
+        StoreBatchMovementsRequest $request,
+        RegisterBatchMovementsAction $batchAction,
     ): RedirectResponse {
-        $product = Product::findOrFail($request->validated('product_id'));
         $validated = $request->validated();
-        $type = StockMovementType::from($validated['type_movement']);
 
-        match ($type) {
-            StockMovementType::Entry => $registerEntry->handle(
-                $product,
-                $validated['quantity_movement'],
-                $validated['reference_movement'] ?? null,
-                $validated['notes_movement'] ?? null,
-                $request->user(),
-            ),
-            StockMovementType::Exit => $registerExit->handle(
-                $product,
-                $validated['quantity_movement'],
-                $validated['reference_movement'] ?? null,
-                $validated['notes_movement'] ?? null,
-                $request->user(),
-            ),
-            StockMovementType::Adjustment => $registerAdjustment->handle(
-                $product,
-                $validated['quantity_movement'],
-                $validated['reference_movement'] ?? null,
-                $validated['notes_movement'] ?? null,
-                $request->user(),
-            ),
-        };
+        $result = $batchAction->handle(
+            $validated['movements'],
+            $validated['reference_movement'] ?? null,
+            $validated['notes_movement'] ?? null,
+            $request->user(),
+        );
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => 'Movimiento registrado correctamente.']);
+        $count = $result->count();
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => $this->buildSuccessMessage($count),
+        ]);
 
         return to_route('movements.index');
     }
@@ -100,5 +82,13 @@ class StockMovementController extends Controller
         return Inertia::render('movements/show', [
             'movement' => $movement,
         ]);
+    }
+
+    private function buildSuccessMessage(int $count): string
+    {
+        return match ($count) {
+            1 => 'Movimiento registrado correctamente.',
+            default => "{$count} movimientos registrados correctamente.",
+        };
     }
 }

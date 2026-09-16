@@ -1,61 +1,80 @@
-import { Form, Head, Link, router } from '@inertiajs/react';
-import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
+import { Form, Head } from '@inertiajs/react';
+import { ArrowLeftIcon, HomeIcon, PlusIcon } from 'lucide-react';
 import { useBackNavigation } from '@/hooks/use-back-navigation';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import InputError from '@/components/input-error';
-import { StockBadge } from '@/components/inventory/stock-badge';
 import { PageHeader } from '@/components/inventory/page-header';
-import { SearchableSelect } from '@/components/inventory/searchable-select';
+import { MovementRow } from './components/movement-row';
 import movements from '@/routes/movements';
-import type { Product, StockMovementType } from '@/types/inventory';
+import type { Product, StockMovementType, StockMovementTypeOption } from '@/types/inventory';
+import type { MovementFormData } from '@/types/inventory';
+
+const MAX_MOVEMENTS = 20;
 
 type MovementsCreateProps = {
     products: Product[];
-    types: { value: StockMovementType; label: string }[];
+    types: StockMovementTypeOption[];
 };
 
-export default function MovementsCreate({
-    products,
-    types,
-}: MovementsCreateProps) {
+function createEmptyRow(): MovementFormData {
+    return {
+        product_id: '',
+        type_movement: '',
+        quantity_movement: '',
+    };
+}
+
+export default function MovementsCreate({ products, types }: MovementsCreateProps) {
     const back = useBackNavigation(movements.index.url());
-    const [selectedProductId, setSelectedProductId] = useState<string>('');
-    const [selectedType, setSelectedType] = useState<string>('');
-    const [quantity, setQuantity] = useState<string>('');
 
-    const productOptions = products.map((p) => ({
-        value: String(p.id),
-        label: `${p.name_product} (${p.sku_product})`,
-    }));
+    const [rows, setRows] = useState<MovementFormData[]>([createEmptyRow()]);
 
-    const selectedProduct = products.find(
-        (p) => p.id === Number(selectedProductId),
-    );
+    const updateRow = useCallback((index: number, field: keyof MovementFormData, value: string) => {
+        setRows((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: value } : row)));
+    }, []);
 
-    const isExit = selectedType === 'exit';
-    const currentStock = selectedProduct?.current_stock_product ?? 0;
-    const quantityNum = parseInt(quantity, 10) || 0;
-    const isStockInsufficient = isExit && quantityNum > currentStock;
+    const addRow = useCallback(() => {
+        setRows((prev) => (prev.length < MAX_MOVEMENTS ? [...prev, createEmptyRow()] : prev));
+    }, []);
+
+    const removeRow = useCallback((index: number) => {
+        setRows((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
+    }, []);
+
+    const summary = useMemo(() => {
+        const entries = rows.filter((r) => r.type_movement === 'entry').length;
+        const exits = rows.filter((r) => r.type_movement === 'exit').length;
+        const adjustments = rows.filter((r) => r.type_movement === 'adjustment').length;
+        return { entries, exits, adjustments, total: rows.length };
+    }, [rows]);
+
+    const hasInsufficientStock = useMemo(() => {
+        return rows.some((row) => {
+            if (row.type_movement !== 'exit' || !row.product_id) return false;
+            const product = products.find((p) => p.id === Number(row.product_id));
+            const qty = parseInt(row.quantity_movement, 10) || 0;
+            return product && qty > product.current_stock_product;
+        });
+    }, [rows, products]);
+
+    const hasEmptyRequired = useMemo(() => {
+        return rows.some((row) => !row.product_id || !row.type_movement || !row.quantity_movement);
+    }, [rows]);
+
+    const isSubmitDisabled = hasInsufficientStock || hasEmptyRequired;
 
     return (
         <>
-            <Head title="Nuevo Movimiento" />
+            <Head title="Registrar Movimientos" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <PageHeader
-                    title="Nuevo Movimiento"
-                    description="Registrar entrada, salida o ajuste de stock"
+                    title="Registrar Movimientos"
+                    description="Agregar múltiples entradas, salidas o ajustes de stock en un solo lote"
                 >
                     <Button variant="outline" onClick={back}>
                         <ArrowLeftIcon className="size-4" />
@@ -63,113 +82,90 @@ export default function MovementsCreate({
                     </Button>
                 </PageHeader>
 
-                <div className="max-w-2xl">
+                <div className="max-w-3xl">
                     <Form
                         method="post"
                         action={movements.store.url()}
-                        onError={() => toast.error('Error al registrar el movimiento. Verifica los datos.')}
-                        className="space-y-6"
+                        onError={() => toast.error('Error al registrar los movimientos. Verifica los datos.')}
+                        className="space-y-5"
+                        transform={(data) => {
+                            const movements = rows
+                                .filter((r) => r.product_id && r.type_movement && r.quantity_movement)
+                                .map((r) => ({
+                                    product_id: Number(r.product_id),
+                                    type_movement: r.type_movement as StockMovementType,
+                                    quantity_movement: parseInt(r.quantity_movement, 10),
+                                }));
+
+                            return {
+                                movements,
+                                reference_movement: data.reference_movement ?? '',
+                                notes_movement: data.notes_movement ?? '',
+                            };
+                        }}
                     >
                         {({ processing, errors }) => (
                             <>
-                                <div className="grid gap-4 sm:grid-cols-2">
-                                    <div className="space-y-2">
-                                        <Label>
-                                            Producto <span className="text-destructive">*</span>
-                                        </Label>
-                                        <SearchableSelect
-                                            name="product_id"
-                                            options={productOptions}
-                                            value={selectedProductId}
-                                            onValueChange={(v) => setSelectedProductId(v)}
-                                            placeholder="Seleccionar producto"
-                                            searchPlaceholder="Buscar por nombre o SKU..."
+                                <div className="space-y-3">
+                                    {rows.map((row, index) => (
+                                        <MovementRow
+                                            key={index}
+                                            index={index}
+                                            product={products.find((p) => p.id === Number(row.product_id))}
+                                            typeMovement={row.type_movement}
+                                            quantity={row.quantity_movement}
+                                            products={products}
+                                            types={types}
+                                            errors={errors}
+                                            canRemove={rows.length > 1}
+                                            onProductChange={(v) => updateRow(index, 'product_id', v)}
+                                            onTypeChange={(v) => updateRow(index, 'type_movement', v)}
+                                            onQuantityChange={(v) => updateRow(index, 'quantity_movement', v)}
+                                            onRemove={() => removeRow(index)}
                                         />
-                                        <InputError message={errors.product_id} />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label>
-                                            Tipo de movimiento{' '}
-                                            <span className="text-destructive">*</span>
-                                        </Label>
-                                        <input type="hidden" name="type_movement" value="" />
-                                        <Select
-                                            name="type_movement"
-                                            value={selectedType}
-                                            onValueChange={(v) => setSelectedType(v)}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Seleccionar tipo" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {types.map((t) => (
-                                                    <SelectItem key={t.value} value={t.value}>
-                                                        {t.label}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <InputError message={errors.type_movement} />
-                                    </div>
+                                    ))}
                                 </div>
 
-                                {selectedProduct && (
-                                    <div className="rounded-lg border p-4">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="font-medium">
-                                                    {selectedProduct.name_product}
-                                                </p>
-                                                <p className="text-muted-foreground text-sm">
-                                                    SKU: {selectedProduct.sku_product}
-                                                </p>
-                                            </div>
-                                            <StockBadge
-                                                currentStock={selectedProduct.current_stock_product}
-                                                minimumStock={selectedProduct.minimum_stock_product}
-                                            />
-                                        </div>
-                                        <div className="text-muted-foreground mt-2 text-sm">
-                                            Stock actual:{' '}
-                                            <span className="font-medium">
-                                                {selectedProduct.current_stock_product}
+                                {rows.length < MAX_MOVEMENTS && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={addRow}
+                                        className="w-full border-dashed"
+                                    >
+                                        <PlusIcon className="size-4" />
+                                        Agregar producto
+                                    </Button>
+                                )}
+
+                                {summary.total > 0 && (
+                                    <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                                        <span className="font-medium text-foreground">
+                                            {summary.total} {summary.total === 1 ? 'movimiento' : 'movimientos'}:
+                                        </span>
+                                        {summary.entries > 0 && (
+                                            <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400">
+                                                {summary.entries} entrada{summary.entries > 1 ? 's' : ''}
                                             </span>
-                                            {' '}&middot; Mínimo:{' '}
-                                            <span className="font-medium">
-                                                {selectedProduct.minimum_stock_product}
+                                        )}
+                                        {summary.exits > 0 && (
+                                            <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/40 dark:text-red-400">
+                                                {summary.exits} salida{summary.exits > 1 ? 's' : ''}
                                             </span>
-                                        </div>
+                                        )}
+                                        {summary.adjustments > 0 && (
+                                            <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/40 dark:text-blue-400">
+                                                {summary.adjustments} ajuste{summary.adjustments > 1 ? 's' : ''}
+                                            </span>
+                                        )}
                                     </div>
                                 )}
 
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     <div className="space-y-2">
-                                        <Label htmlFor="quantity_movement">
-                                            Cantidad{' '}
-                                            <span className="text-destructive">*</span>
-                                        </Label>
-                                        <Input
-                                            id="quantity_movement"
-                                            name="quantity_movement"
-                                            type="number"
-                                            min="1"
-                                            value={quantity}
-                                            onChange={(e) => setQuantity(e.target.value)}
-                                            required
-                                            autoFocus
-                                        />
-                                        {isStockInsufficient && (
-                                            <p className="text-sm text-amber-600 dark:text-amber-400">
-                                                Stock insuficiente. Disponible: {currentStock}
-                                            </p>
-                                        )}
-                                        <InputError message={errors.quantity_movement} />
-                                    </div>
-
-                                    <div className="space-y-2">
                                         <Label htmlFor="reference_movement">
-                                            Referencia
+                                            Referencia (compartida)
                                         </Label>
                                         <Input
                                             id="reference_movement"
@@ -179,27 +175,35 @@ export default function MovementsCreate({
                                         />
                                         <InputError message={errors.reference_movement} />
                                     </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="notes_movement">
+                                            Notas (compartidas)
+                                        </Label>
+                                        <Textarea
+                                            id="notes_movement"
+                                            name="notes_movement"
+                                            placeholder="Detalles del lote de movimientos..."
+                                            rows={3}
+                                        />
+                                        <InputError message={errors.notes_movement} />
+                                    </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="notes_movement">Notas</Label>
-                                    <Textarea
-                                        id="notes_movement"
-                                        name="notes_movement"
-                                        placeholder="Detalles del movimiento..."
-                                        rows={3}
-                                    />
-                                    <InputError message={errors.notes_movement} />
-                                </div>
+                                {errors.movements && typeof errors.movements === 'string' && (
+                                    <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                                        {errors.movements}
+                                    </div>
+                                )}
 
                                 <div className="flex items-center gap-3">
                                     <Button
                                         type="submit"
-                                        disabled={processing || isStockInsufficient}
+                                        disabled={processing || isSubmitDisabled}
                                     >
                                         {processing
                                             ? 'Registrando...'
-                                            : 'Registrar movimiento'}
+                                            : `Registrar ${summary.total === 1 ? 'movimiento' : `${summary.total} movimientos`}`}
                                     </Button>
                                     <Button type="button" variant="outline" onClick={back}>
                                         Cancelar
