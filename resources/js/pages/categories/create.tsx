@@ -113,7 +113,7 @@ export default function CategoriesCreate({
 
 CategoriesCreate.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Categorías', href: categories.index.url() },
         { title: 'Nueva', href: categories.create.url() },
     ],

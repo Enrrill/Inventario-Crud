@@ -68,7 +68,7 @@ function DashboardSkeleton() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {Array.from({ length: 4 }).map((_, i) => (
+                                {Array.from({ length: 3 }).map((_, i) => (
                                     <div key={`mov-skeleton-${i}`} className="flex items-center justify-between">
                                         <div className="space-y-1">
                                             <Skeleton className="h-4 w-32" />
@@ -87,7 +87,7 @@ function DashboardSkeleton() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {Array.from({ length: 4 }).map((_, i) => (
+                                {Array.from({ length: 5 }).map((_, i) => (
                                     <div key={`stock-skeleton-${i}`} className="flex items-center justify-between">
                                         <div className="space-y-1">
                                             <Skeleton className="h-4 w-36" />
@@ -266,7 +266,7 @@ export default function Dashboard({
 Dashboard.layout = {
     breadcrumbs: [
         {
-            title: 'Dashboard',
+            title: 'StockNow',
             href: dashboard(),
             icon: HomeIcon,
         },

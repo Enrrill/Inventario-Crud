@@ -118,7 +118,7 @@ export default function SuppliersEdit({ supplier }: SuppliersEditProps) {
 
 SuppliersEdit.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Proveedores', href: suppliers.index.url() },
         { title: 'Editar', href: '' },
     ],

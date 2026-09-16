@@ -119,7 +119,7 @@ export default function CategoriesEdit({
 
 CategoriesEdit.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Categorías', href: categories.index.url() },
         { title: 'Editar', href: '' },
     ],

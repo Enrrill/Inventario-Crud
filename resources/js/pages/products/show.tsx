@@ -33,7 +33,7 @@ export default function ProductsShow({ product }: ProductsShowProps) {
 
     setLayoutProps({
         breadcrumbs: [
-            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
             { title: 'Productos', href: products.index.url() },
             { title: product.name_product, href: products.show.url(product.id) },
         ],
@@ -251,7 +251,7 @@ export default function ProductsShow({ product }: ProductsShowProps) {
 
 ProductsShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Productos', href: products.index.url() },
     ],
 };

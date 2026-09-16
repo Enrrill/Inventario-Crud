@@ -17,7 +17,7 @@ export default function MovementsShow({ movement }: MovementsShowProps) {
 
     setLayoutProps({
         breadcrumbs: [
-            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
             { title: 'Movimientos', href: movements.index.url() },
             { title: `Movimiento #${movement.id}`, href: movements.show.url(movement.id) },
         ],
@@ -147,7 +147,7 @@ export default function MovementsShow({ movement }: MovementsShowProps) {
 
 MovementsShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Movimientos', href: movements.index.url() },
         { title: 'Detalle', href: '' },
     ],

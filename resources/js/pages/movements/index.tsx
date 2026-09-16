@@ -260,7 +260,7 @@ export default function MovementsIndex({
 
 MovementsIndex.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Movimientos', href: movements.index.url() },
     ],
 };

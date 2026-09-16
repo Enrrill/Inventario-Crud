@@ -113,7 +113,7 @@ export default function SuppliersCreate() {
 
 SuppliersCreate.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Proveedores', href: suppliers.index.url() },
         { title: 'Nuevo', href: suppliers.create.url() },
     ],

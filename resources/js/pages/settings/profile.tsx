@@ -151,7 +151,7 @@ export default function Profile({
 
 Profile.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Perfil', href: edit() },
     ],
 };

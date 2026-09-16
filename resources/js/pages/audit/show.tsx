@@ -91,7 +91,7 @@ export default function AuditShow({ log, batchSiblings = [] }: AuditShowProps) {
 
     setLayoutProps({
         breadcrumbs: [
-            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
             { title: 'Auditoría', href: audit.index.url() },
             { title: `Registro #${log.id}`, href: audit.show.url(log.id) },
         ],
@@ -262,7 +262,7 @@ export default function AuditShow({ log, batchSiblings = [] }: AuditShowProps) {
 
 AuditShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Auditoría', href: audit.index.url() },
     ],
 };

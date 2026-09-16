@@ -28,7 +28,7 @@ export default function CategoriesShow({ category }: CategoriesShowProps) {
 
     setLayoutProps({
         breadcrumbs: [
-            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
             { title: 'Categorías', href: categories.index.url() },
             { title: category.name_category, href: categories.show.url(category.id) },
         ],
@@ -218,7 +218,7 @@ export default function CategoriesShow({ category }: CategoriesShowProps) {
 
 CategoriesShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Categorías', href: categories.index.url() },
     ],
 };

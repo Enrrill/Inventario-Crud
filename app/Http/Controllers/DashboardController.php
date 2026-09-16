@@ -25,13 +25,13 @@ class DashboardController extends Controller
 
         $recentMovements = StockMovement::with('product', 'user')
             ->latest('created_at')
-            ->limit(5)
+            ->limit(3)
             ->get();
 
         $lowStockProducts = Product::with('category')
             ->lowStock()
             ->active()
-            ->limit(10)
+            ->limit(5)
             ->get();
 
         return Inertia::render('dashboard', [

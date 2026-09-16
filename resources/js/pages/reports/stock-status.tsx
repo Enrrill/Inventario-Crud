@@ -330,7 +330,7 @@ export default function ReportsStockStatus({
 
 ReportsStockStatus.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Reportes', href: reports.index.url() },
         { title: 'Estado de Stock', href: '' },
     ],

@@ -264,7 +264,7 @@ export default function ProductsEdit({
 
 ProductsEdit.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Productos', href: products.index.url() },
         { title: 'Editar', href: '' },
     ],

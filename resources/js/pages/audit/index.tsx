@@ -536,7 +536,7 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
 
 AuditIndex.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Auditoría', href: audit.index.url() },
     ],
 };

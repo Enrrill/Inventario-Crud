@@ -134,7 +134,7 @@ export default function UsersCreate() {
 
 UsersCreate.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Usuarios', href: users.index.url() },
         { title: 'Nuevo', href: users.create.url() },
     ],

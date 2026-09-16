@@ -312,7 +312,7 @@ export default function ReportsInventory({
 
 ReportsInventory.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Reportes', href: reports.index.url() },
         { title: 'Inventario', href: '' },
     ],

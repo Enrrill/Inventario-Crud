@@ -204,7 +204,7 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
 
 UsersIndex.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Usuarios', href: users.index.url() },
     ],
 };

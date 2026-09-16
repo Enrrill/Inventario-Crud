@@ -69,7 +69,7 @@ export default function Appearance() {
 
 Appearance.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Apariencia', href: editAppearance() },
     ],
 };

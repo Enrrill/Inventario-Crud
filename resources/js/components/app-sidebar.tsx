@@ -26,7 +26,7 @@ import type { NavItem, NavItemGroup } from '@/types';
 
 const inventoryNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'StockNow',
         href: dashboard(),
         icon: LayoutGrid,
     },

@@ -265,7 +265,7 @@ export default function ReportsMovements({
 
 ReportsMovements.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Reportes', href: reports.index.url() },
         { title: 'Movimientos', href: '' },
     ],

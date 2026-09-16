@@ -27,7 +27,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
 
     setLayoutProps({
         breadcrumbs: [
-            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
             { title: 'Proveedores', href: suppliers.index.url() },
             { title: supplier.name_supplier, href: suppliers.show.url(supplier.id) },
         ],
@@ -197,7 +197,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
 
 SuppliersShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Proveedores', href: suppliers.index.url() },
     ],
 };

@@ -137,7 +137,7 @@ export default function UsersEdit({ user }: UsersEditProps) {
 
 UsersEdit.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Usuarios', href: users.index.url() },
         { title: 'Editar', href: '' },
     ],

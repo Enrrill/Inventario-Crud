@@ -40,7 +40,7 @@ export default function UsersShow({ user }: UsersShowProps) {
 
     setLayoutProps({
         breadcrumbs: [
-            { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+            { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
             { title: 'Usuarios', href: users.index.url() },
             { title: user.name, href: users.show.url(user.id) },
         ],
@@ -184,7 +184,7 @@ export default function UsersShow({ user }: UsersShowProps) {
 
 UsersShow.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Usuarios', href: users.index.url() },
     ],
 };

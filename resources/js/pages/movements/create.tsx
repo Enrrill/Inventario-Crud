@@ -220,7 +220,7 @@ export default function MovementsCreate({ products, types }: MovementsCreateProp
 
 MovementsCreate.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Movimientos', href: movements.index.url() },
         { title: 'Nuevo', href: '' },
     ],

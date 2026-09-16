@@ -243,7 +243,7 @@ export default function ProductsCreate({
 
 ProductsCreate.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+        { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
         { title: 'Productos', href: products.index.url() },
         { title: 'Nuevo', href: products.create.url() },
     ],
