@@ -15,15 +15,26 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request): Response
     {
+        $user = $request->user();
+        $isAdmin = $user->isAdmin();
+
         $stats = [
             'total_products' => Product::active()->count(),
             'low_stock_products' => Product::lowStock()->active()->count(),
             'total_categories' => Category::count(),
             'total_suppliers' => Supplier::count(),
-            'inventory_value' => Product::active()->sum(DB::raw('current_stock_product * unit_price_product')),
+            'inventory_value' => $isAdmin
+                ? Product::active()->sum(DB::raw('current_stock_product * unit_price_product'))
+                : null,
         ];
 
-        $recentMovements = StockMovement::with('product', 'user')
+        $movementsQuery = StockMovement::with('product', 'user:id,name');
+
+        if (! $isAdmin) {
+            $movementsQuery->where('user_id', $user->id);
+        }
+
+        $recentMovements = $movementsQuery
             ->latest('created_at')
             ->limit(3)
             ->get();
@@ -38,6 +49,7 @@ class DashboardController extends Controller
             'stats' => $stats,
             'recentMovements' => $recentMovements,
             'lowStockProducts' => $lowStockProducts,
+            'isAdmin' => $isAdmin,
         ]);
     }
 }

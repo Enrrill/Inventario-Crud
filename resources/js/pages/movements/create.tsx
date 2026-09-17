@@ -19,6 +19,7 @@ const MAX_MOVEMENTS = 20;
 type MovementsCreateProps = {
     products: Product[];
     types: StockMovementTypeOption[];
+    isAdmin: boolean;
 };
 
 function createEmptyRow(): MovementFormData {
@@ -29,7 +30,7 @@ function createEmptyRow(): MovementFormData {
     };
 }
 
-export default function MovementsCreate({ products, types }: MovementsCreateProps) {
+export default function MovementsCreate({ products, types, isAdmin }: MovementsCreateProps) {
     const back = useBackNavigation(movements.index.url());
 
     const [rows, setRows] = useState<MovementFormData[]>([createEmptyRow()]);
@@ -74,7 +75,7 @@ export default function MovementsCreate({ products, types }: MovementsCreateProp
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <PageHeader
                     title="Registrar Movimientos"
-                    description="Agregar múltiples entradas, salidas o ajustes de stock en un solo lote"
+                    description={isAdmin ? "Agregar múltiples entradas, salidas o ajustes de stock en un solo lote" : "Agregar múltiples entradas o salidas de stock en un solo lote"}
                 >
                     <Button variant="outline" onClick={back}>
                         <ArrowLeftIcon className="size-4" />

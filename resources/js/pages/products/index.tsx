@@ -40,6 +40,7 @@ type ProductsIndexProps = {
         low_stock?: string;
         inactive?: string;
     };
+    isAdmin: boolean;
 };
 
 function formatCurrency(value: number) {
@@ -53,6 +54,7 @@ export default function ProductsIndex({
     products: pagination,
     categories,
     suppliers,
+    isAdmin,
 }: ProductsIndexProps) {
     const [view, setView] = useLocalStorage<'list' | 'grid'>(
         'products-view',
@@ -137,23 +139,24 @@ export default function ProductsIndex({
             header: 'Proveedor',
             cell: ({ row }) =>
                 row.original.supplier ? (
-                    <Link
-                        href={suppliersRoute.show.url(row.original.supplier.id)}
-                        className="hover:text-primary text-muted-foreground"
-                    >
+                    <span className="text-muted-foreground">
                         {row.original.supplier.name_supplier}
-                    </Link>
+                    </span>
                 ) : (
                     <span className="text-muted-foreground">—</span>
                 ),
         },
-        {
-            accessorKey: 'unit_price_product',
-            header: 'Precio',
-            cell: ({ row }) => (
-                <span>{formatCurrency(row.original.unit_price_product)}</span>
-            ),
-        },
+        ...(isAdmin
+            ? [
+                  {
+                      accessorKey: 'unit_price_product',
+                      header: 'Precio',
+                      cell: ({ row }) => (
+                          <span>{formatCurrency(row.original.unit_price_product)}</span>
+                      ),
+                  },
+              ]
+            : []),
         {
             accessorKey: 'current_stock_product',
             header: 'Stock',
@@ -171,37 +174,41 @@ export default function ProductsIndex({
                 <StatusBadge active={row.original.is_active_product} />
             ),
         },
-        {
-            id: 'actions',
-            header: 'Acciones',
-            meta: { className: 'text-center' },
-            cell: ({ row }) => (
-                <div className="flex items-center justify-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            router.get(products.edit.url(row.original.id));
-                        }}
-                    >
-                        <PencilIcon className="size-4" />
-                        <span className="sr-only">Editar</span>
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteProduct(row.original);
-                        }}
-                    >
-                        <Trash2Icon className="text-destructive size-4" />
-                        <span className="sr-only">Eliminar</span>
-                    </Button>
-                </div>
-            ),
-        },
+        ...(isAdmin
+            ? [
+                  {
+                      id: 'actions',
+                      header: 'Acciones',
+                      meta: { className: 'text-center' },
+                      cell: ({ row }) => (
+                          <div className="flex items-center justify-center gap-1">
+                              <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  onClick={(e) => {
+                                      e.stopPropagation();
+                                      router.get(products.edit.url(row.original.id));
+                                  }}
+                              >
+                                  <PencilIcon className="size-4" />
+                                  <span className="sr-only">Editar</span>
+                              </Button>
+                              <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  onClick={(e) => {
+                                      e.stopPropagation();
+                                      setDeleteProduct(row.original);
+                                  }}
+                              >
+                                  <Trash2Icon className="text-destructive size-4" />
+                                  <span className="sr-only">Eliminar</span>
+                              </Button>
+                          </div>
+                      ),
+                  },
+              ]
+            : []),
     ];
 
     return (
@@ -212,12 +219,14 @@ export default function ProductsIndex({
                     title="Productos"
                     description="Gestión de productos del inventario"
                 >
-                    <Button asChild>
-                        <Link href={products.create.url()}>
-                            <PlusIcon className="size-4" />
-                            Nuevo producto
-                        </Link>
-                    </Button>
+                    {isAdmin && (
+                        <Button asChild>
+                            <Link href={products.create.url()}>
+                                <PlusIcon className="size-4" />
+                                Nuevo producto
+                            </Link>
+                        </Button>
+                    )}
                 </PageHeader>
 
                 <FilterBar>
@@ -328,11 +337,13 @@ export default function ProductsIndex({
                                                             {product.category?.name_category ?? 'Sin categoría'}
                                                         </p>
                                                         <div className="flex items-center justify-between pt-2">
-                                                            <span className="font-bold">
-                                                                {formatCurrency(
-                                                                    product.unit_price_product,
-                                                                )}
-                                                            </span>
+                                                            {isAdmin && (
+                                                                <span className="font-bold">
+                                                                    {formatCurrency(
+                                                                        product.unit_price_product,
+                                                                    )}
+                                                                </span>
+                                                            )}
                                                             <StockBadge
                                                                 currentStock={
                                                                     product.current_stock_product

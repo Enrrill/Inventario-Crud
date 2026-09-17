@@ -16,7 +16,9 @@ class ProductController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = Product::with('category', 'supplier')
+        $isAdmin = $request->user()->isAdmin();
+
+        $query = Product::with('category', 'supplier:id,name_supplier')
             ->orderBy('name_product');
 
         if ($request->filled('search')) {
@@ -52,6 +54,7 @@ class ProductController extends Controller
             'categories' => $categories,
             'suppliers' => $suppliers,
             'filters' => $request->only(['search', 'category_id', 'supplier_id', 'low_stock', 'inactive', 'per_page']),
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -75,12 +78,15 @@ class ProductController extends Controller
         return to_route('products.index');
     }
 
-    public function show(Product $product): Response
+    public function show(Product $product, Request $request): Response
     {
-        $product->load('category', 'supplier');
+        $isAdmin = $request->user()->isAdmin();
+
+        $product->load('category', 'supplier:id,name_supplier');
 
         return Inertia::render('products/show', [
             'product' => $product,
+            'isAdmin' => $isAdmin,
         ]);
     }
 

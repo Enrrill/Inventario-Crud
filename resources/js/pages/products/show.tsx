@@ -18,6 +18,7 @@ type ProductsShowProps = {
         category?: { id: number; name_category: string };
         supplier?: { id: number; name_supplier: string };
     };
+    isAdmin: boolean;
 };
 
 function formatCurrency(value: number) {
@@ -27,7 +28,7 @@ function formatCurrency(value: number) {
     }).format(value);
 }
 
-export default function ProductsShow({ product }: ProductsShowProps) {
+export default function ProductsShow({ product, isAdmin }: ProductsShowProps) {
     const [showDelete, setShowDelete] = useState(false);
     const back = useBackNavigation(products.index.url());
 
@@ -60,19 +61,23 @@ export default function ProductsShow({ product }: ProductsShowProps) {
                         <ArrowLeftIcon className="size-4" />
                         Volver
                     </Button>
-                    <Button variant="outline" asChild>
-                        <Link href={products.edit.url(product.id)}>
-                            <PencilIcon className="size-4" />
-                            Editar
-                        </Link>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        onClick={() => setShowDelete(true)}
-                    >
-                        <Trash2Icon className="text-destructive size-4" />
-                        Eliminar
-                    </Button>
+                    {isAdmin && (
+                        <>
+                            <Button variant="outline" asChild>
+                                <Link href={products.edit.url(product.id)}>
+                                    <PencilIcon className="size-4" />
+                                    Editar
+                                </Link>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowDelete(true)}
+                            >
+                                <Trash2Icon className="text-destructive size-4" />
+                                Eliminar
+                            </Button>
+                        </>
+                    )}
                 </PageHeader>
 
                 <div className="grid gap-4 lg:grid-cols-3">
@@ -147,14 +152,16 @@ export default function ProductsShow({ product }: ProductsShowProps) {
                                     </div>
                                 </div>
                                 <div className="space-y-3">
-                                    <div>
-                                        <p className="text-muted-foreground text-sm">
-                                            Precio unitario
-                                        </p>
-                                        <p className="text-2xl font-bold">
-                                            {formatCurrency(product.unit_price_product)}
-                                        </p>
-                                    </div>
+                                    {isAdmin && (
+                                        <div>
+                                            <p className="text-muted-foreground text-sm">
+                                                Precio unitario
+                                            </p>
+                                            <p className="text-2xl font-bold">
+                                                {formatCurrency(product.unit_price_product)}
+                                            </p>
+                                        </div>
+                                    )}
                                     <div>
                                         <p className="text-muted-foreground text-sm">
                                             Unidad de medida
@@ -221,17 +228,19 @@ export default function ProductsShow({ product }: ProductsShowProps) {
                                     showValue={false}
                                 />
                             </div>
-                            <div className="text-center">
-                                <p className="text-muted-foreground text-sm">
-                                    Valor en inventario
-                                </p>
-                                <p className="text-xl font-bold">
-                                    {formatCurrency(
-                                        product.current_stock_product *
-                                            product.unit_price_product,
-                                    )}
-                                </p>
-                            </div>
+                            {isAdmin && (
+                                <div className="text-center">
+                                    <p className="text-muted-foreground text-sm">
+                                        Valor en inventario
+                                    </p>
+                                    <p className="text-xl font-bold">
+                                        {formatCurrency(
+                                            product.current_stock_product *
+                                                product.unit_price_product,
+                                        )}
+                                    </p>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>

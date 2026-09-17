@@ -74,7 +74,14 @@ class ReportController extends Controller
 
     public function movements(ReportRequest $request): Response
     {
-        $query = StockMovement::with('product', 'user');
+        $user = $request->user();
+        $isAdmin = $user->isAdmin();
+
+        $query = StockMovement::with('product', 'user:id,name');
+
+        if (! $isAdmin) {
+            $query->where('user_id', $user->id);
+        }
 
         if ($dateFrom = $request->input('date_from')) {
             $query->where('created_at', '>=', $dateFrom);
@@ -92,19 +99,25 @@ class ReportController extends Controller
             $query->where('type_movement', $typeMovement);
         }
 
-        if ($userId = $request->input('user_id')) {
+        if ($isAdmin && $userId = $request->input('user_id')) {
             $query->where('user_id', $userId);
         }
 
         $perPage = max(1, min(100, $request->integer('per_page', 25)));
         $movements = $query->latest('created_at')->paginate($perPage)->withQueryString();
 
-        $summaryQuery = StockMovement::query()
+        $summaryQuery = StockMovement::query();
+
+        if (! $isAdmin) {
+            $summaryQuery->where('user_id', $user->id);
+        }
+
+        $summaryQuery
             ->when($request->filled('date_from'), fn ($q) => $q->where('created_at', '>=', $request->input('date_from')))
             ->when($request->filled('date_to'), fn ($q) => $q->where('created_at', '<=', $request->input('date_to').' 23:59:59'))
             ->when($request->filled('product_id'), fn ($q) => $q->where('product_id', $request->input('product_id')))
             ->when($request->filled('type_movement'), fn ($q) => $q->where('type_movement', $request->input('type_movement')))
-            ->when($request->filled('user_id'), fn ($q) => $q->where('user_id', $request->input('user_id')));
+            ->when($isAdmin && $request->filled('user_id'), fn ($q) => $q->where('user_id', $request->input('user_id')));
 
         $summary = [
             'total_movements' => (clone $summaryQuery)->count(),
@@ -118,7 +131,8 @@ class ReportController extends Controller
             'movements' => $movements,
             'summary' => $summary,
             'filters' => $request->only(['date_from', 'date_to', 'product_id', 'type_movement', 'user_id', 'per_page']),
-            'users' => User::orderBy('name')->get(['id', 'name']),
+            'users' => $isAdmin ? User::orderBy('name')->get(['id', 'name']) : collect(),
+            'isAdmin' => $isAdmin,
         ]);
     }
 

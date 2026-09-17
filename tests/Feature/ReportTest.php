@@ -13,7 +13,7 @@ test('un usuario autenticado puede ver el indice de reportes', function () {
 });
 
 test('un usuario autenticado puede ver reporte de inventario', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $this->actingAs($user)
         ->get(route('reports.inventory'))
@@ -42,7 +42,7 @@ test('un usuario no autenticado es redirigido al login', function () {
 });
 
 test('reporte de inventario muestra productos', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
     Product::factory()->count(3)->create();
 
     $this->actingAs($user)

@@ -24,6 +24,7 @@ type DashboardProps = {
     stats: DashboardStats;
     recentMovements: StockMovement[];
     lowStockProducts: Product[];
+    isAdmin: boolean;
 };
 
 const formatCurrency = (value: number) =>
@@ -109,6 +110,7 @@ export default function Dashboard({
     stats,
     recentMovements,
     lowStockProducts,
+    isAdmin,
 }: DashboardProps) {
     if (!stats) {
         return <DashboardSkeleton />;
@@ -120,10 +122,10 @@ export default function Dashboard({
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
                 <PageHeader
                     title="Dashboard"
-                    description="Resumen general del sistema de inventario"
+                    description={isAdmin ? 'Resumen general del sistema de inventario' : 'Resumen de tu actividad en el sistema'}
                 />
 
-                <DataGrid className="xl:grid-cols-5">
+                <DataGrid className={isAdmin ? 'xl:grid-cols-5' : 'xl:grid-cols-4'}>
                     <StatCard
                         title="Total Productos"
                         value={stats.total_products}
@@ -140,22 +142,26 @@ export default function Dashboard({
                         value={stats.total_categories}
                         icon={Tags}
                     />
-                    <StatCard
-                        title="Proveedores"
-                        value={stats.total_suppliers}
-                        icon={Truck}
-                    />
-                    <StatCard
-                        title="Valor del Inventario"
-                        value={formatCurrency(stats.inventory_value)}
-                        icon={DollarSign}
-                    />
+                    {isAdmin && (
+                        <StatCard
+                            title="Proveedores"
+                            value={stats.total_suppliers}
+                            icon={Truck}
+                        />
+                    )}
+                    {isAdmin && stats.inventory_value !== null && (
+                        <StatCard
+                            title="Valor del Inventario"
+                            value={formatCurrency(stats.inventory_value)}
+                            icon={DollarSign}
+                        />
+                    )}
                 </DataGrid>
 
                 <div className="grid gap-6 lg:grid-cols-2">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Últimos Movimientos</CardTitle>
+                            <CardTitle>{isAdmin ? 'Últimos Movimientos' : 'Mis Últimos Movimientos'}</CardTitle>
                             <Link
                                 href={movements.index.url()}
                                 className="text-muted-foreground hover:text-primary text-sm font-medium"
