@@ -20,9 +20,10 @@ type CategoriesShowProps = {
         children?: Category[];
         products?: Product[];
     };
+    isAdmin: boolean;
 };
 
-export default function CategoriesShow({ category }: CategoriesShowProps) {
+export default function CategoriesShow({ category, isAdmin }: CategoriesShowProps) {
     const [showDelete, setShowDelete] = useState(false);
     const back = useBackNavigation(categories.index.url());
 
@@ -92,19 +93,23 @@ export default function CategoriesShow({ category }: CategoriesShowProps) {
                         <ArrowLeftIcon className="size-4" />
                         Volver
                     </Button>
-                    <Button variant="outline" asChild>
-                        <Link href={categories.edit.url(category.id)}>
-                            <PencilIcon className="size-4" />
-                            Editar
-                        </Link>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        onClick={() => setShowDelete(true)}
-                    >
-                        <Trash2Icon className="text-destructive size-4" />
-                        Eliminar
-                    </Button>
+                    {isAdmin && (
+                        <>
+                            <Button variant="outline" asChild>
+                                <Link href={categories.edit.url(category.id)}>
+                                    <PencilIcon className="size-4" />
+                                    Editar
+                                </Link>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowDelete(true)}
+                            >
+                                <Trash2Icon className="text-destructive size-4" />
+                                Eliminar
+                            </Button>
+                        </>
+                    )}
                 </PageHeader>
 
                 <div className="grid gap-4 lg:grid-cols-3">

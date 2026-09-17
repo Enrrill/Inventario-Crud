@@ -294,10 +294,14 @@ export default function ProductsIndex({
                         onPerPageChange={(perPage) => setQueryFilters({ per_page: String(perPage) })}
                         emptyTitle="Sin productos"
                         emptyDescription="No se encontraron productos. Crea uno nuevo para comenzar."
-                        emptyAction={{
-                            label: 'Nuevo producto',
-                            href: products.create.url(),
-                        }}
+                    emptyAction={
+                        isAdmin
+                            ? {
+                                  label: 'Nuevo producto',
+                                  href: products.create.url(),
+                              }
+                            : undefined
+                    }
                     />
                 ) : (
                     <div className="space-y-4">
@@ -306,10 +310,14 @@ export default function ProductsIndex({
                                 icon={PlusIcon}
                                 title="Sin productos"
                                 description="No se encontraron productos. Crea uno nuevo para comenzar."
-                                action={{
-                                    label: 'Nuevo producto',
-                                    href: products.create.url(),
-                                }}
+                                action={
+                                    isAdmin
+                                        ? {
+                                              label: 'Nuevo producto',
+                                              href: products.create.url(),
+                                          }
+                                        : undefined
+                                }
                             />
                         ) : (
                             <>

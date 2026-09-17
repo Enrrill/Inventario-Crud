@@ -4,16 +4,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/inventory/page-header';
 import reports from '@/routes/reports';
 
-export default function ReportsIndex() {
+type ReportsIndexProps = {
+    isAdmin: boolean;
+};
+
+export default function ReportsIndex({ isAdmin }: ReportsIndexProps) {
     const reportTypes = [
-        {
-            title: 'Reporte de Inventario',
-            description: 'Consulta detallada de todos los productos, su valor y distribución por categoría y proveedor.',
-            icon: Package,
-            href: reports.inventory.url(),
-            color: 'text-blue-600 dark:text-blue-400',
-            bg: 'bg-blue-50 dark:bg-blue-900/20',
-        },
+        ...(isAdmin
+            ? [
+                  {
+                      title: 'Reporte de Inventario',
+                      description: 'Consulta detallada de todos los productos, su valor y distribución por categoría y proveedor.',
+                      icon: Package,
+                      href: reports.inventory.url(),
+                      color: 'text-blue-600 dark:text-blue-400',
+                      bg: 'bg-blue-50 dark:bg-blue-900/20',
+                  },
+              ]
+            : []),
         {
             title: 'Reporte de Movimientos',
             description: 'Análisis de movimientos de entrada, salida y ajuste con filtros por fecha y tipo.',

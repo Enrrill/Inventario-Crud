@@ -16,9 +16,10 @@ import type { Category, PaginatedData } from '@/types/inventory';
 type CategoriesIndexProps = {
     categories: PaginatedData<Category>;
     filters: { search?: string; per_page?: string };
+    isAdmin: boolean;
 };
 
-export default function CategoriesIndex({ categories: pagination }: CategoriesIndexProps) {
+export default function CategoriesIndex({ categories: pagination, isAdmin }: CategoriesIndexProps) {
     const [filters, setFilters] = useQueryParams<{ search: string; per_page: string }>();
     const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
 
@@ -76,37 +77,41 @@ export default function CategoriesIndex({ categories: pagination }: CategoriesIn
                 </span>
             ),
         },
-        {
-            id: 'actions',
-            header: 'Acciones',
-            meta: { className: 'text-center' },
-            cell: ({ row }) => (
-                <div className="flex items-center justify-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            router.get(categories.edit.url(row.original.id));
-                        }}
-                    >
-                        <PencilIcon className="size-4" />
-                        <span className="sr-only">Editar</span>
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteCategory(row.original);
-                        }}
-                    >
-                        <Trash2Icon className="text-destructive size-4" />
-                        <span className="sr-only">Eliminar</span>
-                    </Button>
-                </div>
-            ),
-        },
+        ...(isAdmin
+            ? [
+                  {
+                      id: 'actions',
+                      header: 'Acciones',
+                      meta: { className: 'text-center' },
+                      cell: ({ row }) => (
+                          <div className="flex items-center justify-center gap-1">
+                              <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  onClick={(e) => {
+                                      e.stopPropagation();
+                                      router.get(categories.edit.url(row.original.id));
+                                  }}
+                              >
+                                  <PencilIcon className="size-4" />
+                                  <span className="sr-only">Editar</span>
+                              </Button>
+                              <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  onClick={(e) => {
+                                      e.stopPropagation();
+                                      setDeleteCategory(row.original);
+                                  }}
+                              >
+                                  <Trash2Icon className="text-destructive size-4" />
+                                  <span className="sr-only">Eliminar</span>
+                              </Button>
+                          </div>
+                      ),
+                  },
+              ]
+            : []),
     ];
 
     return (
@@ -117,12 +122,14 @@ export default function CategoriesIndex({ categories: pagination }: CategoriesIn
                     title="Categorías"
                     description="Gestión de categorías del inventario"
                 >
-                    <Button asChild>
-                        <Link href={categories.create.url()}>
-                            <PlusIcon className="size-4" />
-                            Nueva categoría
-                        </Link>
-                    </Button>
+                    {isAdmin && (
+                        <Button asChild>
+                            <Link href={categories.create.url()}>
+                                <PlusIcon className="size-4" />
+                                Nueva categoría
+                            </Link>
+                        </Button>
+                    )}
                 </PageHeader>
 
                 <FilterBar>
@@ -142,10 +149,14 @@ export default function CategoriesIndex({ categories: pagination }: CategoriesIn
                     onPerPageChange={(perPage) => setFilters({ per_page: String(perPage) })}
                     emptyTitle="Sin categorías"
                     emptyDescription="No se encontraron categorías. Crea una nueva para comenzar."
-                    emptyAction={{
-                        label: 'Nueva categoría',
-                        href: categories.create.url(),
-                    }}
+                    emptyAction={
+                        isAdmin
+                            ? {
+                                  label: 'Nueva categoría',
+                                  href: categories.create.url(),
+                              }
+                            : undefined
+                    }
                 />
 
                 <ConfirmDialog

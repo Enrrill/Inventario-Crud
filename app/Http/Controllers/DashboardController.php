@@ -26,6 +26,11 @@ class DashboardController extends Controller
             'inventory_value' => $isAdmin
                 ? Product::active()->sum(DB::raw('current_stock_product * unit_price_product'))
                 : null,
+            'my_movements_today' => $isAdmin
+                ? null
+                : StockMovement::where('user_id', $user->id)
+                    ->whereDate('created_at', now()->toDateString())
+                    ->count(),
         ];
 
         $movementsQuery = StockMovement::with('product', 'user:id,name');

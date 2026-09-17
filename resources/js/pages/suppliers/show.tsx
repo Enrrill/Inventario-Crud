@@ -19,9 +19,10 @@ type SuppliersShowProps = {
     supplier: Supplier & {
         products?: Product[];
     };
+    isAdmin: boolean;
 };
 
-export default function SuppliersShow({ supplier }: SuppliersShowProps) {
+export default function SuppliersShow({ supplier, isAdmin }: SuppliersShowProps) {
     const [showDelete, setShowDelete] = useState(false);
     const back = useBackNavigation(suppliers.index.url());
 
@@ -103,19 +104,23 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                         <ArrowLeftIcon className="size-4" />
                         Volver
                     </Button>
-                    <Button variant="outline" asChild>
-                        <Link href={suppliers.edit.url(supplier.id)}>
-                            <PencilIcon className="size-4" />
-                            Editar
-                        </Link>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        onClick={() => setShowDelete(true)}
-                    >
-                        <Trash2Icon className="text-destructive size-4" />
-                        Eliminar
-                    </Button>
+                    {isAdmin && (
+                        <>
+                            <Button variant="outline" asChild>
+                                <Link href={suppliers.edit.url(supplier.id)}>
+                                    <PencilIcon className="size-4" />
+                                    Editar
+                                </Link>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowDelete(true)}
+                            >
+                                <Trash2Icon className="text-destructive size-4" />
+                                Eliminar
+                            </Button>
+                        </>
+                    )}
                 </PageHeader>
 
                 <div className="grid gap-4 lg:grid-cols-3">
@@ -134,24 +139,28 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                                     {supplier.contact_name_supplier ?? '—'}
                                 </p>
                             </div>
-                            <div>
-                                <p className="text-muted-foreground text-sm">Email</p>
-                                <p className="font-medium">
-                                    {supplier.email_supplier ?? '—'}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-muted-foreground text-sm">Teléfono</p>
-                                <p className="font-medium">
-                                    {supplier.phone_supplier ?? '—'}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-muted-foreground text-sm">Dirección</p>
-                                <p className="font-medium">
-                                    {supplier.address_supplier ?? '—'}
-                                </p>
-                            </div>
+                            {isAdmin && (
+                                <>
+                                    <div>
+                                        <p className="text-muted-foreground text-sm">Email</p>
+                                        <p className="font-medium">
+                                            {supplier.email_supplier ?? '—'}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground text-sm">Teléfono</p>
+                                        <p className="font-medium">
+                                            {supplier.phone_supplier ?? '—'}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground text-sm">Dirección</p>
+                                        <p className="font-medium">
+                                            {supplier.address_supplier ?? '—'}
+                                        </p>
+                                    </div>
+                                </>
+                            )}
                             <div>
                                 <p className="text-muted-foreground text-sm">Productos</p>
                                 <p className="font-medium">{supplier.products?.length ?? 0}</p>

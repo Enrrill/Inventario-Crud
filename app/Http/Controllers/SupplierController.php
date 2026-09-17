@@ -14,6 +14,8 @@ class SupplierController extends Controller
 {
     public function index(Request $request): Response
     {
+        $isAdmin = $request->user()->isAdmin();
+
         $query = Supplier::withCount('products')->orderBy('name_supplier');
 
         if ($request->filled('search')) {
@@ -30,6 +32,7 @@ class SupplierController extends Controller
         return Inertia::render('suppliers/index', [
             'suppliers' => $suppliers,
             'filters' => $request->only(['search', 'per_page']),
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -47,12 +50,15 @@ class SupplierController extends Controller
         return to_route('suppliers.index');
     }
 
-    public function show(Supplier $supplier): Response
+    public function show(Supplier $supplier, Request $request): Response
     {
+        $isAdmin = $request->user()->isAdmin();
+
         $supplier->load('products');
 
         return Inertia::render('suppliers/show', [
             'supplier' => $supplier,
+            'isAdmin' => $isAdmin,
         ]);
     }
 

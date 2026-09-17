@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import {
     AlertTriangle,
+    CircleCheckBig,
     DollarSign,
     HomeIcon,
     Package,
@@ -48,8 +49,8 @@ function DashboardSkeleton() {
                     <Skeleton className="h-4 w-64" />
                 </div>
 
-                <DataGrid className="xl:grid-cols-5">
-                    {Array.from({ length: 5 }).map((_, i) => (
+                <DataGrid className={isAdmin ? 'xl:grid-cols-5' : 'xl:grid-cols-4'}>
+                    {Array.from({ length: isAdmin ? 5 : 4 }).map((_, i) => (
                         <Card key={`stat-skeleton-${i}`}>
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between">
@@ -154,6 +155,13 @@ export default function Dashboard({
                             title="Valor del Inventario"
                             value={formatCurrency(stats.inventory_value)}
                             icon={DollarSign}
+                        />
+                    )}
+                    {!isAdmin && stats.my_movements_today !== null && (
+                        <StatCard
+                            title="Mis Movimientos Hoy"
+                            value={stats.my_movements_today}
+                            icon={CircleCheckBig}
                         />
                     )}
                 </DataGrid>

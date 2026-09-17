@@ -86,7 +86,8 @@ export type DashboardStats = {
     low_stock_products: number;
     total_categories: number;
     total_suppliers: number;
-    inventory_value: number;
+    inventory_value: number | null;
+    my_movements_today: number | null;
 };
 
 export type PaginatedData<T> = {

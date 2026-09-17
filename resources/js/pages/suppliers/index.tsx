@@ -15,10 +15,12 @@ import type { PaginatedData, Supplier } from '@/types/inventory';
 type SuppliersIndexProps = {
     suppliers: PaginatedData<Supplier>;
     filters: { search?: string; per_page?: string };
+    isAdmin: boolean;
 };
 
 export default function SuppliersIndex({
     suppliers: pagination,
+    isAdmin,
 }: SuppliersIndexProps) {
     const [filters, setFilters] = useQueryParams<{ search: string; per_page: string }>();
     const [deleteSupplier, setDeleteSupplier] = useState<Supplier | null>(null);
@@ -59,24 +61,28 @@ export default function SuppliersIndex({
                 </span>
             ),
         },
-        {
-            accessorKey: 'email_supplier',
-            header: 'Email',
-            cell: ({ row }) => (
-                <span className="text-muted-foreground">
-                    {row.original.email_supplier ?? '—'}
-                </span>
-            ),
-        },
-        {
-            accessorKey: 'phone_supplier',
-            header: 'Teléfono',
-            cell: ({ row }) => (
-                <span className="text-muted-foreground">
-                    {row.original.phone_supplier ?? '—'}
-                </span>
-            ),
-        },
+        ...(isAdmin
+            ? [
+                  {
+                      accessorKey: 'email_supplier',
+                      header: 'Email',
+                      cell: ({ row }) => (
+                          <span className="text-muted-foreground">
+                              {row.original.email_supplier ?? '—'}
+                          </span>
+                      ),
+                  },
+                  {
+                      accessorKey: 'phone_supplier',
+                      header: 'Teléfono',
+                      cell: ({ row }) => (
+                          <span className="text-muted-foreground">
+                              {row.original.phone_supplier ?? '—'}
+                          </span>
+                      ),
+                  },
+              ]
+            : []),
         {
             accessorKey: 'products_count',
             header: 'Productos',
@@ -86,37 +92,41 @@ export default function SuppliersIndex({
                 </span>
             ),
         },
-        {
-            id: 'actions',
-            header: 'Acciones',
-            meta: { className: 'text-center' },
-            cell: ({ row }) => (
-                <div className="flex items-center justify-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            router.get(suppliers.edit.url(row.original.id));
-                        }}
-                    >
-                        <PencilIcon className="size-4" />
-                        <span className="sr-only">Editar</span>
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteSupplier(row.original);
-                        }}
-                    >
-                        <Trash2Icon className="text-destructive size-4" />
-                        <span className="sr-only">Eliminar</span>
-                    </Button>
-                </div>
-            ),
-        },
+        ...(isAdmin
+            ? [
+                  {
+                      id: 'actions',
+                      header: 'Acciones',
+                      meta: { className: 'text-center' },
+                      cell: ({ row }) => (
+                          <div className="flex items-center justify-center gap-1">
+                              <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  onClick={(e) => {
+                                      e.stopPropagation();
+                                      router.get(suppliers.edit.url(row.original.id));
+                                  }}
+                              >
+                                  <PencilIcon className="size-4" />
+                                  <span className="sr-only">Editar</span>
+                              </Button>
+                              <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  onClick={(e) => {
+                                      e.stopPropagation();
+                                      setDeleteSupplier(row.original);
+                                  }}
+                              >
+                                  <Trash2Icon className="text-destructive size-4" />
+                                  <span className="sr-only">Eliminar</span>
+                              </Button>
+                          </div>
+                      ),
+                  },
+              ]
+            : []),
     ];
 
     return (
@@ -127,12 +137,14 @@ export default function SuppliersIndex({
                     title="Proveedores"
                     description="Gestión de proveedores del inventario"
                 >
-                    <Button asChild>
-                        <Link href={suppliers.create.url()}>
-                            <PlusIcon className="size-4" />
-                            Nuevo proveedor
-                        </Link>
-                    </Button>
+                    {isAdmin && (
+                        <Button asChild>
+                            <Link href={suppliers.create.url()}>
+                                <PlusIcon className="size-4" />
+                                Nuevo proveedor
+                            </Link>
+                        </Button>
+                    )}
                 </PageHeader>
 
                 <FilterBar>
@@ -152,10 +164,14 @@ export default function SuppliersIndex({
                     onPerPageChange={(perPage) => setFilters({ per_page: String(perPage) })}
                     emptyTitle="Sin proveedores"
                     emptyDescription="No se encontraron proveedores. Crea uno nuevo para comenzar."
-                    emptyAction={{
-                        label: 'Nuevo proveedor',
-                        href: suppliers.create.url(),
-                    }}
+                    emptyAction={
+                        isAdmin
+                            ? {
+                                  label: 'Nuevo proveedor',
+                                  href: suppliers.create.url(),
+                              }
+                            : undefined
+                    }
                 />
 
                 <ConfirmDialog

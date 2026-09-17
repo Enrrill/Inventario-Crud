@@ -40,6 +40,7 @@ type ReportsMovementsProps = {
     };
     filters: { date_from?: string; date_to?: string; product_id?: string; type_movement?: string; user_id?: string; per_page?: string };
     users: UserOption[];
+    isAdmin: boolean;
 };
 
 const formatDate = (date: string) =>
@@ -50,6 +51,7 @@ export default function ReportsMovements({
     summary,
     filters,
     users,
+    isAdmin,
 }: ReportsMovementsProps) {
     const back = useBackNavigation(reports.index.url());
     const [queryFilters, setQueryFilters, clearFilters] = useQueryParams<{
@@ -231,16 +233,18 @@ export default function ReportsMovements({
                             <SelectItem value="all">Todos los tipos</SelectItem>
                             <SelectItem value="entry">Entradas</SelectItem>
                             <SelectItem value="exit">Salidas</SelectItem>
-                            <SelectItem value="adjustment">Ajustes</SelectItem>
+                            {isAdmin && <SelectItem value="adjustment">Ajustes</SelectItem>}
                         </SelectContent>
                     </Select>
-                    <SearchableSelect
-                        options={userOptions}
-                        value={queryFilters.user_id ?? 'all'}
-                        onValueChange={(v) => handleFilterChange('user_id', v)}
-                        placeholder="Todos los usuarios"
-                        className="w-full sm:w-56"
-                    />
+                    {isAdmin && (
+                        <SearchableSelect
+                            options={userOptions}
+                            value={queryFilters.user_id ?? 'all'}
+                            onValueChange={(v) => handleFilterChange('user_id', v)}
+                            placeholder="Todos los usuarios"
+                            className="w-full sm:w-56"
+                        />
+                    )}
                     {hasActiveFilters && (
                         <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 shrink-0">
                             <XIcon className="size-4" />

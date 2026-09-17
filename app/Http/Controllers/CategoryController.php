@@ -15,6 +15,8 @@ class CategoryController extends Controller
 {
     public function index(Request $request): Response
     {
+        $isAdmin = $request->user()->isAdmin();
+
         $query = Category::with('parent', 'children', 'products')
             ->withCount('products');
 
@@ -34,6 +36,7 @@ class CategoryController extends Controller
         return Inertia::render('categories/index', [
             'categories' => $categories,
             'filters' => $request->only(['search', 'per_page']),
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -57,12 +60,15 @@ class CategoryController extends Controller
         return to_route('categories.index');
     }
 
-    public function show(Category $category): Response
+    public function show(Category $category, Request $request): Response
     {
+        $isAdmin = $request->user()->isAdmin();
+
         $category->load('parent', 'children', 'products');
 
         return Inertia::render('categories/show', [
             'category' => $category,
+            'isAdmin' => $isAdmin,
         ]);
     }
 

@@ -9,20 +9,24 @@ use App\Models\StockMovement;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Services\ReportExportService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ReportController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $isAdmin = $request->user()->isAdmin();
+
         $categories = Category::orderBy('name_category')->get();
         $suppliers = Supplier::orderBy('name_supplier')->get();
 
         return Inertia::render('reports/index', [
             'categories' => $categories,
             'suppliers' => $suppliers,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
