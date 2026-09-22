@@ -41,6 +41,7 @@ export default function CategoriesIndex({ categories: pagination, isAdmin }: Cat
         {
             accessorKey: 'name_category',
             header: 'Nombre',
+            meta: { className: 'min-w-[200px]' },
             cell: ({ row }) => (
                 <Link
                     href={categories.show.url(row.original.id)}
@@ -53,8 +54,9 @@ export default function CategoriesIndex({ categories: pagination, isAdmin }: Cat
         {
             accessorKey: 'description_category',
             header: 'Descripción',
+            meta: { className: 'min-w-[250px]' },
             cell: ({ row }) => (
-                <span className="text-muted-foreground line-clamp-1 max-w-[300px]">
+                <span className="text-muted-foreground line-clamp-1">
                     {row.original.description_category ?? '—'}
                 </span>
             ),
@@ -62,6 +64,7 @@ export default function CategoriesIndex({ categories: pagination, isAdmin }: Cat
         {
             accessorKey: 'products_count',
             header: 'Productos',
+            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground">
                     {row.original.products_count}
@@ -71,6 +74,7 @@ export default function CategoriesIndex({ categories: pagination, isAdmin }: Cat
         {
             id: 'children_count',
             header: 'Subcategorías',
+            meta: { className: 'w-32 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground">
                     {row.original.children?.length ?? 0}
@@ -82,7 +86,7 @@ export default function CategoriesIndex({ categories: pagination, isAdmin }: Cat
                   {
                       id: 'actions',
                       header: 'Acciones',
-                      meta: { className: 'text-center' },
+                      meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
                       cell: ({ row }) => (
                           <div className="flex items-center justify-center gap-1">
                               <Button

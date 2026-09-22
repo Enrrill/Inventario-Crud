@@ -101,6 +101,7 @@ export default function ProductsIndex({
         {
             accessorKey: 'sku_product',
             header: 'SKU',
+            meta: { className: 'w-28' },
             cell: ({ row }) => (
                 <span className="font-mono text-sm">
                     {row.original.sku_product}
@@ -110,6 +111,7 @@ export default function ProductsIndex({
         {
             accessorKey: 'name_product',
             header: 'Nombre',
+            meta: { className: 'min-w-[180px]' },
             cell: ({ row }) => (
                 <Link
                     href={products.show.url(row.original.id)}
@@ -122,6 +124,7 @@ export default function ProductsIndex({
         {
             accessorKey: 'category.name_category',
             header: 'Categoría',
+            meta: { className: 'min-w-[140px]' },
             cell: ({ row }) =>
                 row.original.category ? (
                     <Link
@@ -137,6 +140,7 @@ export default function ProductsIndex({
         {
             accessorKey: 'supplier.name_supplier',
             header: 'Proveedor',
+            meta: { className: 'min-w-[140px]' },
             cell: ({ row }) =>
                 row.original.supplier ? (
                     <span className="text-muted-foreground">
@@ -151,6 +155,7 @@ export default function ProductsIndex({
                   {
                       accessorKey: 'unit_price_product',
                       header: 'Precio',
+                      meta: { className: 'w-28 text-right', headerClassName: 'text-right' },
                       cell: ({ row }) => (
                           <span>{formatCurrency(row.original.unit_price_product)}</span>
                       ),
@@ -160,6 +165,7 @@ export default function ProductsIndex({
         {
             accessorKey: 'current_stock_product',
             header: 'Stock',
+            meta: { className: 'w-32 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <StockBadge
                     currentStock={row.original.current_stock_product}
@@ -170,6 +176,7 @@ export default function ProductsIndex({
         {
             accessorKey: 'is_active_product',
             header: 'Estado',
+            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <StatusBadge active={row.original.is_active_product} />
             ),
@@ -179,7 +186,7 @@ export default function ProductsIndex({
                   {
                       id: 'actions',
                       header: 'Acciones',
-                      meta: { className: 'text-center' },
+                      meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
                       cell: ({ row }) => (
                           <div className="flex items-center justify-center gap-1">
                               <Button

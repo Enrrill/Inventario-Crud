@@ -102,6 +102,7 @@ export default function ReportsMovements({
         {
             accessorKey: 'created_at',
             header: 'Fecha',
+            meta: { className: 'w-40' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground text-sm">{formatDate(row.original.created_at)}</span>
             ),
@@ -109,6 +110,7 @@ export default function ReportsMovements({
         {
             accessorKey: 'product',
             header: 'Producto',
+            meta: { className: 'min-w-[200px]' },
             cell: ({ row }) =>
                 row.original.product ? (
                     <Link
@@ -124,12 +126,13 @@ export default function ReportsMovements({
         {
             accessorKey: 'type_movement',
             header: 'Tipo',
+            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => <TypeBadge type={row.original.type_movement} />,
         },
         {
             accessorKey: 'quantity_movement',
             header: 'Cantidad',
-            meta: { className: 'text-center' },
+            meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <span className="font-medium">
                     {row.original.type_movement === 'exit' ? '-' : '+'}
@@ -140,6 +143,7 @@ export default function ReportsMovements({
         {
             accessorKey: 'user',
             header: 'Usuario',
+            meta: { className: 'w-48' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground">{row.original.user?.name ?? '—'}</span>
             ),

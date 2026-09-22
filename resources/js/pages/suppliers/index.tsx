@@ -43,6 +43,7 @@ export default function SuppliersIndex({
         {
             accessorKey: 'name_supplier',
             header: 'Nombre',
+            meta: { className: 'min-w-[200px]' },
             cell: ({ row }) => (
                 <Link
                     href={suppliers.show.url(row.original.id)}
@@ -55,6 +56,7 @@ export default function SuppliersIndex({
         {
             accessorKey: 'contact_name_supplier',
             header: 'Contacto',
+            meta: { className: 'min-w-[180px]' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground">
                     {row.original.contact_name_supplier ?? '—'}
@@ -66,6 +68,7 @@ export default function SuppliersIndex({
                   {
                       accessorKey: 'email_supplier',
                       header: 'Email',
+                      meta: { className: 'min-w-[180px]' },
                       cell: ({ row }) => (
                           <span className="text-muted-foreground">
                               {row.original.email_supplier ?? '—'}
@@ -75,6 +78,7 @@ export default function SuppliersIndex({
                   {
                       accessorKey: 'phone_supplier',
                       header: 'Teléfono',
+                      meta: { className: 'min-w-[140px]' },
                       cell: ({ row }) => (
                           <span className="text-muted-foreground">
                               {row.original.phone_supplier ?? '—'}
@@ -86,6 +90,7 @@ export default function SuppliersIndex({
         {
             accessorKey: 'products_count',
             header: 'Productos',
+            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground">
                     {row.original.products_count}
@@ -97,7 +102,7 @@ export default function SuppliersIndex({
                   {
                       id: 'actions',
                       header: 'Acciones',
-                      meta: { className: 'text-center' },
+                      meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
                       cell: ({ row }) => (
                           <div className="flex items-center justify-center gap-1">
                               <Button

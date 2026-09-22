@@ -84,6 +84,7 @@ export default function MovementsIndex({
         {
             accessorKey: 'created_at',
             header: 'Fecha',
+            meta: { className: 'w-36' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground text-sm">
                     {formatDate(row.original.created_at)}
@@ -93,6 +94,7 @@ export default function MovementsIndex({
         {
             accessorKey: 'product',
             header: 'Producto',
+            meta: { className: 'min-w-[180px]' },
             cell: ({ row }) => (
                 <Link
                     href={productsRoute.show.url(row.original.product_id)}
@@ -105,12 +107,13 @@ export default function MovementsIndex({
         {
             accessorKey: 'type_movement',
             header: 'Tipo',
+            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => <TypeBadge type={row.original.type_movement} />,
         },
         {
             accessorKey: 'quantity_movement',
             header: 'Cantidad',
-            meta: { className: 'text-center' },
+            meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => {
                 const m = row.original;
                 const isEntry = m.type_movement === 'entry';
@@ -134,7 +137,7 @@ export default function MovementsIndex({
         {
             accessorKey: 'previous_stock_movement',
             header: 'Stock Ant.',
-            meta: { className: 'text-center' },
+            meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground text-sm">
                     {row.original.previous_stock_movement}
@@ -144,7 +147,7 @@ export default function MovementsIndex({
         {
             accessorKey: 'new_stock_movement',
             header: 'Stock Nuevo',
-            meta: { className: 'text-center' },
+            meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground text-sm">
                     {row.original.new_stock_movement}
@@ -154,6 +157,7 @@ export default function MovementsIndex({
         {
             accessorKey: 'reference_movement',
             header: 'Ref.',
+            meta: { className: 'min-w-[120px]' },
             cell: ({ row }) => (
                 <span className="text-muted-foreground text-sm">
                     {row.original.reference_movement ?? '—'}
@@ -163,6 +167,7 @@ export default function MovementsIndex({
         {
             accessorKey: 'user',
             header: 'Usuario',
+            meta: { className: 'w-36' },
             cell: ({ row }) => (
                 <span className="text-sm">
                     {row.original.user?.name}
@@ -172,7 +177,7 @@ export default function MovementsIndex({
         {
             id: 'actions',
             header: 'Acciones',
-            meta: { className: 'text-center' },
+            meta: { className: 'w-20 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <div className="flex items-center justify-center gap-1">
                     <Button

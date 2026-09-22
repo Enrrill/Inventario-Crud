@@ -85,6 +85,7 @@ export default function ReportsInventory({
         {
             accessorKey: 'sku_product',
             header: 'SKU',
+            meta: { className: 'w-32' },
             cell: ({ row }) => (
                 <span className="font-mono text-sm">{row.original.sku_product}</span>
             ),
@@ -92,6 +93,7 @@ export default function ReportsInventory({
         {
             accessorKey: 'name_product',
             header: 'Nombre',
+            meta: { className: 'min-w-[200px]' },
             cell: ({ row }) => (
                 <Link
                     href={productsRoute.show.url(row.original.id)}
@@ -104,6 +106,7 @@ export default function ReportsInventory({
         {
             accessorKey: 'category',
             header: 'Categoría',
+            meta: { className: 'min-w-[140px]' },
             cell: ({ row }) =>
                 row.original.category ? (
                     <Link
@@ -119,6 +122,7 @@ export default function ReportsInventory({
         {
             accessorKey: 'supplier',
             header: 'Proveedor',
+            meta: { className: 'min-w-[140px]' },
             cell: ({ row }) =>
                 row.original.supplier ? (
                     <Link
@@ -134,7 +138,7 @@ export default function ReportsInventory({
         {
             accessorKey: 'current_stock_product',
             header: 'Stock',
-            meta: { className: 'text-center' },
+            meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <span>{row.original.current_stock_product}</span>
             ),
@@ -142,7 +146,7 @@ export default function ReportsInventory({
         {
             accessorKey: 'unit_price_product',
             header: 'Precio',
-            meta: { className: 'text-center' },
+            meta: { className: 'w-28 text-right', headerClassName: 'text-right' },
             cell: ({ row }) => (
                 <span>{formatCurrency(row.original.unit_price_product)}</span>
             ),
@@ -150,7 +154,7 @@ export default function ReportsInventory({
         {
             accessorKey: 'status',
             header: 'Estado',
-            meta: { className: 'text-center' },
+            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <div className="flex justify-center">
                     <StockBadge

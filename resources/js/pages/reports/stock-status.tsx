@@ -71,6 +71,7 @@ export default function ReportsStockStatus({
         {
             accessorKey: 'sku_product',
             header: 'SKU',
+            meta: { className: 'w-32' },
             cell: ({ row }) => (
                 <span className="font-mono text-sm">{row.original.sku_product}</span>
             ),
@@ -78,6 +79,7 @@ export default function ReportsStockStatus({
         {
             accessorKey: 'name_product',
             header: 'Nombre',
+            meta: { className: 'min-w-[200px]' },
             cell: ({ row }) => (
                 <Link
                     href={productsRoute.show.url(row.original.id)}
@@ -90,6 +92,7 @@ export default function ReportsStockStatus({
         {
             accessorKey: 'category',
             header: 'Categoría',
+            meta: { className: 'min-w-[150px]' },
             cell: ({ row }) =>
                 row.original.category ? (
                     <Link
@@ -105,7 +108,7 @@ export default function ReportsStockStatus({
         {
             accessorKey: 'current_stock_product',
             header: 'Stock Actual',
-            meta: { className: 'text-center' },
+            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <span className="font-medium">{row.original.current_stock_product}</span>
             ),
@@ -113,7 +116,7 @@ export default function ReportsStockStatus({
         {
             accessorKey: 'minimum_stock_product',
             header: 'Stock Mínimo',
-            meta: { className: 'text-center' },
+            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <span>{row.original.minimum_stock_product}</span>
             ),
@@ -121,7 +124,7 @@ export default function ReportsStockStatus({
         {
             accessorKey: 'status',
             header: 'Estado',
-            meta: { className: 'text-center' },
+            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
             cell: ({ row }) => (
                 <div className="flex justify-center">
                     <StockBadge

@@ -1,7 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowDownCircle, ArrowLeftRight, BarChart3, HomeIcon, Package } from 'lucide-react';
+import { ArrowLeftRight, BarChart3, HomeIcon, Package } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/inventory/page-header';
+import { cn } from '@/lib/utils';
 import reports from '@/routes/reports';
 
 type ReportsIndexProps = {
@@ -49,7 +50,14 @@ export default function ReportsIndex({ isAdmin }: ReportsIndexProps) {
                     description="Genera y consulta reportes del sistema de inventario"
                 />
 
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div
+                    className={cn(
+                        'grid w-full gap-4',
+                        reportTypes.length === 2
+                            ? 'grid-cols-1 md:grid-cols-2'
+                            : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+                    )}
+                >
                     {reportTypes.map((report) => (
                         <Link key={report.title} href={report.href}>
                             <Card className="h-full transition-all hover:border-primary/50 hover:shadow-md">

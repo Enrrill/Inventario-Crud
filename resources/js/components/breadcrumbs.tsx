@@ -26,7 +26,7 @@ export function Breadcrumbs({
 
                             const label = Icon ? (
                                 <span className="inline-flex items-center gap-1.5">
-                                    <Icon className="size-4" aria-hidden="true" />
+                                    <Icon className="size-4 shrink-0" aria-hidden="true" />
                                     <span>{item.title}</span>
                                 </span>
                             ) : (
@@ -37,12 +37,15 @@ export function Breadcrumbs({
                                 <Fragment key={index}>
                                     <BreadcrumbItem>
                                         {isLast ? (
-                                            <BreadcrumbPage>
+                                            <BreadcrumbPage className="inline-flex items-center gap-1.5">
                                                 {label}
                                             </BreadcrumbPage>
                                         ) : (
                                             <BreadcrumbLink asChild>
-                                                <Link href={item.href}>
+                                                <Link
+                                                    href={item.href}
+                                                    className="inline-flex items-center gap-1.5"
+                                                >
                                                     {label}
                                                 </Link>
                                             </BreadcrumbLink>
