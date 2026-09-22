@@ -12,8 +12,8 @@ class InsufficientStockException extends RuntimeException
         private readonly int $requested,
     ) {
         parent::__construct(
-            "Stock insuficiente para el producto '{$product->name}'. "
-            ."Solicitado: {$requested}, Disponible: {$product->current_stock}"
+            "Stock insuficiente para el producto '{$product->name_product}'. "
+            ."Solicitado: {$requested}, Disponible: {$product->current_stock_product}"
         );
     }
 

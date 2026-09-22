@@ -44,16 +44,20 @@ UserRole::Admin->isEmployee(); // false
 
 ## Permisos por Rol
 
+Efectivos a nivel de rutas y datos (verificados por `tests/Feature/EmployeePermissionsTest.php`):
+
 | Recurso | Admin | Employee |
 |---------|-------|----------|
-| **Dashboard** | Ver | Ver |
-| **Categorías** | CRUD completo | Ver, crear, editar (no eliminar) |
-| **Proveedores** | CRUD completo | Ver, crear, editar (no eliminar) |
-| **Productos** | CRUD completo | Ver, crear, editar (no eliminar) |
-| **Movimientos** | CRUD completo | Ver, crear |
-| **Usuarios** | CRUD completo | No acceso |
-| **Reportes** | Ver + exportar | Ver + exportar |
-| **Auditoría** | Ver | No acceso |
+| **Dashboard** | Ver (stats completos, últimos 3 movimientos globales, top 5 stock bajo) | Ver (stats redactados: sin `inventory_value`, con `my_movements_today`, solo **sus** movimientos) |
+| **Categorías** | CRUD completo | **Solo lectura** (`index`/`show`) — 403 en escrituras |
+| **Proveedores** | CRUD completo | **Solo lectura** — 403 en escrituras |
+| **Productos** | CRUD completo | **Solo lectura** — 403 en escrituras |
+| **Movimientos** | Ver todos, crear cualquier tipo | Ver **solo los suyos**, crear **entry/exit** (sin `adjustment`) |
+| **Usuarios** | CRUD completo | No acceso (403) |
+| **Reportes** | Inventario + movimientos + stock + export | **Sin** `/reports/inventory` (403); movimientos/stock/export solo con **sus** datos |
+| **Auditoría** | Ver | No acceso (403) |
+
+> El gate real de escritura es el **middleware `role:admin` a nivel de ruta** (`routes/web.php`), no las policies — un employee puede tener policies permisivas en Category/Supplier/Product y aun así recibir 403 al intentar crear/editar/eliminar.
 
 ---
 
@@ -62,11 +66,13 @@ UserRole::Admin->isEmployee(); // false
 **Archivo**: `app/Http/Middleware/RoleMiddleware.php`
 
 ```php
-Route::get('/users', [UserController::class, 'index'])
-    ->middleware('role:admin');
+Route::middleware('role:admin')->group(function () {
+    Route::resource('categories', CategoryController::class)
+        ->only(['create', 'store', 'edit', 'update', 'destroy']);
+});
 ```
 
-El middleware valida que el usuario autenticado tenga al menos uno de los roles especificados.
+El middleware valida que el usuario autenticado tenga al menos uno de los roles especificados; en caso contrario responde 403.
 
 **Registro** en `bootstrap/app.php`:
 
@@ -78,6 +84,8 @@ El middleware valida que el usuario autenticado tenga al menos uno de los roles 
 })
 ```
 
+> El `bootstrap/app.php` real también registra `HandleAppearance`, `HandleInertiaRequests`, `AddLinkHeadersForPreloadedAssets` y cifrado de cookies.
+
 ---
 
 ## Policies
@@ -86,21 +94,23 @@ El middleware valida que el usuario autenticado tenga al menos uno de los roles 
 
 | Policy | Admin | Employee |
 |--------|-------|----------|
-| `UserPolicy` | full CRUD | viewAny, view (solo perfil propio) |
-| `CategoryPolicy` | full CRUD | viewAny, view, create, update (no delete) |
-| `SupplierPolicy` | full CRUD | viewAny, view, create, update (no delete) |
-| `ProductPolicy` | full CRUD | viewAny, view, create, update (no delete) |
+| `UserPolicy` | full CRUD | solo `view` del perfil propio |
+| `CategoryPolicy` | full CRUD | viewAny, view, create, update (delete ❌) — **anulado por rutas role:admin** |
+| `SupplierPolicy` | full CRUD | viewAny, view, create, update (delete ❌) — **anulado por rutas role:admin** |
+| `ProductPolicy` | full CRUD | viewAny, view, create, update (delete ❌) — **anulado por rutas role:admin** |
 | `StockMovementPolicy` | full CRUD | viewAny, view, create |
 
 ### UserPolicy
 
 | Método | Admin | Employee |
 |--------|-------|----------|
-| `viewAny($user)` | ✅ | ✅ |
+| `viewAny($user)` | ✅ | ❌ (`isAdmin()`) |
 | `view($user, $model)` | ✅ | ✅ (solo propio) |
 | `create($user)` | ✅ | ❌ |
-| `update($user, $model)` | ✅ | ✅ (solo propio) |
-| `delete($user, $model)` | ✅ | ❌ |
+| `update($user, $model)` | ✅ | ❌ (`isAdmin()`) |
+| `delete($user, $model)` | ✅ (no a sí mismo) | ❌ |
+| `restore($user, $model)` | ✅ | ❌ |
+| `forceDelete($user, $model)` | ✅ | ❌ |
 
 ### CategoryPolicy
 
@@ -108,8 +118,8 @@ El middleware valida que el usuario autenticado tenga al menos uno de los roles 
 |--------|-------|----------|
 | `viewAny($user)` | ✅ | ✅ |
 | `view($user, $model)` | ✅ | ✅ |
-| `create($user)` | ✅ | ✅ |
-| `update($user, $model)` | ✅ | ✅ |
+| `create($user)` | ✅ | ✅ (pero 403 por ruta) |
+| `update($user, $model)` | ✅ | ✅ (pero 403 por ruta) |
 | `delete($user, $model)` | ✅ | ❌ |
 
 ### SupplierPolicy
@@ -118,8 +128,8 @@ El middleware valida que el usuario autenticado tenga al menos uno de los roles 
 |--------|-------|----------|
 | `viewAny($user)` | ✅ | ✅ |
 | `view($user, $model)` | ✅ | ✅ |
-| `create($user)` | ✅ | ✅ |
-| `update($user, $model)` | ✅ | ✅ |
+| `create($user)` | ✅ | ✅ (pero 403 por ruta) |
+| `update($user, $model)` | ✅ | ✅ (pero 403 por ruta) |
 | `delete($user, $model)` | ✅ | ❌ |
 
 ### ProductPolicy
@@ -128,8 +138,8 @@ El middleware valida que el usuario autenticado tenga al menos uno de los roles 
 |--------|-------|----------|
 | `viewAny($user)` | ✅ | ✅ |
 | `view($user, $model)` | ✅ | ✅ |
-| `create($user)` | ✅ | ✅ |
-| `update($user, $model)` | ✅ | ✅ |
+| `create($user)` | ✅ | ✅ (pero 403 por ruta) |
+| `update($user, $model)` | ✅ | ✅ (pero 403 por ruta) |
 | `delete($user, $model)` | ✅ | ❌ |
 
 ### StockMovementPolicy

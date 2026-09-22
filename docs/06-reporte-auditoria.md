@@ -21,9 +21,9 @@ flowchart TD
     Filters2 --> Export
     Filters3 --> Export
 
-    Export -->|CSV| CSV[ReportExportService::exportCsv]
-    Export -->|PDF| PDF[ReportExportService::exportPdf]
-    Export -->|XLSX| XLSX[ReportExportService::exportXlsx]
+    Export -->|CSV| CSV[exportCsv - streaming]
+    Export -->|PDF| PDF[exportPdf - dompdf]
+    Export -->|XLSX| XLSX[exportXlsx - openspout]
 
     CSV --> Download[Descargar archivo]
     PDF --> Download
@@ -34,9 +34,9 @@ flowchart TD
 
 ## Reportes Disponibles
 
-### 1. Reporte de Inventario (`reports.inventory`)
+### 1. Reporte de Inventario (`reports.inventory`) — **solo admin**
 
-**Endpoint**: `GET /reports/inventory`
+**Endpoint**: `GET /reports/inventory` (middleware `role:admin`)
 
 **Contenido**:
 - Valor total del inventario
@@ -54,13 +54,15 @@ flowchart TD
 - Movimientos por usuario
 - Resumen diario/semanal/mensual
 
+> **Scoping**: un employee solo ve y resume **sus** movimientos; el filtro `user_id` y la lista de usuarios solo aplican a admin.
+
 ### 3. Reporte de Estado de Stock (`reports.stock-status`)
 
 **Endpoint**: `GET /reports/stock-status`
 
 **Contenido**:
-- Productos bajo mínimo (`current_stock <= minimum_stock`)
-- Productos sin stock (`current_stock = 0`)
+- Productos bajo mínimo (`current_stock_product <= minimum_stock_product`)
+- Productos sin stock (`current_stock_product = 0`)
 - Productos con exceso de stock
 - Distribución por categoría
 
@@ -75,8 +77,8 @@ flowchart TD
 | Formato | Paquete | Método |
 |---------|---------|--------|
 | CSV | Nativo PHP | `fputcsv()` con streaming |
-| PDF | `barryvdh/laravel-dompdf` | `Pdf::loadView()` |
-| XLSX | `maatwebsite/excel` | `Excel::download()` |
+| PDF | `barryvdh/laravel-dompdf` | renderiza la view `exports.pdf-table` con los datos |
+| XLSX | `openspout/openspout` | `Writer` de Spout escribiendo filas directamente |
 
 ### Endpoints de Exportación
 
@@ -86,14 +88,23 @@ GET /reports/export/pdf?report=movements&category_id=...
 GET /reports/export/xlsx?report=stock-status&supplier_id=...
 ```
 
-### Métodos del Servicio
+`report` = `inventory` | `movements` | `stock-status` (dispatch en `ReportController::export`).
+
+### API del Servicio
 
 ```php
 class ReportExportService
 {
-    public function exportCsv(Collection $data, string $filename, array $headers): StreamedResponse;
-    public function exportPdf(View $view, string $filename): BinaryFileResponse;
-    public function exportXlsx(FromCollection $export, string $filename): BinaryFileResponse;
+    // Públicos: reciben el tipo de archivo (csv|pdf|xlsx) + ReportRequest
+    public function exportInventory(string $type, ReportRequest $request): SymfonyResponse;
+    public function exportMovements(string $type, ReportRequest $request): SymfonyResponse;
+    public function exportStockStatus(string $type, ReportRequest $request): SymfonyResponse;
+
+    // Privados: formatos concretos, todos reciben Collection + headers/filename
+    private function export(string $type, Collection $data, array $headers, string $filename): SymfonyResponse;
+    private function exportCsv(Collection $data, string $filename, array $headers): SymfonyResponse;
+    private function exportPdf(Collection $data, string $filename, array $headers): SymfonyResponse;
+    private function exportXlsx(Collection $data, string $filename, array $headers): SymfonyResponse;
 }
 ```
 
@@ -101,7 +112,7 @@ class ReportExportService
 
 ```bash
 composer require barryvdh/laravel-dompdf   # PDF
-composer require maatwebsite/excel         # XLSX
+composer require openspout/openspout       # XLSX
 ```
 
 ---
@@ -112,15 +123,16 @@ composer require maatwebsite/excel         # XLSX
 
 ```mermaid
 flowchart TD
+    Batch[RegisterBatchMovementsAction] -->|Context add audit_batch_id| Ctx[Context - UUID del lote]
     Model[Modelo Auditable] -->|created/updated/deleted| Boot[bootAuditable]
     Boot --> LogAudit[logAudit]
-    LogAudit --> AuditLog[Crear AuditLog]
+    LogAudit --> AuditLog[Crear AuditLog con batch_id desde Context]
     AuditLog --> DB[(audit_logs)]
 
     Admin[Admin] -->|GET /audit| AuditIndex[AuditController::index]
-    AuditIndex --> Filters[Filtros: user, model, event, dates]
-    Filters --> Paginate[Paginación 25/página]
-    Paginate --> Response[Inertia Response]
+    AuditIndex --> Group[UI agrupa por batch_id - BatchBadge]
+    Admin -->|GET /audit/id| AuditShow[AuditController::show]
+    AuditShow --> Siblings[batchSiblings - logs del mismo lote]
 ```
 
 ### Trait Auditable
@@ -153,6 +165,7 @@ class Product extends Model
 | Campo | Descripción |
 |-------|-------------|
 | `user_id` | Usuario que realizó la acción (nullable) |
+| `batch_id` | UUID del lote que originó la operación (nullable) — correlaciona los logs de un `POST /movements` |
 | `auditable_type` | Tipo del modelo auditado |
 | `auditable_id` | ID del modelo auditado |
 | `event` | `created`, `updated` o `deleted` |
@@ -161,6 +174,8 @@ class Product extends Model
 | `ip_address` | IP del cliente |
 | `user_agent` | User-Agent del navegador |
 
+El trait `Auditable` escribe `'batch_id' => Context::get('audit_batch_id')`; el action de lote pone y limpia ese valor de Context.
+
 ### Scopes del Modelo AuditLog
 
 | Scope | Parámetro | Descripción |
@@ -168,7 +183,13 @@ class Product extends Model
 | `scopeForModel($query, $type, $id)` | tipo, ID opcional | Filtrar por modelo |
 | `scopeForEvent($query, $event)` | evento | Filtrar por tipo de evento |
 | `scopeForUser($query, $userId)` | ID de usuario | Filtrar por usuario |
+| `scopeForBatch($query, $batchId)` | UUID de lote | Todos los logs de un mismo lote |
 | `scopeRecent($query, $days)` | días (default: 30) | Logs recientes |
+
+### UI de Lotes (admin)
+
+- `audit/index.tsx`: agrupa entradas por `batch_id` con badge **"Lote (n)"** y grupos expandibles.
+- `audit/show.tsx`: recibe la prop `batchSiblings` (logs del mismo lote ordenados por `created_at`) y los muestra junto al detalle.
 
 ---
 

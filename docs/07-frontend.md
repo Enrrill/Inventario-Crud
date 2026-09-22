@@ -35,7 +35,7 @@ resources/js/
 │   ├── use-debounce.ts
 │   ├── use-local-storage.ts
 │   ├── use-query-params.ts
-│   └── ... (11 hooks)
+│   └── ... (12 hooks)
 ├── components/
 │   ├── ui/                         # shadcn/ui base (33 components)
 │   │   ├── button.tsx
@@ -65,12 +65,13 @@ resources/js/
 │   ├── nav-main.tsx                # Collapsible nav groups
 │   └── ... (25+ app components)
 ├── pages/                          # Inertia page components
+│   ├── welcome.tsx                 # Landing pública (GET /)
 │   ├── dashboard.tsx
 │   ├── auth/                       # 7 auth pages
 │   ├── categories/                 # CRUD (4 pages)
 │   ├── suppliers/                  # CRUD (4 pages)
 │   ├── products/                   # CRUD (4 pages)
-│   ├── movements/                  # Partial CRUD (3 pages)
+│   ├── movements/                  # Partial CRUD (3 pages + components/movement-row.tsx)
 │   ├── users/                      # CRUD admin-only (4 pages)
 │   ├── reports/                    # Reports (4 pages)
 │   ├── audit/                      # Audit logs (2 pages)
@@ -85,7 +86,7 @@ resources/js/
 ### Dashboard
 | Archivo | Descripción |
 |---------|-------------|
-| `dashboard.tsx` | Estadísticas, últimos movimientos, stock bajo |
+| `dashboard.tsx` | Role-aware: stat cards redactadas para employee (`my_movements_today` en vez de valor de inventario), skeleton de carga, últimos 3 movimientos (propios si es employee), top 5 stock bajo. Branding "StockNow". |
 
 ### Auth (7 páginas)
 | Archivo | Descripción |
@@ -122,11 +123,12 @@ resources/js/
 | `products/show.tsx` | Detalle completo |
 | `products/edit.tsx` | Formulario en drawer |
 
-### Movimientos (3 páginas)
+### Movimientos (3 páginas + componente)
 | Archivo | Descripción |
 |---------|-------------|
-| `movements/index.tsx` | Tabla con filtros |
-| `movements/create.tsx` | Formulario con lógica condicional |
+| `movements/index.tsx` | Tabla con filtros (employee: solo sus movimientos) |
+| `movements/create.tsx` | **Formulario por lote**: agregar/quitar filas (máx. 20), `reference`/`notes` compartidos, tipos filtrados por rol (employee sin `adjustment`), errores por fila |
+| `movements/components/movement-row.tsx` | Fila individual del lote: select de producto, tipo, cantidad con aviso de stock insuficiente en vivo |
 | `movements/show.tsx` | Detalle del movimiento |
 
 ### Usuarios (4 páginas — admin only)
@@ -148,8 +150,8 @@ resources/js/
 ### Auditoría (2 páginas — admin only)
 | Archivo | Descripción |
 |---------|-------------|
-| `audit/index.tsx` | DataTable: Usuario, Modelo, Evento (badge), IP, Fecha |
-| `audit/show.tsx` | Metadata + JSON formateado old/new values |
+| `audit/index.tsx` | DataTable con **agrupación por lote**: badge "Lote (n)" y grupos expandibles (`BatchGroup`) |
+| `audit/show.tsx` | Metadata + panel de **`batchSiblings`** (logs del mismo lote) + JSON formateado old/new values |
 
 ### Settings (3 páginas)
 | Archivo | Descripción |
@@ -180,9 +182,10 @@ graph TD
     G3 --> A[Auditoría]
 ```
 
-- **Inventario**: Accesible para todos los roles.
-- **Reportes**: Accesible para todos los roles.
-- **Administración**: Solo visible para `admin`.
+- **Inventario**: Accesible para todos los roles (escrituras ocultas/403 para employee).
+- **Reportes**: Accesible para todos los roles (card de inventario oculta a employee).
+- **Administración**: Solo visible para `admin` (grupo condicional con icono Shield).
+- Branding del sidebar/breadcrumbs: **"StockNow"**.
 
 ---
 
@@ -263,15 +266,21 @@ Cada página recibe sus datos del controlador vía Inertia:
 
 | Página | Props del Backend |
 |--------|-------------------|
-| Dashboard | `stats`, `recentMovements`, `lowStockProducts` |
-| Categories Index | `categories` (paginada), `filters` |
+| Dashboard | `stats` (con `inventory_value` nullable y `my_movements_today`), `recentMovements`, `lowStockProducts`, `isAdmin` |
+| Categories Index | `categories` (paginada), `filters`, `isAdmin` |
 | Categories Create | `parentCategories` |
 | Categories Show | `category` (con parent/children/products) |
-| Products Index | `products` (paginada), `categories`, `suppliers`, `filters` |
-| Movements Create | `products`, `types` |
+| Suppliers/Products Index | lista paginada + `filters` + `isAdmin` |
+| Products Index | `products` (paginada), `categories`, `suppliers`, `filters`, `isAdmin` |
+| Movements Index | `movements` (paginada), `products`, `filters`, `isAdmin` |
+| Movements Create | `products`, `types` (filtrados por rol), `isAdmin` |
+| Movements Show | `movement`, `isAdmin` |
 | Users Index | `users` (paginada), `filters` (search, role) |
-| Reports Inventory | `products`, `summary`, `filters` |
+| Reports Index | `categories`, `suppliers`, `isAdmin` |
+| Reports Inventory | `products`, `summary`, `filters` (admin) |
+| Reports Movements | `movements`, `summary`, `filters`, `users` (solo admin; vacío para employee), `isAdmin` |
 | Audit Index | `logs` (paginada), `filters` |
+| Audit Show | `log`, `batchSiblings` |
 
 ---
 

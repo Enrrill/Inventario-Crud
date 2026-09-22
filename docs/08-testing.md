@@ -25,21 +25,26 @@ tests/
 │   ├── AuditLogTest.php
 │   ├── CategoryTest.php
 │   ├── DashboardTest.php
+│   ├── EmployeePermissionsTest.php  # 35 tests — restricciones del rol employee
+│   ├── ExampleTest.php
 │   ├── ProductTest.php
 │   ├── ReportTest.php
-│   ├── StockMovementTest.php
+│   ├── StockMovementBatchTest.php   # 13 tests — registro de movimientos en lote
+│   ├── StockMovementTest.php        # 2 tests (factory-level)
 │   ├── TextNormalizationTest.php
 │   ├── UserAuthorizationTest.php
 │   ├── UserTest.php
 │   └── UserRoleTest.php
 └── Unit/
-    ├── AuditLogTest.php
     ├── AuditableTraitTest.php
+    ├── AuditLogTest.php
+    ├── ExampleTest.php
+    ├── InsufficientStockExceptionTest.php  # mensaje con name_product/current_stock_product
     ├── TextNormalizerTest.php
     └── UserRoleTest.php
 ```
 
-**Total**: 27 archivos — 18 Feature tests, 5 Unit tests, 2 base files.
+**Total**: 30 archivos — 22 Feature tests, 6 Unit tests, 2 base files.
 
 ---
 
@@ -52,8 +57,10 @@ tests/
 | Categorías | 1 | CRUD completo |
 | Proveedores | (en ProductTest) | — |
 | Productos | 1 | CRUD completo |
-| Movimientos | 1 | Registro de stock |
+| Movimientos (batch) | 13 | Lote: entradas/salidas/ajustes, stock insuficiente, duplicados, límites, audit batch_id |
+| Movimientos | 1 (2 tests) | Factory-level |
 | Dashboard | 1 | Visualización |
+| Permisos employee | 35 | Rutas 403, scoping propio, sin ajustes, reportes/inventario admin-only |
 | Usuarios | 3 | CRUD, roles, autorización |
 | Reportes | 1 | Endpoints de reportes |
 | Auditoría | 1 | Logs de auditoría |
@@ -62,8 +69,9 @@ tests/
 | Unit: TextNormalizer | 1 | Métodos individuales |
 | Unit: UserRole | 1 | Funciones del enum |
 | Unit: AuditLog | 1 | Creación de logs |
+| Unit: InsufficientStockException | 2 | Mensaje y accessors |
 
-**Total**: 125 tests, 246 assertions — todos pasan ✅
+**Total**: 179 tests, 428 assertions — todos pasan ✅
 
 ---
 
@@ -145,7 +153,7 @@ $product = Product::factory()->create([
 
 ```php
 it('requires admin role', function () {
-    $user = User::factory()->employee()->create();
+    $user = User::factory()->create(); // rol por defecto: employee
     $this->actingAs($user);
 
     $this->get(route('users.index'))->assertForbidden();

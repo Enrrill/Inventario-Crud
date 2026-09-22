@@ -1,6 +1,6 @@
 # 03 — Flujo de Stock
 
-> Lógica de negocio para movimientos de inventario: entradas, salidas, ajustes y eliminación de categorías.
+> Lógica de negocio para movimientos de inventario: registro en lote (entradas, salidas, ajustes) y eliminación de categorías.
 
 ---
 
@@ -8,122 +8,93 @@
 
 ```mermaid
 flowchart TD
-    Start([Usuario crea movimiento]) --> SelectType{Tipo de movimiento}
-    SelectType -->|Entry| Entry[Entrada]
-    SelectType -->|Exit| Exit[Salida]
-    SelectType -->|Adjustment| Adj[Ajuste]
+    Start([Usuario envía formulario]) --> Validate[StoreBatchMovementsRequest]
+    Validate -->|Errores| Errors[Respuesta 422 + errores por fila]
+    Validate -->|Pass| EmployeeCheck{Empleado envía ajuste?}
+    EmployeeCheck -->|Sí| Deny403[Flash error - vuelve al form]
+    EmployeeCheck -->|No| Batch[RegisterBatchMovementsAction]
 
-    Entry --> LockDB1[Bloquear producto - lockForUpdate]
-    LockDB1 --> CalcEntry[new_stock = previous_stock + quantity]
-    CalcEntry --> UpdateEntry[Actualizar current_stock]
-    UpdateEntry --> CreateEntry[Crear StockMovement]
-    CreateEntry --> Done1([FIN])
+    Batch --> Tx[Una sola DB::transaction]
+    Tx --> PerRow[Por cada fila: lockForUpdate en producto]
 
-    Exit --> LockDB2[Bloquear producto - lockForUpdate]
-    LockDB2 --> CheckStock{Stock suficiente?}
-    CheckStock -->|No| ThrowErr[Lanzar InsufficientStockException]
-    ThrowErr --> ErrorPage([Página de error 403])
-    CheckStock -->|Sí| CalcExit[new_stock = previous_stock - quantity]
-    CalcExit --> UpdateExit[Actualizar current_stock]
-    UpdateExit --> CreateExit[Crear StockMovement]
-    CreateExit --> Done2([FIN])
+    PerRow -->|entry| Entry[new_stock = previous + quantity]
+    PerRow -->|exit| Exit{quantity <= current_stock?}
+    PerRow -->|adjustment| Adj[new_stock = quantity - abs]
 
-    Adj --> LockDB3[Bloquear producto - lockForUpdate]
-    LockDB3 --> CalcAdj[quantity = abs new_stock - previous_stock]
-    CalcAdj --> UpdateAdj[Actualizar current_stock]
-    UpdateAdj --> CreateAdj[Crear StockMovement]
-    CreateAdj --> Done3([FIN])
+    Exit -->|No| ThrowErr[Lanzar InsufficientStockException - rollback]
+    Exit -->|Sí| ExitCalc[new_stock = previous - quantity]
+    ExitCalc --> Create[Crear StockMovement]
+    Entry --> Create
+    Adj --> Create
+
+    Create --> Ctx[audit_logs comparten batch_id via Context]
+    Ctx --> Done([FIN - toast con cantidad registrada])
 ```
+
+> Notas:
+> - El stock se pre-valida en `withValidator` de `StoreBatchMovementsRequest` (el error más común nunca llega al action).
+> - No hay "página de error 403" configurada: el bloqueo de ajustes para employees devuelve un flash toast de error y `back()`.
 
 ---
 
-## 1. Registro de Entrada (Entry)
+## 1. Registro en Lote (Batch) — flujo actual
 
-**Acción**: `app/Actions/Stock/RegisterEntryAction.php`
+**Endpoint**: `POST /movements` → `StockMovementController::store`
+**Form Request**: `app/Http/Requests/StockMovement/StoreBatchMovementsRequest.php`
+**Acción**: `app/Actions/Stock/RegisterBatchMovementsAction.php`
 
-```mermaid
-flowchart LR
-    A[Recibir datos] --> B[Iniciar DB::transaction]
-    B --> C[Obtener previous_stock]
-    C --> D[new_stock = previous + quantity]
-    D --> E[Actualizar product.current_stock]
-    E --> F[Crear StockMovement type=entry]
-    F --> G[Retornar StockMovement]
+### Payload
+
+```json
+{
+  "movements": [
+    { "product_id": 1, "type_movement": "entry", "quantity_movement": 10 },
+    { "product_id": 2, "type_movement": "exit", "quantity_movement": 5 }
+  ],
+  "reference_movement": "OC-001",
+  "notes_movement": "Recepción parcial"
+}
 ```
 
-**Lógica**:
-1. Se obtiene el `current_stock` actual del producto.
-2. Se calcula `new_stock = previous_stock + quantity`.
-3. Se actualiza `product.current_stock`.
-4. Se crea el registro en `stock_movements` con tipo `entry`.
+### Validación (`StoreBatchMovementsRequest`)
 
-**No requiere validación de stock** — las entradas siempre son válidas.
+| Regla | Valor |
+|-------|-------|
+| `movements` | required, array, min:1, **max:20** |
+| `movements.*.product_id` | required, exists:products,id |
+| `movements.*.type_movement` | required, enum `StockMovementType` |
+| `movements.*.quantity_movement` | required, integer, min:1 |
+| `reference_movement` | nullable, string, max:100 |
+| `notes_movement` | nullable, string |
+
+**Validación custom (`withValidator`)**:
+- **Producto duplicado en el mismo lote** → error *"No puede registrar el mismo producto más de una vez en un lote."*
+- **Salida mayor al stock disponible** → error por fila: *"Stock insuficiente para {producto}. Disponible: {N}"*
+
+### Restricción de rol
+
+- El form solo ofrece `entry`/`exit` a employees (el tipo `adjustment` se filtra en `create`).
+- En `store`, si un employee envía un `adjustment`, se responde con flash toast de error *"No tienes permiso para crear movimientos de ajustes."* y `back()`.
+
+### Ejecución (`RegisterBatchMovementsAction::handle`)
+
+1. Genera un **UUID de lote** y lo guarda en `Context::add('audit_batch_id', $batchId)`.
+2. Entra a **una sola `DB::transaction`**.
+3. Por cada fila: `Product::lockForUpdate()->findOrFail()` y aplica la lógica correspondiente:
+   - **entry**: `new = previous + quantity` → actualiza `current_stock_product`.
+   - **exit**: si `quantity > current_stock_product` lanza `InsufficientStockException` (rollback del lote completo); si no, `new = previous - quantity`.
+   - **adjustment**: `quantity_movement` registrado = `abs(newQuantity - previous)`; `current_stock_product = newQuantity`.
+4. Crea el `StockMovement` con `previous_stock_movement` / `new_stock_movement`.
+5. Los `audit_logs` generados en la transacción comparten `batch_id` (los lee `Auditable` desde Context).
+6. `finally`: `Context::forget('audit_batch_id')`.
+
+**Toast de éxito**: 1 movimiento → *"Movimiento registrado correctamente."*; N > 1 → *"N movimientos registrados correctamente."*
+
+> Los actions unitarios (`RegisterEntryAction`, `RegisterExitAction`, `RegisterAdjustmentAction`) ya **no los invoca ningún controller** — quedan como referencia/legacy.
 
 ---
 
-## 2. Registro de Salida (Exit)
-
-**Acción**: `app/Actions/Stock/RegisterExitAction.php`
-
-```mermaid
-flowchart LR
-    A[Recibir datos] --> B[Iniciar DB::transaction]
-    B --> C[lockForUpdate en producto]
-    C --> D{quantity <= current_stock?}
-    D -->|No| E[Throw InsufficientStockException]
-    D -->|Sí| F[Obtener previous_stock]
-    F --> G[new_stock = previous - quantity]
-    G --> H[Actualizar product.current_stock]
-    H --> I[Crear StockMovement type=exit]
-    I --> J[Retornar StockMovement]
-```
-
-**Lógica**:
-1. Se bloquea el producto con `lockForUpdate()` para prevenir race conditions.
-2. **Validación**: si `quantity > current_stock`, se lanza `InsufficientStockException`.
-3. Se calcula `new_stock = previous_stock - quantity`.
-4. Se actualiza `product.current_stock`.
-5. Se crea el registro en `stock_movements` con tipo `exit`.
-
-### InsufficientStockException
-
-**Archivo**: `app/Exceptions/InsufficientStockException.php`
-
-Se lanza cuando un usuario intenta retirar más stock del disponible.
-
-```php
-throw new InsufficientStockException($product, $quantity);
-```
-
-El frontend muestra un toast de error con el mensaje: *"No hay stock suficiente para [producto]. Disponible: [N], Solicitado: [N]"*
-
----
-
-## 3. Registro de Ajuste (Adjustment)
-
-**Acción**: `app/Actions/Stock/RegisterAdjustmentAction.php`
-
-```mermaid
-flowchart LR
-    A[Recibir datos] --> B[Iniciar DB::transaction]
-    B --> C[Bloquear producto]
-    C --> D[quantity = abs new_qty - previous_stock]
-    D --> E[Actualizar product.current_stock = new_qty]
-    E --> F[Crear StockMovement type=adjustment]
-    F --> G[Retornar StockMovement]
-```
-
-**Lógica**:
-1. Se bloquea el producto.
-2. Se calcula la diferencia: `quantity = abs(newQuantity - previousStock)`.
-3. Se establece `product.current_stock = newQuantity` directamente.
-4. Se crea el registro en `stock_movements` con tipo `adjustment`.
-
-> Un ajuste puede ser **positivo** (agregar stock no registrado) o **negativo** (corregir exceso).
-
----
-
-## 4. Eliminación de Categoría
+## 2. Eliminación de Categoría
 
 **Acción**: `app/Actions/Category/DeleteCategoryAction.php`
 
@@ -150,18 +121,34 @@ flowchart TD
 
 ## Transacciones y Concurrencia
 
-Todos los movimientos de stock usan `DB::transaction()` para garantizar atomicidad:
+El registro en lote usa una sola `DB::transaction()` para garantizar atomicidad del lote completo:
 
 ```php
-return DB::transaction(function () use ($product, $quantity, ...) {
-    $product->lockForUpdate();  // Bloqueo pesimista
-    // ... lógica de negocio ...
-    $product->update(['current_stock' => $newStock]);
-    return StockMovement::create([...]);
+return DB::transaction(function () use ($movements, ...) {
+    foreach ($movements as $movement) {
+        $product = Product::lockForUpdate()->findOrFail($movement['product_id']);
+        // ... lógica de negocio por tipo ...
+        $product->update(['current_stock_product' => $newStock]);
+        StockMovement::create([...]);
+    }
 });
 ```
 
-**`lockForUpdate()`** previene race conditions cuando múltiples usuarios modifican el stock del mismo producto simultáneamente.
+**`lockForUpdate()`** previene race conditions cuando múltiples usuarios modifican el stock del mismo producto simultáneamente. Si cualquier fila falla, **todo el lote se revierte**.
+
+### InsufficientStockException
+
+**Archivo**: `app/Exceptions/InsufficientStockException.php`
+
+Se lanza dentro de la transacción cuando una salida excede el stock disponible:
+
+```php
+throw new InsufficientStockException($product, $quantity);
+```
+
+Mensaje real: *"Stock insuficiente para el producto '{name_product}'. Solicitado: {N}, Disponible: {current_stock_product}"*
+
+En la práctica, la mayoría de salidas insuficientes se detectan antes en la validación del Form Request (mensaje *"Stock insuficiente para {producto}. Disponible: {N}"*).
 
 ---
 
@@ -179,16 +166,14 @@ Normaliza datos antes de la validación en Form Requests:
 | `normalizeSku()` | `" abc-123 "` | `"ABC-123"` | Uppercase + trim |
 | `normalizeText()` | `"  multiple   spaces "` | `" multiple spaces"` | Colapsar espacios |
 
-Se aplica en `prepareForValidation()` de cada Form Request:
+Se aplica en `prepareForValidation()` de cada Form Request (los campos de negocio llevan sufijo):
 
 | Form Request | Campos normalizados |
 |---|---|
-| `StoreSupplierRequest` | email, contact_name, phone, name, address |
-| `UpdateSupplierRequest` | email, contact_name, phone, name, address |
-| `StoreProductRequest` | sku, name, description |
-| `UpdateProductRequest` | sku, name, description |
-| `StoreCategoryRequest` | name, description |
-| `UpdateCategoryRequest` | name, description |
+| `StoreSupplierRequest` / `UpdateSupplierRequest` | `email_supplier`, `contact_name_supplier`, `phone_supplier`, `name_supplier`, `address_supplier` |
+| `StoreProductRequest` / `UpdateProductRequest` | `sku_product`, `name_product`, `description_product` |
+| `StoreCategoryRequest` / `UpdateCategoryRequest` | `name_category`, `description_category` |
+| `StoreUserRequest` / `UpdateUserRequest` | `name`, `email` |
 
 ---
 

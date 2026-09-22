@@ -1,6 +1,6 @@
 # Inventario CRUD — Documentación
 
-> Sistema de gestión de inventario con alertas de stock, reportes y auditoría.
+> Sistema de gestión de inventario con alertas de stock, reportes, auditoría y movimientos en lote.
 
 ---
 
@@ -23,7 +23,7 @@
 |---|-----------|-------------|
 | 01 | [Arquitectura del Sistema](01-arquitectura-sistema.md) | Stack, diagrama ER, diseño de base de datos |
 | 02 | [Modelo de Datos](02-modelo-datos.md) | Enums, tablas, relaciones Eloquent, scopes, factories |
-| 03 | [Flujo de Stock](03-flujo-stock.md) | Lógica de negocio: entradas, salidas, ajustes, excepciones |
+| 03 | [Flujo de Stock](03-flujo-stock.md) | Lógica de negocio: lote (entradas, salidas, ajustes), excepciones |
 | 04 | [API y Rutas](04-api-rutas.md) | Controladores, endpoints, Form Requests, validaciones |
 | 05 | [Autenticación y Autorización](05-autorizacion.md) | Roles, middleware, policies |
 | 06 | [Reportes y Auditoría](06-reporte-auditoria.md) | Exportación CSV/PDF/XLSX, logs de auditoría |
@@ -40,7 +40,7 @@ composer install
 cp .env.example .env
 php artisan key:generate
 php artisan migrate
-php artisan db:seed
+php artisan db:seed        # DatabaseSeeder → InventoryTestSeeder (datos de prueba)
 
 # Desarrollo
 composer run dev          # Servidor Laravel + Vite
@@ -59,4 +59,4 @@ php artisan route:list
 
 ---
 
-*Última actualización: 2026-09-12*
+*Última actualización: 2026-09-22*
