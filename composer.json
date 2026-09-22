@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/react-starter-kit",
+    "name": "enrrill/inventario-crud",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Sistema de gestión de inventario con movimientos en lote, reportes exportables y auditoría (Laravel + Inertia React).",
     "keywords": [
         "laravel",
         "framework"
