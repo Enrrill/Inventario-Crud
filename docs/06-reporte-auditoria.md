@@ -39,6 +39,7 @@ flowchart TD
 **Endpoint**: `GET /reports/inventory` (middleware `role:admin`)
 
 **Contenido**:
+
 - Valor total del inventario
 - Productos por categoría (conteo y valor)
 - Productos por proveedor (conteo y valor)
@@ -49,6 +50,7 @@ flowchart TD
 **Endpoint**: `GET /reports/movements`
 
 **Contenido**:
+
 - Entradas/salidas/ajustes por rango de fechas
 - Movimientos por producto
 - Movimientos por usuario
@@ -61,6 +63,7 @@ flowchart TD
 **Endpoint**: `GET /reports/stock-status`
 
 **Contenido**:
+
 - Productos bajo mínimo (`current_stock_product <= minimum_stock_product`)
 - Productos sin stock (`current_stock_product = 0`)
 - Productos con exceso de stock
@@ -74,11 +77,11 @@ flowchart TD
 
 ### Formatos Soportados
 
-| Formato | Paquete | Método |
-|---------|---------|--------|
-| CSV | Nativo PHP | `fputcsv()` con streaming |
-| PDF | `barryvdh/laravel-dompdf` | renderiza la view `exports.pdf-table` con los datos |
-| XLSX | `openspout/openspout` | `Writer` de Spout escribiendo filas directamente |
+| Formato | Paquete                   | Método                                              |
+| ------- | ------------------------- | --------------------------------------------------- |
+| CSV     | Nativo PHP                | `fputcsv()` con streaming                           |
+| PDF     | `barryvdh/laravel-dompdf` | renderiza la view `exports.pdf-table` con los datos |
+| XLSX    | `openspout/openspout`     | `Writer` de Spout escribiendo filas directamente    |
 
 ### Endpoints de Exportación
 
@@ -154,37 +157,37 @@ class Product extends Model
 
 ### Eventos Registrados
 
-| Evento | `old_values` | `new_values` |
-|--------|-------------|-------------|
-| `created` | `null` | Todos los atributos |
-| `updated` | Valores originales (solo campos modificados) | Nuevos valores |
-| `deleted` | Todos los atributos | `null` |
+| Evento    | `old_values`                                 | `new_values`        |
+| --------- | -------------------------------------------- | ------------------- |
+| `created` | `null`                                       | Todos los atributos |
+| `updated` | Valores originales (solo campos modificados) | Nuevos valores      |
+| `deleted` | Todos los atributos                          | `null`              |
 
 ### Campos del Log
 
-| Campo | Descripción |
-|-------|-------------|
-| `user_id` | Usuario que realizó la acción (nullable) |
-| `batch_id` | UUID del lote que originó la operación (nullable) — correlaciona los logs de un `POST /movements` |
-| `auditable_type` | Tipo del modelo auditado |
-| `auditable_id` | ID del modelo auditado |
-| `event` | `created`, `updated` o `deleted` |
-| `old_values` | Valores anteriores (JSON) |
-| `new_values` | Valores nuevos (JSON) |
-| `ip_address` | IP del cliente |
-| `user_agent` | User-Agent del navegador |
+| Campo            | Descripción                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------------- |
+| `user_id`        | Usuario que realizó la acción (nullable)                                                          |
+| `batch_id`       | UUID del lote que originó la operación (nullable) — correlaciona los logs de un `POST /movements` |
+| `auditable_type` | Tipo del modelo auditado                                                                          |
+| `auditable_id`   | ID del modelo auditado                                                                            |
+| `event`          | `created`, `updated` o `deleted`                                                                  |
+| `old_values`     | Valores anteriores (JSON)                                                                         |
+| `new_values`     | Valores nuevos (JSON)                                                                             |
+| `ip_address`     | IP del cliente                                                                                    |
+| `user_agent`     | User-Agent del navegador                                                                          |
 
 El trait `Auditable` escribe `'batch_id' => Context::get('audit_batch_id')`; el action de lote pone y limpia ese valor de Context.
 
 ### Scopes del Modelo AuditLog
 
-| Scope | Parámetro | Descripción |
-|-------|-----------|-------------|
-| `scopeForModel($query, $type, $id)` | tipo, ID opcional | Filtrar por modelo |
-| `scopeForEvent($query, $event)` | evento | Filtrar por tipo de evento |
-| `scopeForUser($query, $userId)` | ID de usuario | Filtrar por usuario |
-| `scopeForBatch($query, $batchId)` | UUID de lote | Todos los logs de un mismo lote |
-| `scopeRecent($query, $days)` | días (default: 30) | Logs recientes |
+| Scope                               | Parámetro          | Descripción                     |
+| ----------------------------------- | ------------------ | ------------------------------- |
+| `scopeForModel($query, $type, $id)` | tipo, ID opcional  | Filtrar por modelo              |
+| `scopeForEvent($query, $event)`     | evento             | Filtrar por tipo de evento      |
+| `scopeForUser($query, $userId)`     | ID de usuario      | Filtrar por usuario             |
+| `scopeForBatch($query, $batchId)`   | UUID de lote       | Todos los logs de un mismo lote |
+| `scopeRecent($query, $days)`        | días (default: 30) | Logs recientes                  |
 
 ### UI de Lotes (admin)
 
@@ -193,4 +196,4 @@ El trait `Auditable` escribe `'batch_id' => Context::get('audit_batch_id')`; el 
 
 ---
 
-*Ver también: [Autorización](05-autorizacion.md) · [API y Rutas](04-api-rutas.md)*
+_Ver también: [Autorización](05-autorizacion.md) · [API y Rutas](04-api-rutas.md)_

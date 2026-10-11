@@ -21,13 +21,13 @@
 
 ## Stack
 
-| Capa | Tecnología |
-|------|-----------|
-| Backend | Laravel 13 · PHP 8.3 · PostgreSQL |
-| Frontend | React 19 · Inertia.js v3 · TypeScript |
-| UI | Tailwind CSS v4 · shadcn/ui (Radix UI) |
-| Testing | Pest PHP (179 tests) |
-| Code Style | Laravel Pint |
+| Capa       | Tecnología                             |
+| ---------- | -------------------------------------- |
+| Backend    | Laravel 13 · PHP 8.3 · PostgreSQL      |
+| Frontend   | React 19 · Inertia.js v3 · TypeScript  |
+| UI         | Tailwind CSS v4 · shadcn/ui (Radix UI) |
+| Testing    | Pest PHP (179 tests)                   |
+| Code Style | Laravel Pint                           |
 
 ## Instalación
 
@@ -53,16 +53,16 @@ vendor/bin/pint --dirty      # formato
 
 La documentación técnica completa (arquitectura, modelo de datos, flujo de stock, API, autorización, reportes/auditoría, frontend y testing) vive en [`docs/`](docs/README.md):
 
-| # | Documento |
-|---|-----------|
-| 01 | [Arquitectura del Sistema](docs/01-arquitectura-sistema.md) |
-| 02 | [Modelo de Datos](docs/02-modelo-datos.md) |
-| 03 | [Flujo de Stock](docs/03-flujo-stock.md) |
-| 04 | [API y Rutas](docs/04-api-rutas.md) |
-| 05 | [Autenticación y Autorización](docs/05-autorizacion.md) |
-| 06 | [Reportes y Auditoría](docs/06-reporte-auditoria.md) |
-| 07 | [Frontend](docs/07-frontend.md) |
-| 08 | [Testing](docs/08-testing.md) |
+| #   | Documento                                                   |
+| --- | ----------------------------------------------------------- |
+| 01  | [Arquitectura del Sistema](docs/01-arquitectura-sistema.md) |
+| 02  | [Modelo de Datos](docs/02-modelo-datos.md)                  |
+| 03  | [Flujo de Stock](docs/03-flujo-stock.md)                    |
+| 04  | [API y Rutas](docs/04-api-rutas.md)                         |
+| 05  | [Autenticación y Autorización](docs/05-autorizacion.md)     |
+| 06  | [Reportes y Auditoría](docs/06-reporte-auditoria.md)        |
+| 07  | [Frontend](docs/07-frontend.md)                             |
+| 08  | [Testing](docs/08-testing.md)                               |
 
 ## Licencia
 

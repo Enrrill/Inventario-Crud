@@ -50,26 +50,26 @@ tests/
 
 ## Cobertura Actual
 
-| Categoría | Tests | Cobertura |
-|-----------|-------|-----------|
-| Autenticación (Fortify) | 7 | Login, registro, password reset, 2FA, email verify |
-| Settings | 2 | Profile update, security |
-| Categorías | 1 | CRUD completo |
-| Proveedores | (en ProductTest) | — |
-| Productos | 1 | CRUD completo |
-| Movimientos (batch) | 13 | Lote: entradas/salidas/ajustes, stock insuficiente, duplicados, límites, audit batch_id |
-| Movimientos | 1 (2 tests) | Factory-level |
-| Dashboard | 1 | Visualización |
-| Permisos employee | 35 | Rutas 403, scoping propio, sin ajustes, reportes/inventario admin-only |
-| Usuarios | 3 | CRUD, roles, autorización |
-| Reportes | 1 | Endpoints de reportes |
-| Auditoría | 1 | Logs de auditoría |
-| Normalización | 1 | TextNormalizer |
-| Unit: Auditable | 1 | Trait funciona en modelos |
-| Unit: TextNormalizer | 1 | Métodos individuales |
-| Unit: UserRole | 1 | Funciones del enum |
-| Unit: AuditLog | 1 | Creación de logs |
-| Unit: InsufficientStockException | 2 | Mensaje y accessors |
+| Categoría                        | Tests            | Cobertura                                                                               |
+| -------------------------------- | ---------------- | --------------------------------------------------------------------------------------- |
+| Autenticación (Fortify)          | 7                | Login, registro, password reset, 2FA, email verify                                      |
+| Settings                         | 2                | Profile update, security                                                                |
+| Categorías                       | 1                | CRUD completo                                                                           |
+| Proveedores                      | (en ProductTest) | —                                                                                       |
+| Productos                        | 1                | CRUD completo                                                                           |
+| Movimientos (batch)              | 13               | Lote: entradas/salidas/ajustes, stock insuficiente, duplicados, límites, audit batch_id |
+| Movimientos                      | 1 (2 tests)      | Factory-level                                                                           |
+| Dashboard                        | 1                | Visualización                                                                           |
+| Permisos employee                | 35               | Rutas 403, scoping propio, sin ajustes, reportes/inventario admin-only                  |
+| Usuarios                         | 3                | CRUD, roles, autorización                                                               |
+| Reportes                         | 1                | Endpoints de reportes                                                                   |
+| Auditoría                        | 1                | Logs de auditoría                                                                       |
+| Normalización                    | 1                | TextNormalizer                                                                          |
+| Unit: Auditable                  | 1                | Trait funciona en modelos                                                               |
+| Unit: TextNormalizer             | 1                | Métodos individuales                                                                    |
+| Unit: UserRole                   | 1                | Funciones del enum                                                                      |
+| Unit: AuditLog                   | 1                | Creación de logs                                                                        |
+| Unit: InsufficientStockException | 2                | Mensaje y accessors                                                                     |
 
 **Total**: 179 tests, 428 assertions — todos pasan ✅
 
@@ -177,4 +177,4 @@ php artisan test --compact
 
 ---
 
-*Ver también: [Frontend](07-frontend.md) · [API y Rutas](04-api-rutas.md)*
+_Ver también: [Frontend](07-frontend.md) · [API y Rutas](04-api-rutas.md)_

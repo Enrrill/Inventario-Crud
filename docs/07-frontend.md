@@ -6,19 +6,19 @@
 
 ## Stack
 
-| Tecnología | Versión | Uso |
-|-----------|---------|-----|
-| React | 19 | UI library |
-| Inertia.js | v3 | SPA bridge (Laravel ↔ React) |
-| TypeScript | — | Type safety |
-| Tailwind CSS | v4 | Utility-first CSS |
-| shadcn/ui | — | Component library (Radix UI) |
-| Lucide React | — | Icons |
-| react-hook-form | — | Form handling |
-| Zod | — | Schema validation |
-| @tanstack/react-table | — | DataTable |
-| Sonner | — | Toast notifications |
-| Wayfinder | — | Typed route functions |
+| Tecnología            | Versión | Uso                          |
+| --------------------- | ------- | ---------------------------- |
+| React                 | 19      | UI library                   |
+| Inertia.js            | v3      | SPA bridge (Laravel ↔ React) |
+| TypeScript            | —       | Type safety                  |
+| Tailwind CSS          | v4      | Utility-first CSS            |
+| shadcn/ui             | —       | Component library (Radix UI) |
+| Lucide React          | —       | Icons                        |
+| react-hook-form       | —       | Form handling                |
+| Zod                   | —       | Schema validation            |
+| @tanstack/react-table | —       | DataTable                    |
+| Sonner                | —       | Toast notifications          |
+| Wayfinder             | —       | Typed route functions        |
 
 ---
 
@@ -84,81 +84,91 @@ resources/js/
 ## Páginas por Módulo
 
 ### Dashboard
-| Archivo | Descripción |
-|---------|-------------|
+
+| Archivo         | Descripción                                                                                                                                                                                                     |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `dashboard.tsx` | Role-aware: stat cards redactadas para employee (`my_movements_today` en vez de valor de inventario), skeleton de carga, últimos 3 movimientos (propios si es employee), top 5 stock bajo. Branding "StockNow". |
 
 ### Auth (7 páginas)
-| Archivo | Descripción |
-|---------|-------------|
-| `auth/login.tsx` | Login con card centrada, iconos en inputs |
-| `auth/register.tsx` | Registro con validación visual |
-| `auth/forgot-password.tsx` | Recuperación de contraseña |
-| `auth/reset-password.tsx` | Restablecimiento de contraseña |
-| `auth/confirm-password.tsx` | Confirmación de contraseña |
-| `auth/verify-email.tsx` | Verificación de email |
-| `auth/two-factor-challenge.tsx` | Challenge de 2FA |
+
+| Archivo                         | Descripción                               |
+| ------------------------------- | ----------------------------------------- |
+| `auth/login.tsx`                | Login con card centrada, iconos en inputs |
+| `auth/register.tsx`             | Registro con validación visual            |
+| `auth/forgot-password.tsx`      | Recuperación de contraseña                |
+| `auth/reset-password.tsx`       | Restablecimiento de contraseña            |
+| `auth/confirm-password.tsx`     | Confirmación de contraseña                |
+| `auth/verify-email.tsx`         | Verificación de email                     |
+| `auth/two-factor-challenge.tsx` | Challenge de 2FA                          |
 
 ### Categorías (4 páginas)
-| Archivo | Descripción |
-|---------|-------------|
-| `categories/index.tsx` | Lista con tabla + filtros jerárquicos |
-| `categories/create.tsx` | Formulario en drawer |
-| `categories/show.tsx` | Detalle + productos + subcategorías |
-| `categories/edit.tsx` | Formulario en drawer |
+
+| Archivo                 | Descripción                           |
+| ----------------------- | ------------------------------------- |
+| `categories/index.tsx`  | Lista con tabla + filtros jerárquicos |
+| `categories/create.tsx` | Formulario en drawer                  |
+| `categories/show.tsx`   | Detalle + productos + subcategorías   |
+| `categories/edit.tsx`   | Formulario en drawer                  |
 
 ### Proveedores (4 páginas)
-| Archivo | Descripción |
-|---------|-------------|
-| `suppliers/index.tsx` | Lista con búsqueda |
+
+| Archivo                | Descripción          |
+| ---------------------- | -------------------- |
+| `suppliers/index.tsx`  | Lista con búsqueda   |
 | `suppliers/create.tsx` | Formulario en drawer |
-| `suppliers/show.tsx` | Detalle + productos |
-| `suppliers/edit.tsx` | Formulario en drawer |
+| `suppliers/show.tsx`   | Detalle + productos  |
+| `suppliers/edit.tsx`   | Formulario en drawer |
 
 ### Productos (4 páginas)
-| Archivo | Descripción |
-|---------|-------------|
-| `products/index.tsx` | Vista dual lista/grid + filtros avanzados |
-| `products/create.tsx` | Formulario completo en drawer |
-| `products/show.tsx` | Detalle completo |
-| `products/edit.tsx` | Formulario en drawer |
+
+| Archivo               | Descripción                               |
+| --------------------- | ----------------------------------------- |
+| `products/index.tsx`  | Vista dual lista/grid + filtros avanzados |
+| `products/create.tsx` | Formulario completo en drawer             |
+| `products/show.tsx`   | Detalle completo                          |
+| `products/edit.tsx`   | Formulario en drawer                      |
 
 ### Movimientos (3 páginas + componente)
-| Archivo | Descripción |
-|---------|-------------|
-| `movements/index.tsx` | Tabla con filtros (employee: solo sus movimientos) |
-| `movements/create.tsx` | **Formulario por lote**: agregar/quitar filas (máx. 20), `reference`/`notes` compartidos, tipos filtrados por rol (employee sin `adjustment`), errores por fila |
-| `movements/components/movement-row.tsx` | Fila individual del lote: select de producto, tipo, cantidad con aviso de stock insuficiente en vivo |
-| `movements/show.tsx` | Detalle del movimiento |
+
+| Archivo                                 | Descripción                                                                                                                                                     |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `movements/index.tsx`                   | Tabla con filtros (employee: solo sus movimientos)                                                                                                              |
+| `movements/create.tsx`                  | **Formulario por lote**: agregar/quitar filas (máx. 20), `reference`/`notes` compartidos, tipos filtrados por rol (employee sin `adjustment`), errores por fila |
+| `movements/components/movement-row.tsx` | Fila individual del lote: select de producto, tipo, cantidad con aviso de stock insuficiente en vivo                                                            |
+| `movements/show.tsx`                    | Detalle del movimiento                                                                                                                                          |
 
 ### Usuarios (4 páginas — admin only)
-| Archivo | Descripción |
-|---------|-------------|
-| `users/index.tsx` | DataTable: Nombre, Email, Rol (badge), Creado |
-| `users/create.tsx` | Formulario: name, email, password, role |
-| `users/show.tsx` | Info del usuario, badge de rol |
-| `users/edit.tsx` | Formulario sin password obligatorio |
+
+| Archivo            | Descripción                                   |
+| ------------------ | --------------------------------------------- |
+| `users/index.tsx`  | DataTable: Nombre, Email, Rol (badge), Creado |
+| `users/create.tsx` | Formulario: name, email, password, role       |
+| `users/show.tsx`   | Info del usuario, badge de rol                |
+| `users/edit.tsx`   | Formulario sin password obligatorio           |
 
 ### Reportes (4 páginas)
-| Archivo | Descripción |
-|---------|-------------|
-| `reports/index.tsx` | 3 stat cards clickeables |
-| `reports/inventory.tsx` | Resumen + tabla + filtros + export |
-| `reports/movements.tsx` | Stats por tipo + tabla + filtros fecha |
-| `reports/stock-status.tsx` | 3 stat cards + desglose por categoría |
+
+| Archivo                    | Descripción                            |
+| -------------------------- | -------------------------------------- |
+| `reports/index.tsx`        | 3 stat cards clickeables               |
+| `reports/inventory.tsx`    | Resumen + tabla + filtros + export     |
+| `reports/movements.tsx`    | Stats por tipo + tabla + filtros fecha |
+| `reports/stock-status.tsx` | 3 stat cards + desglose por categoría  |
 
 ### Auditoría (2 páginas — admin only)
-| Archivo | Descripción |
-|---------|-------------|
-| `audit/index.tsx` | DataTable con **agrupación por lote**: badge "Lote (n)" y grupos expandibles (`BatchGroup`) |
-| `audit/show.tsx` | Metadata + panel de **`batchSiblings`** (logs del mismo lote) + JSON formateado old/new values |
+
+| Archivo           | Descripción                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------- |
+| `audit/index.tsx` | DataTable con **agrupación por lote**: badge "Lote (n)" y grupos expandibles (`BatchGroup`)    |
+| `audit/show.tsx`  | Metadata + panel de **`batchSiblings`** (logs del mismo lote) + JSON formateado old/new values |
 
 ### Settings (3 páginas)
-| Archivo | Descripción |
-|---------|-------------|
-| `settings/profile.tsx` | Info personal + zona de peligro |
-| `settings/security.tsx` | Contraseña, 2FA, Passkeys |
-| `settings/appearance.tsx` | Light/Dark/System selector |
+
+| Archivo                   | Descripción                     |
+| ------------------------- | ------------------------------- |
+| `settings/profile.tsx`    | Info personal + zona de peligro |
+| `settings/security.tsx`   | Contraseña, 2FA, Passkeys       |
+| `settings/appearance.tsx` | Light/Dark/System selector      |
 
 ---
 
@@ -196,7 +206,7 @@ graph TD
 ```tsx
 // Function declaration + data-slot + ComponentProps
 function DataTable({ data, columns }: DataTableProps) {
-  return <div data-slot="data-table">...</div>;
+    return <div data-slot="data-table">...</div>;
 }
 ```
 
@@ -206,7 +216,7 @@ function DataTable({ data, columns }: DataTableProps) {
 // Siempre usar cn() para combinar clases
 import { cn } from '@/lib/utils';
 
-<div className={cn('base-classes', conditional && 'conditional-classes')} />
+<div className={cn('base-classes', conditional && 'conditional-classes')} />;
 ```
 
 ### Routing (Wayfinder)
@@ -232,8 +242,8 @@ import { z } from 'zod';
 const schema = z.object({ name: z.string().min(1) });
 
 function CreateForm() {
-  const form = useForm({ resolver: zodResolver(schema) });
-  return <Form {...form}>...</Form>;
+    const form = useForm({ resolver: zodResolver(schema) });
+    return <Form {...form}>...</Form>;
 }
 ```
 
@@ -264,24 +274,24 @@ const { data, setData, post, processing, errors } = useForm({...});
 
 Cada página recibe sus datos del controlador vía Inertia:
 
-| Página | Props del Backend |
-|--------|-------------------|
-| Dashboard | `stats` (con `inventory_value` nullable y `my_movements_today`), `recentMovements`, `lowStockProducts`, `isAdmin` |
-| Categories Index | `categories` (paginada), `filters`, `isAdmin` |
-| Categories Create | `parentCategories` |
-| Categories Show | `category` (con parent/children/products) |
-| Suppliers/Products Index | lista paginada + `filters` + `isAdmin` |
-| Products Index | `products` (paginada), `categories`, `suppliers`, `filters`, `isAdmin` |
-| Movements Index | `movements` (paginada), `products`, `filters`, `isAdmin` |
-| Movements Create | `products`, `types` (filtrados por rol), `isAdmin` |
-| Movements Show | `movement`, `isAdmin` |
-| Users Index | `users` (paginada), `filters` (search, role) |
-| Reports Index | `categories`, `suppliers`, `isAdmin` |
-| Reports Inventory | `products`, `summary`, `filters` (admin) |
-| Reports Movements | `movements`, `summary`, `filters`, `users` (solo admin; vacío para employee), `isAdmin` |
-| Audit Index | `logs` (paginada), `filters` |
-| Audit Show | `log`, `batchSiblings` |
+| Página                   | Props del Backend                                                                                                 |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Dashboard                | `stats` (con `inventory_value` nullable y `my_movements_today`), `recentMovements`, `lowStockProducts`, `isAdmin` |
+| Categories Index         | `categories` (paginada), `filters`, `isAdmin`                                                                     |
+| Categories Create        | `parentCategories`                                                                                                |
+| Categories Show          | `category` (con parent/children/products)                                                                         |
+| Suppliers/Products Index | lista paginada + `filters` + `isAdmin`                                                                            |
+| Products Index           | `products` (paginada), `categories`, `suppliers`, `filters`, `isAdmin`                                            |
+| Movements Index          | `movements` (paginada), `products`, `filters`, `isAdmin`                                                          |
+| Movements Create         | `products`, `types` (filtrados por rol), `isAdmin`                                                                |
+| Movements Show           | `movement`, `isAdmin`                                                                                             |
+| Users Index              | `users` (paginada), `filters` (search, role)                                                                      |
+| Reports Index            | `categories`, `suppliers`, `isAdmin`                                                                              |
+| Reports Inventory        | `products`, `summary`, `filters` (admin)                                                                          |
+| Reports Movements        | `movements`, `summary`, `filters`, `users` (solo admin; vacío para employee), `isAdmin`                           |
+| Audit Index              | `logs` (paginada), `filters`                                                                                      |
+| Audit Show               | `log`, `batchSiblings`                                                                                            |
 
 ---
 
-*Ver también: [Testing](08-testing.md) · [API y Rutas](04-api-rutas.md)*
+_Ver también: [Testing](08-testing.md) · [API y Rutas](04-api-rutas.md)_

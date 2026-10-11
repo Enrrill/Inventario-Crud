@@ -6,18 +6,18 @@
 
 ## Stack
 
-| Capa | Tecnología | Versión |
-|------|-----------|---------|
-| Language | PHP | 8.3 |
-| Framework | Laravel | 13 |
-| Database | PostgreSQL | — |
-| Auth | Fortify + Passkeys + 2FA | — |
-| Frontend | React | 19 |
-| SPA Bridge | Inertia.js | v3 |
-| Styling | Tailwind CSS | v4 |
-| UI Library | shadcn/ui (Radix UI) | — |
-| Testing | Pest | — |
-| Code Style | Laravel Pint | — |
+| Capa       | Tecnología               | Versión |
+| ---------- | ------------------------ | ------- |
+| Language   | PHP                      | 8.3     |
+| Framework  | Laravel                  | 13      |
+| Database   | PostgreSQL               | —       |
+| Auth       | Fortify + Passkeys + 2FA | —       |
+| Frontend   | React                    | 19      |
+| SPA Bridge | Inertia.js               | v3      |
+| Styling    | Tailwind CSS             | v4      |
+| UI Library | shadcn/ui (Radix UI)     | —       |
+| Testing    | Pest                     | —       |
+| Code Style | Laravel Pint             | —       |
 
 ---
 
@@ -150,30 +150,35 @@ graph TB
 ## Decisiones Arquitectónicas
 
 ### 1. Actions Pattern
+
 La lógica de negocio compleja se encapsula en clases de acción (`app/Actions/`) en lugar de colocarla directamente en controladores. Esto mejora la testabilidad y reutilización.
 
-| Acción | Responsabilidad |
-|--------|----------------|
+| Acción                         | Responsabilidad                                                              |
+| ------------------------------ | ---------------------------------------------------------------------------- |
 | `RegisterBatchMovementsAction` | Registrar 1..N movimientos en una sola transacción (usado por el controller) |
-| `RegisterEntryAction` | Registrar entrada de stock *(legacy — ya no la invoca ningún controller)* |
-| `RegisterExitAction` | Registrar salida de stock con validación *(legacy)* |
-| `RegisterAdjustmentAction` | Ajustar stock directamente *(legacy)* |
-| `DeleteCategoryAction` | Eliminar categoría reasignando productos |
+| `RegisterEntryAction`          | Registrar entrada de stock _(legacy — ya no la invoca ningún controller)_    |
+| `RegisterExitAction`           | Registrar salida de stock con validación _(legacy)_                          |
+| `RegisterAdjustmentAction`     | Ajustar stock directamente _(legacy)_                                        |
+| `DeleteCategoryAction`         | Eliminar categoría reasignando productos                                     |
 
 > `POST /movements` siempre pasa por `RegisterBatchMovementsAction`, que internamente aplica la lógica de entrada/salida/ajuste por fila y correlaciona los `audit_logs` de la operación mediante `Context::get('audit_batch_id')`.
 
 ### 2. Form Requests
+
 Cada endpoint de escritura tiene su propio Form Request para validación y normalización de datos. Se usa `prepareForValidation()` para sanitizar inputs antes de validar.
 
 ### 3. Policies + Middleware de Rol
+
 El control de acceso se maneja en dos capas: Policies de Laravel y un middleware `role:` personalizado registrado en `bootstrap/app.php`. **El gate efectivo de las rutas de escritura (categorías/proveedores/productos/usuarios/inventario) es el middleware `role:admin` a nivel de ruta** — las policies son una capa secundaria.
 
 ### 4. Auditable Trait
+
 Los modelos domain (Product, Category, Supplier, StockMovement, User) usan el trait `Auditable` para registrar automáticamente cambios en `audit_logs`.
 
 ### 5. Inertia.js
+
 El frontend se comunica con el backend vía Inertia.js, eliminando la necesidad de una API REST separada. Cada controlador renderiza componentes React directamente.
 
 ---
 
-*Ver también: [Modelo de Datos](02-modelo-datos.md) · [Flujo de Stock](03-flujo-stock.md)*
+_Ver también: [Modelo de Datos](02-modelo-datos.md) · [Flujo de Stock](03-flujo-stock.md)_

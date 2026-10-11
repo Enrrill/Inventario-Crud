@@ -27,10 +27,10 @@ flowchart TD
 
 **Archivo**: `app/Enums/UserRole.php`
 
-| Rol | Valor | Label | Descripción |
-|-----|-------|-------|-------------|
-| `Admin` | `admin` | Administrador | Acceso total al sistema |
-| `Employee` | `employee` | Empleado | Acceso limitado |
+| Rol        | Valor      | Label         | Descripción             |
+| ---------- | ---------- | ------------- | ----------------------- |
+| `Admin`    | `admin`    | Administrador | Acceso total al sistema |
+| `Employee` | `employee` | Empleado      | Acceso limitado         |
 
 ### Métodos del Enum
 
@@ -46,16 +46,16 @@ UserRole::Admin->isEmployee(); // false
 
 Efectivos a nivel de rutas y datos (verificados por `tests/Feature/EmployeePermissionsTest.php`):
 
-| Recurso | Admin | Employee |
-|---------|-------|----------|
-| **Dashboard** | Ver (stats completos, últimos 3 movimientos globales, top 5 stock bajo) | Ver (stats redactados: sin `inventory_value`, con `my_movements_today`, solo **sus** movimientos) |
-| **Categorías** | CRUD completo | **Solo lectura** (`index`/`show`) — 403 en escrituras |
-| **Proveedores** | CRUD completo | **Solo lectura** — 403 en escrituras |
-| **Productos** | CRUD completo | **Solo lectura** — 403 en escrituras |
-| **Movimientos** | Ver todos, crear cualquier tipo | Ver **solo los suyos**, crear **entry/exit** (sin `adjustment`) |
-| **Usuarios** | CRUD completo | No acceso (403) |
-| **Reportes** | Inventario + movimientos + stock + export | **Sin** `/reports/inventory` (403); movimientos/stock/export solo con **sus** datos |
-| **Auditoría** | Ver | No acceso (403) |
+| Recurso         | Admin                                                                   | Employee                                                                                          |
+| --------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Dashboard**   | Ver (stats completos, últimos 3 movimientos globales, top 5 stock bajo) | Ver (stats redactados: sin `inventory_value`, con `my_movements_today`, solo **sus** movimientos) |
+| **Categorías**  | CRUD completo                                                           | **Solo lectura** (`index`/`show`) — 403 en escrituras                                             |
+| **Proveedores** | CRUD completo                                                           | **Solo lectura** — 403 en escrituras                                                              |
+| **Productos**   | CRUD completo                                                           | **Solo lectura** — 403 en escrituras                                                              |
+| **Movimientos** | Ver todos, crear cualquier tipo                                         | Ver **solo los suyos**, crear **entry/exit** (sin `adjustment`)                                   |
+| **Usuarios**    | CRUD completo                                                           | No acceso (403)                                                                                   |
+| **Reportes**    | Inventario + movimientos + stock + export                               | **Sin** `/reports/inventory` (403); movimientos/stock/export solo con **sus** datos               |
+| **Auditoría**   | Ver                                                                     | No acceso (403)                                                                                   |
 
 > El gate real de escritura es el **middleware `role:admin` a nivel de ruta** (`routes/web.php`), no las policies — un employee puede tener policies permisivas en Category/Supplier/Product y aun así recibir 403 al intentar crear/editar/eliminar.
 
@@ -92,65 +92,65 @@ El middleware valida que el usuario autenticado tenga al menos uno de los roles 
 
 ### Resumen de Políticas
 
-| Policy | Admin | Employee |
-|--------|-------|----------|
-| `UserPolicy` | full CRUD | solo `view` del perfil propio |
-| `CategoryPolicy` | full CRUD | viewAny, view, create, update (delete ❌) — **anulado por rutas role:admin** |
-| `SupplierPolicy` | full CRUD | viewAny, view, create, update (delete ❌) — **anulado por rutas role:admin** |
-| `ProductPolicy` | full CRUD | viewAny, view, create, update (delete ❌) — **anulado por rutas role:admin** |
-| `StockMovementPolicy` | full CRUD | viewAny, view, create |
+| Policy                | Admin     | Employee                                                                     |
+| --------------------- | --------- | ---------------------------------------------------------------------------- |
+| `UserPolicy`          | full CRUD | solo `view` del perfil propio                                                |
+| `CategoryPolicy`      | full CRUD | viewAny, view, create, update (delete ❌) — **anulado por rutas role:admin** |
+| `SupplierPolicy`      | full CRUD | viewAny, view, create, update (delete ❌) — **anulado por rutas role:admin** |
+| `ProductPolicy`       | full CRUD | viewAny, view, create, update (delete ❌) — **anulado por rutas role:admin** |
+| `StockMovementPolicy` | full CRUD | viewAny, view, create                                                        |
 
 ### UserPolicy
 
-| Método | Admin | Employee |
-|--------|-------|----------|
-| `viewAny($user)` | ✅ | ❌ (`isAdmin()`) |
-| `view($user, $model)` | ✅ | ✅ (solo propio) |
-| `create($user)` | ✅ | ❌ |
-| `update($user, $model)` | ✅ | ❌ (`isAdmin()`) |
-| `delete($user, $model)` | ✅ (no a sí mismo) | ❌ |
-| `restore($user, $model)` | ✅ | ❌ |
-| `forceDelete($user, $model)` | ✅ | ❌ |
+| Método                       | Admin              | Employee         |
+| ---------------------------- | ------------------ | ---------------- |
+| `viewAny($user)`             | ✅                 | ❌ (`isAdmin()`) |
+| `view($user, $model)`        | ✅                 | ✅ (solo propio) |
+| `create($user)`              | ✅                 | ❌               |
+| `update($user, $model)`      | ✅                 | ❌ (`isAdmin()`) |
+| `delete($user, $model)`      | ✅ (no a sí mismo) | ❌               |
+| `restore($user, $model)`     | ✅                 | ❌               |
+| `forceDelete($user, $model)` | ✅                 | ❌               |
 
 ### CategoryPolicy
 
-| Método | Admin | Employee |
-|--------|-------|----------|
-| `viewAny($user)` | ✅ | ✅ |
-| `view($user, $model)` | ✅ | ✅ |
-| `create($user)` | ✅ | ✅ (pero 403 por ruta) |
-| `update($user, $model)` | ✅ | ✅ (pero 403 por ruta) |
-| `delete($user, $model)` | ✅ | ❌ |
+| Método                  | Admin | Employee               |
+| ----------------------- | ----- | ---------------------- |
+| `viewAny($user)`        | ✅    | ✅                     |
+| `view($user, $model)`   | ✅    | ✅                     |
+| `create($user)`         | ✅    | ✅ (pero 403 por ruta) |
+| `update($user, $model)` | ✅    | ✅ (pero 403 por ruta) |
+| `delete($user, $model)` | ✅    | ❌                     |
 
 ### SupplierPolicy
 
-| Método | Admin | Employee |
-|--------|-------|----------|
-| `viewAny($user)` | ✅ | ✅ |
-| `view($user, $model)` | ✅ | ✅ |
-| `create($user)` | ✅ | ✅ (pero 403 por ruta) |
-| `update($user, $model)` | ✅ | ✅ (pero 403 por ruta) |
-| `delete($user, $model)` | ✅ | ❌ |
+| Método                  | Admin | Employee               |
+| ----------------------- | ----- | ---------------------- |
+| `viewAny($user)`        | ✅    | ✅                     |
+| `view($user, $model)`   | ✅    | ✅                     |
+| `create($user)`         | ✅    | ✅ (pero 403 por ruta) |
+| `update($user, $model)` | ✅    | ✅ (pero 403 por ruta) |
+| `delete($user, $model)` | ✅    | ❌                     |
 
 ### ProductPolicy
 
-| Método | Admin | Employee |
-|--------|-------|----------|
-| `viewAny($user)` | ✅ | ✅ |
-| `view($user, $model)` | ✅ | ✅ |
-| `create($user)` | ✅ | ✅ (pero 403 por ruta) |
-| `update($user, $model)` | ✅ | ✅ (pero 403 por ruta) |
-| `delete($user, $model)` | ✅ | ❌ |
+| Método                  | Admin | Employee               |
+| ----------------------- | ----- | ---------------------- |
+| `viewAny($user)`        | ✅    | ✅                     |
+| `view($user, $model)`   | ✅    | ✅                     |
+| `create($user)`         | ✅    | ✅ (pero 403 por ruta) |
+| `update($user, $model)` | ✅    | ✅ (pero 403 por ruta) |
+| `delete($user, $model)` | ✅    | ❌                     |
 
 ### StockMovementPolicy
 
-| Método | Admin | Employee |
-|--------|-------|----------|
-| `viewAny($user)` | ✅ | ✅ |
-| `view($user, $model)` | ✅ | ✅ |
-| `create($user)` | ✅ | ✅ |
-| `update($user, $model)` | ✅ | ❌ |
-| `delete($user, $model)` | ✅ | ❌ |
+| Método                  | Admin | Employee |
+| ----------------------- | ----- | -------- |
+| `viewAny($user)`        | ✅    | ✅       |
+| `view($user, $model)`   | ✅    | ✅       |
+| `create($user)`         | ✅    | ✅       |
+| `update($user, $model)` | ✅    | ❌       |
+| `delete($user, $model)` | ✅    | ❌       |
 
 ---
 
@@ -158,17 +158,17 @@ El middleware valida que el usuario autenticado tenga al menos uno de los roles 
 
 El proyecto usa **Laravel Fortify** para autenticación:
 
-| Funcionalidad | Estado |
-|---------------|--------|
-| Login | ✅ Implementado |
-| Registro | ✅ Implementado |
-| Forgot Password | ✅ Implementado |
-| Reset Password | ✅ Implementado |
-| Email Verification | ✅ Implementado |
-| Password Confirmation | ✅ Implementado |
+| Funcionalidad              | Estado          |
+| -------------------------- | --------------- |
+| Login                      | ✅ Implementado |
+| Registro                   | ✅ Implementado |
+| Forgot Password            | ✅ Implementado |
+| Reset Password             | ✅ Implementado |
+| Email Verification         | ✅ Implementado |
+| Password Confirmation      | ✅ Implementado |
 | Two-Factor Auth (2FA/TOTP) | ✅ Implementado |
-| Passkeys (WebAuthn) | ✅ Implementado |
+| Passkeys (WebAuthn)        | ✅ Implementado |
 
 ---
 
-*Ver también: [API y Rutas](04-api-rutas.md) · [Reportes y Auditoría](06-reporte-auditoria.md)*
+_Ver también: [API y Rutas](04-api-rutas.md) · [Reportes y Auditoría](06-reporte-auditoria.md)_
