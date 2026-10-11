@@ -2,16 +2,15 @@
 
 namespace App\Services;
 
-use App\Enums\StockMovementType;
 use App\Http\Requests\ReportRequest;
 use App\Models\Product;
 use App\Models\StockMovement;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Collection;
 use OpenSpout\Common\Entity\Cell;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Writer\XLSX\Writer;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ReportExportService
@@ -30,11 +29,11 @@ class ReportExportService
 
         $products = $query->orderBy('name_product')->get();
 
-        $data = $products->map(fn ($p) => [
+        $data = $products->map(fn (Product $p) => [
             'SKU' => $p->sku_product,
             'Nombre' => $p->name_product,
-            'Categoría' => $p->category?->name_category ?? 'N/A',
-            'Proveedor' => $p->supplier?->name_supplier ?? 'N/A',
+            'Categoría' => $p->category->name_category ?? 'N/A',
+            'Proveedor' => $p->supplier->name_supplier ?? 'N/A',
             'Precio' => number_format($p->unit_price_product, 2),
             'Stock Actual' => $p->current_stock_product,
             'Stock Mínimo' => $p->minimum_stock_product,
@@ -68,15 +67,15 @@ class ReportExportService
 
         $movements = $query->latest('created_at')->get();
 
-        $data = $movements->map(fn ($m) => [
+        $data = $movements->map(fn (StockMovement $m) => [
             'Fecha' => $m->created_at->format('d/m/Y H:i'),
-            'Producto' => $m->product?->name_product ?? 'N/A',
-            'Tipo' => $m->type_movement instanceof StockMovementType ? $m->type_movement->label() : $m->type_movement,
+            'Producto' => $m->product->name_product ?? 'N/A',
+            'Tipo' => $m->type_movement->label(),
             'Cantidad' => $m->quantity_movement,
             'Stock Anterior' => $m->previous_stock_movement,
             'Stock Nuevo' => $m->new_stock_movement,
             'Referencia' => $m->reference_movement ?? 'N/A',
-            'Usuario' => $m->user?->name ?? 'N/A',
+            'Usuario' => $m->user->name ?? 'N/A',
         ]);
 
         $headers = ['Fecha', 'Producto', 'Tipo', 'Cantidad', 'Stock Anterior', 'Stock Nuevo', 'Referencia', 'Usuario'];
@@ -94,7 +93,7 @@ class ReportExportService
 
         $products = $query->get();
 
-        $data = $products->map(function ($p) {
+        $data = $products->map(function (Product $p) {
             $status = match (true) {
                 $p->current_stock_product === 0 => 'Sin Stock',
                 $p->current_stock_product <= $p->minimum_stock_product => 'Stock Bajo',
@@ -104,7 +103,7 @@ class ReportExportService
             return [
                 'SKU' => $p->sku_product,
                 'Nombre' => $p->name_product,
-                'Categoría' => $p->category?->name_category ?? 'N/A',
+                'Categoría' => $p->category->name_category ?? 'N/A',
                 'Stock Actual' => $p->current_stock_product,
                 'Stock Mínimo' => $p->minimum_stock_product,
                 'Estado' => $status,
@@ -116,7 +115,11 @@ class ReportExportService
         return $this->export($type, $data, $headers, 'reporte_estado_stock');
     }
 
-    private function export(string $type, Collection $data, array $headers, string $filename): SymfonyResponse
+    /**
+     * @param  iterable<int, array<string, int|string>>  $data
+     * @param  list<string>  $headers
+     */
+    private function export(string $type, iterable $data, array $headers, string $filename): SymfonyResponse
     {
         if (app()->bound('debugbar')) {
             app('debugbar')->disable();
@@ -130,10 +133,18 @@ class ReportExportService
         };
     }
 
-    private function exportCsv(Collection $data, string $filename, array $headers): SymfonyResponse
+    /**
+     * @param  iterable<int, array<string, int|string>>  $data
+     * @param  list<string>  $headers
+     */
+    private function exportCsv(iterable $data, string $filename, array $headers): SymfonyResponse
     {
         $callback = function () use ($data, $headers) {
             $handle = fopen('php://output', 'w');
+
+            if (! is_resource($handle)) {
+                throw new RuntimeException('No se pudo abrir el stream de salida para el CSV.');
+            }
 
             fputcsv($handle, $headers);
 
@@ -149,7 +160,11 @@ class ReportExportService
         ]);
     }
 
-    private function exportPdf(Collection $data, string $filename, array $headers): SymfonyResponse
+    /**
+     * @param  iterable<int, array<string, int|string>>  $data
+     * @param  list<string>  $headers
+     */
+    private function exportPdf(iterable $data, string $filename, array $headers): SymfonyResponse
     {
         $pdf = Pdf::loadView('exports.pdf-table', [
             'data' => $data,
@@ -160,7 +175,11 @@ class ReportExportService
         return $pdf->download("{$filename}.pdf");
     }
 
-    private function exportXlsx(Collection $data, string $filename, array $headers): SymfonyResponse
+    /**
+     * @param  iterable<int, array<string, int|string>>  $data
+     * @param  list<string>  $headers
+     */
+    private function exportXlsx(iterable $data, string $filename, array $headers): SymfonyResponse
     {
         $tempFile = tempnam(sys_get_temp_dir(), 'xlsx_export_').'.xlsx';
 

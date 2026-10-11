@@ -52,12 +52,12 @@ class ReportController extends Controller
         $summary = [
             'total_products' => $allProducts->count(),
             'total_value' => $allProducts->sum(fn ($p) => $p->current_stock_product * $p->unit_price_product),
-            'by_category' => $allProducts->groupBy(fn ($p) => $p->category?->name_category ?? 'Sin categoría')
+            'by_category' => $allProducts->groupBy(fn ($p) => $p->category->name_category ?? 'Sin categoría')
                 ->map(fn ($items) => [
                     'count' => $items->count(),
                     'value' => $items->sum(fn ($p) => $p->current_stock_product * $p->unit_price_product),
                 ]),
-            'by_supplier' => $allProducts->groupBy(fn ($p) => $p->supplier?->name_supplier ?? 'Sin proveedor')
+            'by_supplier' => $allProducts->groupBy(fn ($p) => $p->supplier->name_supplier ?? 'Sin proveedor')
                 ->map(fn ($items) => [
                     'count' => $items->count(),
                     'value' => $items->sum(fn ($p) => $p->current_stock_product * $p->unit_price_product),
@@ -155,7 +155,7 @@ class ReportController extends Controller
             'out_of_stock' => $products->where('current_stock_product', 0)->values()->all(),
             'low_stock' => $products->filter(fn ($p) => $p->current_stock_product > 0 && $p->current_stock_product <= $p->minimum_stock_product)->values()->all(),
             'normal_stock' => $products->filter(fn ($p) => $p->current_stock_product > $p->minimum_stock_product)->values()->all(),
-            'by_category' => $products->groupBy(fn ($p) => $p->category?->name_category ?? 'Sin categoría')
+            'by_category' => $products->groupBy(fn ($p) => $p->category->name_category ?? 'Sin categoría')
                 ->map(fn ($items) => [
                     'total' => $items->count(),
                     'out_of_stock' => $items->where('current_stock_product', 0)->count(),

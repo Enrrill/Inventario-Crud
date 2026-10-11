@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\StockMovement;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -76,7 +77,7 @@ class StockMovementController extends Controller
         $validated = $request->validated();
 
         if (! $user->isAdmin()) {
-            $hasAdjustment = collect($validated['movements'])->contains(
+            $hasAdjustment = collect(Arr::wrap($validated['movements']))->contains(
                 'type_movement',
                 StockMovementType::Adjustment->value
             );

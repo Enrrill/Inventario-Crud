@@ -25,7 +25,7 @@ class StoreUserRequest extends FormRequest
     }
 
     /**
-     * @return array<string, array<int, ValidationRule|array<mixed>|string>>
+     * @return array<string, array<int, ValidationRule|\Illuminate\Contracts\Validation\Rule|array<mixed>|string>>
      */
     public function rules(): array
     {

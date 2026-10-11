@@ -43,6 +43,9 @@ class InventoryTestSeeder extends Seeder
         $this->command->info("Se crearon {$userCount} usuarios (1 admin principal + ".($userCount - 1).' adicionales).');
     }
 
+    /**
+     * @return array<string, User>
+     */
     private function createUsers(): array
     {
         $admin = User::factory()->create([
@@ -85,6 +88,9 @@ class InventoryTestSeeder extends Seeder
         ];
     }
 
+    /**
+     * @return array<string, Category>
+     */
     private function createCategories(): array
     {
         $data = [
@@ -145,6 +151,9 @@ class InventoryTestSeeder extends Seeder
         return $categories;
     }
 
+    /**
+     * @return list<Supplier>
+     */
     private function createSuppliers(): array
     {
         $suppliersData = [
@@ -217,6 +226,11 @@ class InventoryTestSeeder extends Seeder
         return $suppliers;
     }
 
+    /**
+     * @param  array<string, Category>  $categories
+     * @param  list<Supplier>  $suppliers
+     * @return list<Product>
+     */
     private function createProducts(array $categories, array $suppliers): array
     {
         $productsData = [
@@ -314,6 +328,10 @@ class InventoryTestSeeder extends Seeder
         return $products;
     }
 
+    /**
+     * @param  list<Product>  $products
+     * @param  array<string, User>  $users
+     */
     private function createMovements(array $products, array $users): void
     {
         $types = [

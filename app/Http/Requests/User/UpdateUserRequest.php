@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use App\Enums\UserRole;
+use App\Models\User;
 use App\Services\TextNormalizer;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,11 +26,12 @@ class UpdateUserRequest extends FormRequest
     }
 
     /**
-     * @return array<string, array<int, ValidationRule|array<mixed>|string>>
+     * @return array<string, array<int, ValidationRule|\Illuminate\Contracts\Validation\Rule|\Stringable|array<mixed>|string>>
      */
     public function rules(): array
     {
-        $userId = $this->route('user')?->id;
+        $user = $this->route('user');
+        $userId = $user instanceof User ? $user->id : null;
 
         return [
             'name' => ['required', 'string', 'max:255'],

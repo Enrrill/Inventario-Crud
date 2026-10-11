@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Supplier;
 
+use App\Models\Supplier;
 use App\Services\TextNormalizer;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -30,7 +31,8 @@ class UpdateSupplierRequest extends FormRequest
      */
     public function rules(): array
     {
-        $supplierId = $this->route('supplier')?->id;
+        $supplier = $this->route('supplier');
+        $supplierId = $supplier instanceof Supplier ? $supplier->id : null;
 
         return [
             'name_supplier' => ['required', 'string', 'max:150'],

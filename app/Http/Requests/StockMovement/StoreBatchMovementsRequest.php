@@ -90,7 +90,7 @@ class StoreBatchMovementsRequest extends FormRequest
                     continue;
                 }
 
-                $product = Product::find($movement['product_id']);
+                $product = Product::query()->whereKey($movement['product_id'])->first();
 
                 if ($product && $movement['quantity_movement'] > $product->current_stock_product) {
                     $validator->errors()->add(

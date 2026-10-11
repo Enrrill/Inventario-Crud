@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -12,6 +13,9 @@ class AuditRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, array<int, ValidationRule|array<mixed>|string>>
+     */
     public function rules(): array
     {
         return [

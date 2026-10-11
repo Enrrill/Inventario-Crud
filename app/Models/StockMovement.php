@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\StockMovementType;
 use App\Traits\Auditable;
 use Carbon\Carbon;
+use Database\Factories\StockMovementFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class StockMovement extends Model
 {
+    /** @use HasFactory<StockMovementFactory> */
     use Auditable, HasFactory;
 
     protected $fillable = [
@@ -48,26 +50,44 @@ class StockMovement extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Product, $this>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
     public function scopeForProduct(Builder $query, int $productId): Builder
     {
         return $query->where('product_id', $productId);
     }
 
+    /**
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
     public function scopeOfType(Builder $query, StockMovementType $type): Builder
     {
         return $query->where('type_movement', $type);
     }
 
+    /**
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
     public function scopeRecent(Builder $query, int $days = 30): Builder
     {
         return $query->where('created_at', '>=', now()->subDays($days));

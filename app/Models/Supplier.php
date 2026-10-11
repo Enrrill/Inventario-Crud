@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\Auditable;
 use Carbon\Carbon;
+use Database\Factories\SupplierFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Supplier extends Model
 {
+    /** @use HasFactory<SupplierFactory> */
     use Auditable, HasFactory;
 
     protected $fillable = [
@@ -30,6 +32,9 @@ class Supplier extends Model
         'address_supplier',
     ];
 
+    /**
+     * @return HasMany<Product, $this>
+     */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

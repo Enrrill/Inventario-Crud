@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreStockMovementRequest extends FormRequest
 {
@@ -50,16 +51,16 @@ class StoreStockMovementRequest extends FormRequest
     /**
      * Validate stock availability for exit movements.
      */
-    public function withValidator($validator): void
+    public function withValidator(Validator $validator): void
     {
         $validator->after(function ($validator) {
             if ($validator->errors()->hasAny(['product_id', 'type_movement', 'quantity_movement'])) {
                 return;
             }
 
-            $product = Product::find($this->product_id);
+            $product = Product::query()->whereKey($this->product_id)->first();
 
-            if ($this->type_movement === StockMovementType::Exit && $this->quantity_movement > $product->current_stock_product) {
+            if ($product !== null && $this->type_movement === StockMovementType::Exit && $this->quantity_movement > $product->current_stock_product) {
                 $validator->errors()->add(
                     'quantity_movement',
                     "Stock insuficiente. Disponible: {$product->current_stock_product}"

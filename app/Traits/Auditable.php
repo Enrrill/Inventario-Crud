@@ -25,6 +25,10 @@ trait Auditable
         });
     }
 
+    /**
+     * @param  array<string, mixed>|null  $old
+     * @param  array<string, mixed>|null  $new
+     */
     protected static function logAudit(Model $model, string $event, ?array $old, ?array $new): void
     {
         AuditLog::create([

@@ -62,6 +62,9 @@ class User extends Authenticatable implements PasskeyUser
         return $this->role === UserRole::Employee;
     }
 
+    /**
+     * @return HasMany<StockMovement, $this>
+     */
     public function stockMovements(): HasMany
     {
         return $this->hasMany(StockMovement::class);
