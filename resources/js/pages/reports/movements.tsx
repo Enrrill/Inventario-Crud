@@ -1,10 +1,18 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon, DownloadIcon, ArrowLeftRight, ArrowDownCircle, ArrowUpCircle, HomeIcon, RefreshCw, XIcon } from 'lucide-react';
+import {
+    ArrowLeftIcon,
+    DownloadIcon,
+    ArrowLeftRight,
+    ArrowDownCircle,
+    ArrowUpCircle,
+    HomeIcon,
+    RefreshCw,
+    XIcon,
+} from 'lucide-react';
 import { useBackNavigation } from '@/hooks/use-back-navigation';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -15,7 +23,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { DataTable } from '@/components/inventory/data-table';
-import { EmptyState } from '@/components/inventory/empty-state';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
 import { SearchableSelect } from '@/components/inventory/searchable-select';
@@ -24,7 +31,11 @@ import { TypeBadge } from '@/components/inventory/type-badge';
 import { useQueryParams } from '@/hooks/use-query-params';
 import reports from '@/routes/reports';
 import products from '@/routes/products';
-import type { PaginatedData, StockMovement, StockMovementType } from '@/types/inventory';
+import type {
+    PaginatedData,
+    StockMovement,
+    StockMovementType,
+} from '@/types/inventory';
 
 type UserOption = { id: number; name: string };
 
@@ -38,13 +49,22 @@ type ReportsMovementsProps = {
             total_quantity: number;
         }>;
     };
-    filters: { date_from?: string; date_to?: string; product_id?: string; type_movement?: string; user_id?: string; per_page?: string };
+    filters: {
+        date_from?: string;
+        date_to?: string;
+        product_id?: string;
+        type_movement?: string;
+        user_id?: string;
+        per_page?: string;
+    };
     users: UserOption[];
     isAdmin: boolean;
 };
 
 const formatDate = (date: string) =>
-    new Intl.DateTimeFormat('es-VE', { dateStyle: 'medium' }).format(new Date(date));
+    new Intl.DateTimeFormat('es-VE', { dateStyle: 'medium' }).format(
+        new Date(date),
+    );
 
 export default function ReportsMovements({
     movements,
@@ -64,7 +84,11 @@ export default function ReportsMovements({
     }>();
 
     const hasActiveFilters = Boolean(
-        queryFilters.date_from || queryFilters.date_to || queryFilters.type_movement || queryFilters.product_id || queryFilters.user_id,
+        queryFilters.date_from ||
+        queryFilters.date_to ||
+        queryFilters.type_movement ||
+        queryFilters.product_id ||
+        queryFilters.user_id,
     );
 
     const handleFilterChange = useCallback(
@@ -89,14 +113,19 @@ export default function ReportsMovements({
         if (typeMov && typeMov !== 'all') params.set('type_movement', typeMov);
         if (userId && userId !== 'all') params.set('user_id', userId);
 
-        window.location.href = reports.export.url(type) + '?' + params.toString();
+        window.location.href =
+            reports.export.url(type) + '?' + params.toString();
     }
 
     const hasData = movements.data.length > 0;
 
-    const entrySummary = summary.by_type.find((t) => t.type_movement === 'entry');
+    const entrySummary = summary.by_type.find(
+        (t) => t.type_movement === 'entry',
+    );
     const exitSummary = summary.by_type.find((t) => t.type_movement === 'exit');
-    const adjustmentSummary = summary.by_type.find((t) => t.type_movement === 'adjustment');
+    const adjustmentSummary = summary.by_type.find(
+        (t) => t.type_movement === 'adjustment',
+    );
 
     const columns: ColumnDef<StockFeatures, StockMovement>[] = [
         {
@@ -104,7 +133,9 @@ export default function ReportsMovements({
             header: 'Fecha',
             meta: { className: 'w-40' },
             cell: ({ row }) => (
-                <span className="text-muted-foreground text-sm">{formatDate(row.original.created_at)}</span>
+                <span className="text-muted-foreground text-sm">
+                    {formatDate(row.original.created_at)}
+                </span>
             ),
         },
         {
@@ -126,13 +157,19 @@ export default function ReportsMovements({
         {
             accessorKey: 'type_movement',
             header: 'Tipo',
-            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-28 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => <TypeBadge type={row.original.type_movement} />,
         },
         {
             accessorKey: 'quantity_movement',
             header: 'Cantidad',
-            meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-24 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <span className="font-medium">
                     {row.original.type_movement === 'exit' ? '-' : '+'}
@@ -145,7 +182,9 @@ export default function ReportsMovements({
             header: 'Usuario',
             meta: { className: 'w-48' },
             cell: ({ row }) => (
-                <span className="text-muted-foreground">{row.original.user?.name ?? '—'}</span>
+                <span className="text-muted-foreground">
+                    {row.original.user?.name ?? '—'}
+                </span>
             ),
         },
     ];
@@ -167,15 +206,27 @@ export default function ReportsMovements({
                         <ArrowLeftIcon className="size-4" />
                         Volver
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('csv')} disabled={!hasData}>
+                    <Button
+                        variant="outline"
+                        onClick={() => handleExport('csv')}
+                        disabled={!hasData}
+                    >
                         <DownloadIcon className="size-4" />
                         CSV
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('pdf')} disabled={!hasData}>
+                    <Button
+                        variant="outline"
+                        onClick={() => handleExport('pdf')}
+                        disabled={!hasData}
+                    >
                         <DownloadIcon className="size-4" />
                         PDF
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('xlsx')} disabled={!hasData}>
+                    <Button
+                        variant="outline"
+                        onClick={() => handleExport('xlsx')}
+                        disabled={!hasData}
+                    >
                         <DownloadIcon className="size-4" />
                         XLSX
                     </Button>
@@ -213,7 +264,9 @@ export default function ReportsMovements({
                         <Input
                             type="date"
                             value={queryFilters.date_from ?? ''}
-                            onChange={(e) => handleFilterChange('date_from', e.target.value)}
+                            onChange={(e) =>
+                                handleFilterChange('date_from', e.target.value)
+                            }
                             className="w-full sm:w-40"
                         />
                     </div>
@@ -222,13 +275,17 @@ export default function ReportsMovements({
                         <Input
                             type="date"
                             value={queryFilters.date_to ?? ''}
-                            onChange={(e) => handleFilterChange('date_to', e.target.value)}
+                            onChange={(e) =>
+                                handleFilterChange('date_to', e.target.value)
+                            }
                             className="w-full sm:w-40"
                         />
                     </div>
                     <Select
                         value={queryFilters.type_movement ?? 'all'}
-                        onValueChange={(v) => handleFilterChange('type_movement', v)}
+                        onValueChange={(v) =>
+                            handleFilterChange('type_movement', v)
+                        }
                     >
                         <SelectTrigger className="w-full sm:w-40">
                             <SelectValue placeholder="Todos los tipos" />
@@ -237,20 +294,31 @@ export default function ReportsMovements({
                             <SelectItem value="all">Todos los tipos</SelectItem>
                             <SelectItem value="entry">Entradas</SelectItem>
                             <SelectItem value="exit">Salidas</SelectItem>
-                            {isAdmin && <SelectItem value="adjustment">Ajustes</SelectItem>}
+                            {isAdmin && (
+                                <SelectItem value="adjustment">
+                                    Ajustes
+                                </SelectItem>
+                            )}
                         </SelectContent>
                     </Select>
                     {isAdmin && (
                         <SearchableSelect
                             options={userOptions}
                             value={queryFilters.user_id ?? 'all'}
-                            onValueChange={(v) => handleFilterChange('user_id', v)}
+                            onValueChange={(v) =>
+                                handleFilterChange('user_id', v)
+                            }
                             placeholder="Todos los usuarios"
                             className="w-full sm:w-56"
                         />
                     )}
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 shrink-0">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="h-9 shrink-0"
+                        >
                             <XIcon className="size-4" />
                             Limpiar filtros
                         </Button>
@@ -262,7 +330,9 @@ export default function ReportsMovements({
                     data={movements.data}
                     pagination={movements}
                     showPerPage
-                    onPerPageChange={(perPage) => setQueryFilters({ per_page: String(perPage) })}
+                    onPerPageChange={(perPage) =>
+                        setQueryFilters({ per_page: String(perPage) })
+                    }
                     emptyTitle="Sin movimientos"
                     emptyDescription="No se encontraron movimientos con los filtros seleccionados."
                 />

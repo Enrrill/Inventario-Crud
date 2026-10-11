@@ -11,7 +11,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { DataTable } from '@/components/inventory/data-table';
-import { EmptyState } from '@/components/inventory/empty-state';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
 import { SearchableSelect } from '@/components/inventory/searchable-select';
@@ -45,11 +44,8 @@ export default function MovementsIndex({
         per_page: string;
     }>();
     const page = usePage();
-    const filterTypes: StockMovementType[] = (page.props.filterTypes as StockMovementType[]) ?? [
-        'entry',
-        'exit',
-        'adjustment',
-    ];
+    const filterTypes: StockMovementType[] = (page.props
+        .filterTypes as StockMovementType[]) ?? ['entry', 'exit', 'adjustment'];
     const typeLabels: Record<string, string> = {
         entry: 'Entrada',
         exit: 'Salida',
@@ -60,14 +56,21 @@ export default function MovementsIndex({
 
     const handleFilter = useCallback(
         (key: string, value: string) => {
-            setFilters({ [key]: value === 'all' ? '' : value } as Partial<{ product_id: string; type: string; per_page: string }>);
+            setFilters({ [key]: value === 'all' ? '' : value } as Partial<{
+                product_id: string;
+                type: string;
+                per_page: string;
+            }>);
         },
         [setFilters],
     );
 
     const productOptions = [
         { value: 'all', label: 'Todos los productos' },
-        ...products.map((p) => ({ value: String(p.id), label: p.name_product })),
+        ...products.map((p) => ({
+            value: String(p.id),
+            label: p.name_product,
+        })),
     ];
 
     function formatDate(date: string) {
@@ -107,13 +110,19 @@ export default function MovementsIndex({
         {
             accessorKey: 'type_movement',
             header: 'Tipo',
-            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-28 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => <TypeBadge type={row.original.type_movement} />,
         },
         {
             accessorKey: 'quantity_movement',
             header: 'Cantidad',
-            meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-24 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => {
                 const m = row.original;
                 const isEntry = m.type_movement === 'entry';
@@ -137,7 +146,10 @@ export default function MovementsIndex({
         {
             accessorKey: 'previous_stock_movement',
             header: 'Stock Ant.',
-            meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-24 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <span className="text-muted-foreground text-sm">
                     {row.original.previous_stock_movement}
@@ -147,7 +159,10 @@ export default function MovementsIndex({
         {
             accessorKey: 'new_stock_movement',
             header: 'Stock Nuevo',
-            meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-24 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <span className="text-muted-foreground text-sm">
                     {row.original.new_stock_movement}
@@ -169,22 +184,19 @@ export default function MovementsIndex({
             header: 'Usuario',
             meta: { className: 'w-36' },
             cell: ({ row }) => (
-                <span className="text-sm">
-                    {row.original.user?.name}
-                </span>
+                <span className="text-sm">{row.original.user?.name}</span>
             ),
         },
         {
             id: 'actions',
             header: 'Acciones',
-            meta: { className: 'w-20 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-20 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <div className="flex items-center justify-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        asChild
-                    >
+                    <Button variant="ghost" size="icon-sm" asChild>
                         <Link href={movements.show.url(row.original.id)}>
                             <EyeIcon className="size-4" />
                             <span className="sr-only">Ver</span>
@@ -238,7 +250,12 @@ export default function MovementsIndex({
                     </Select>
 
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="shrink-0"
+                        >
                             <XIcon className="size-4" />
                             Limpiar filtros
                         </Button>
@@ -250,7 +267,9 @@ export default function MovementsIndex({
                     data={pagination.data}
                     pagination={pagination}
                     showPerPage
-                    onPerPageChange={(perPage) => setFilters({ per_page: String(perPage) })}
+                    onPerPageChange={(perPage) =>
+                        setFilters({ per_page: String(perPage) })
+                    }
                     emptyTitle="Sin movimientos"
                     emptyDescription="No se encontraron movimientos. Registra uno nuevo para comenzar."
                     emptyAction={{

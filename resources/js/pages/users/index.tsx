@@ -1,5 +1,11 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { HomeIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
+import {
+    HomeIcon,
+    PencilIcon,
+    PlusIcon,
+    Trash2Icon,
+    XIcon,
+} from 'lucide-react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -41,7 +47,11 @@ function RoleBadge({ role }: { role: UserRole }) {
 export default function UsersIndex({ users: pagination }: UsersIndexProps) {
     const { auth } = usePage().props;
     const currentUser = auth.user;
-    const [filters, setFilters, clearFilters] = useQueryParams<{ search: string; role: string; per_page: string }>();
+    const [filters, setFilters, clearFilters] = useQueryParams<{
+        search: string;
+        role: string;
+        per_page: string;
+    }>();
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
 
     const hasActiveFilters = Boolean(filters.search || filters.role);
@@ -92,7 +102,9 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
             header: 'Creado',
             cell: ({ row }) => (
                 <span className="text-muted-foreground text-sm">
-                    {new Date(row.original.created_at).toLocaleDateString('es-VE')}
+                    {new Date(row.original.created_at).toLocaleDateString(
+                        'es-VE',
+                    )}
                 </span>
             ),
         },
@@ -117,13 +129,23 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
                         variant="ghost"
                         size="icon-sm"
                         disabled={row.original.id === currentUser.id}
-                        title={row.original.id === currentUser.id ? 'No puedes eliminar tu propio usuario' : 'Eliminar'}
+                        title={
+                            row.original.id === currentUser.id
+                                ? 'No puedes eliminar tu propio usuario'
+                                : 'Eliminar'
+                        }
                         onClick={(e) => {
                             e.stopPropagation();
                             setDeleteUser(row.original);
                         }}
                     >
-                        <Trash2Icon className={cn('size-4', row.original.id === currentUser.id && 'opacity-30')} />
+                        <Trash2Icon
+                            className={cn(
+                                'size-4',
+                                row.original.id === currentUser.id &&
+                                    'opacity-30',
+                            )}
+                        />
                         <span className="sr-only">Eliminar</span>
                     </Button>
                 </div>
@@ -156,7 +178,9 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
                     />
                     <Select
                         value={filters.role ?? 'all'}
-                        onValueChange={(v) => setFilters({ role: v === 'all' ? '' : v })}
+                        onValueChange={(v) =>
+                            setFilters({ role: v === 'all' ? '' : v })
+                        }
                     >
                         <SelectTrigger className="w-full sm:w-44">
                             <SelectValue placeholder="Todos los roles" />
@@ -168,7 +192,12 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
                         </SelectContent>
                     </Select>
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="shrink-0"
+                        >
                             <XIcon className="size-4" />
                             Limpiar filtros
                         </Button>
@@ -180,7 +209,9 @@ export default function UsersIndex({ users: pagination }: UsersIndexProps) {
                     data={pagination.data}
                     pagination={pagination}
                     showPerPage
-                    onPerPageChange={(perPage) => setFilters({ per_page: String(perPage) })}
+                    onPerPageChange={(perPage) =>
+                        setFilters({ per_page: String(perPage) })
+                    }
                     emptyTitle="Sin usuarios"
                     emptyDescription="No se encontraron usuarios. Crea uno nuevo para comenzar."
                     emptyAction={{

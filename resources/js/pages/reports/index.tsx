@@ -15,7 +15,8 @@ export default function ReportsIndex({ isAdmin }: ReportsIndexProps) {
             ? [
                   {
                       title: 'Reporte de Inventario',
-                      description: 'Consulta detallada de todos los productos, su valor y distribución por categoría y proveedor.',
+                      description:
+                          'Consulta detallada de todos los productos, su valor y distribución por categoría y proveedor.',
                       icon: Package,
                       href: reports.inventory.url(),
                       color: 'text-blue-600 dark:text-blue-400',
@@ -25,7 +26,8 @@ export default function ReportsIndex({ isAdmin }: ReportsIndexProps) {
             : []),
         {
             title: 'Reporte de Movimientos',
-            description: 'Análisis de movimientos de entrada, salida y ajuste con filtros por fecha y tipo.',
+            description:
+                'Análisis de movimientos de entrada, salida y ajuste con filtros por fecha y tipo.',
             icon: ArrowLeftRight,
             href: reports.movements.url(),
             color: 'text-emerald-600 dark:text-emerald-400',
@@ -33,7 +35,8 @@ export default function ReportsIndex({ isAdmin }: ReportsIndexProps) {
         },
         {
             title: 'Estado de Stock',
-            description: 'Resumen del estado del stock: productos sin stock, con stock bajo y stock normal por categoría.',
+            description:
+                'Resumen del estado del stock: productos sin stock, con stock bajo y stock normal por categoría.',
             icon: BarChart3,
             href: reports.stockStatus.url(),
             color: 'text-amber-600 dark:text-amber-400',
@@ -60,12 +63,18 @@ export default function ReportsIndex({ isAdmin }: ReportsIndexProps) {
                 >
                     {reportTypes.map((report) => (
                         <Link key={report.title} href={report.href}>
-                            <Card className="h-full transition-all hover:border-primary/50 hover:shadow-md">
+                            <Card className="hover:border-primary/50 h-full transition-all hover:shadow-md">
                                 <CardHeader>
-                                    <div className={`mb-2 flex size-10 items-center justify-center rounded-lg ${report.bg}`}>
-                                        <report.icon className={`size-5 ${report.color}`} />
+                                    <div
+                                        className={`mb-2 flex size-10 items-center justify-center rounded-lg ${report.bg}`}
+                                    >
+                                        <report.icon
+                                            className={`size-5 ${report.color}`}
+                                        />
                                     </div>
-                                    <CardTitle className="text-lg">{report.title}</CardTitle>
+                                    <CardTitle className="text-lg">
+                                        {report.title}
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <p className="text-muted-foreground text-sm">

@@ -19,7 +19,10 @@ export default function MovementsShow({ movement }: MovementsShowProps) {
         breadcrumbs: [
             { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
             { title: 'Movimientos', href: movements.index.url() },
-            { title: `Movimiento #${movement.id}`, href: movements.show.url(movement.id) },
+            {
+                title: `Movimiento #${movement.id}`,
+                href: movements.show.url(movement.id),
+            },
         ],
     });
 
@@ -63,7 +66,9 @@ export default function MovementsShow({ movement }: MovementsShowProps) {
                                     Producto
                                 </span>
                                 <Link
-                                    href={products.show.url(movement.product_id)}
+                                    href={products.show.url(
+                                        movement.product_id,
+                                    )}
                                     className="hover:text-primary font-medium"
                                 >
                                     {movement.product?.name_product}
@@ -73,13 +78,21 @@ export default function MovementsShow({ movement }: MovementsShowProps) {
                                 </Link>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-muted-foreground">Tipo</span>
+                                <span className="text-muted-foreground">
+                                    Tipo
+                                </span>
                                 <TypeBadge type={movement.type_movement} />
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-muted-foreground">Cantidad</span>
+                                <span className="text-muted-foreground">
+                                    Cantidad
+                                </span>
                                 <span className="font-medium">
-                                    {movement.type_movement === 'entry' ? '+' : movement.type_movement === 'exit' ? '-' : ''}
+                                    {movement.type_movement === 'entry'
+                                        ? '+'
+                                        : movement.type_movement === 'exit'
+                                          ? '-'
+                                          : ''}
                                     {movement.quantity_movement}
                                 </span>
                             </div>
@@ -117,7 +130,9 @@ export default function MovementsShow({ movement }: MovementsShowProps) {
                             )}
                             {movement.notes_movement && (
                                 <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Notas</span>
+                                    <span className="text-muted-foreground">
+                                        Notas
+                                    </span>
                                     <span className="text-right font-medium">
                                         {movement.notes_movement}
                                     </span>
@@ -132,7 +147,9 @@ export default function MovementsShow({ movement }: MovementsShowProps) {
                                 </span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-muted-foreground">Fecha</span>
+                                <span className="text-muted-foreground">
+                                    Fecha
+                                </span>
                                 <span className="font-medium">
                                     {formatDate(movement.created_at)}
                                 </span>

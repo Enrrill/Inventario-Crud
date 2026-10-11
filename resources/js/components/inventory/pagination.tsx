@@ -38,10 +38,14 @@ function Pagination({
         }
         const url = new URL(window.location.href);
         url.searchParams.set('page', String(page));
-        router.get(url.pathname + url.search, {}, {
-            preserveScroll,
-            preserveState: true,
-        });
+        router.get(
+            url.pathname + url.search,
+            {},
+            {
+                preserveScroll,
+                preserveState: true,
+            },
+        );
     }
 
     function getVisiblePages(): (number | '...')[] {
@@ -81,36 +85,48 @@ function Pagination({
         return pages;
     }
 
-    const isFirstDisabled = current_page <= 1 || isSinglePageOrEmpty || total === 0;
-    const isLastDisabled = current_page >= last_page || isSinglePageOrEmpty || total === 0;
+    const isFirstDisabled =
+        current_page <= 1 || isSinglePageOrEmpty || total === 0;
+    const isLastDisabled =
+        current_page >= last_page || isSinglePageOrEmpty || total === 0;
 
     return (
         <div
             data-slot="pagination"
             className={cn(
-                'flex flex-col items-center justify-between gap-4 sm:flex-row sm:items-center px-1 py-2',
+                'flex flex-col items-center justify-between gap-4 px-1 py-2 sm:flex-row sm:items-center',
                 className,
             )}
         >
-            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-sm text-muted-foreground">
+            <div className="text-muted-foreground flex flex-wrap items-center justify-center gap-2 text-sm sm:gap-3">
                 <span>
                     {total === 0 ? (
-                        <span>Mostrando <span className="font-semibold text-foreground">0</span> registros</span>
+                        <span>
+                            Mostrando{' '}
+                            <span className="text-foreground font-semibold">
+                                0
+                            </span>{' '}
+                            registros
+                        </span>
                     ) : (
                         <>
                             Mostrando{' '}
-                            <span className="font-semibold text-foreground">
+                            <span className="text-foreground font-semibold">
                                 {from === to ? from : `${from}–${to}`}
                             </span>{' '}
                             de{' '}
-                            <span className="font-semibold text-foreground">{total}</span>{' '}
+                            <span className="text-foreground font-semibold">
+                                {total}
+                            </span>{' '}
                             {total === 1 ? 'registro' : 'registros'}
                         </>
                     )}
                 </span>
                 {showPerPage && (
-                    <div className="flex items-center gap-1.5 border-l border-border/80 pl-2 sm:pl-3">
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">Por página:</span>
+                    <div className="border-border/80 flex items-center gap-1.5 border-l pl-2 sm:pl-3">
+                        <span className="text-muted-foreground text-xs whitespace-nowrap">
+                            Por página:
+                        </span>
                         <PerPageSelector
                             value={per_page}
                             onChange={onPerPageChange ?? (() => {})}
@@ -152,13 +168,22 @@ function Pagination({
                     ) : (
                         <Button
                             key={page}
-                            variant={current_page === page && total > 0 ? 'default' : 'outline'}
+                            variant={
+                                current_page === page && total > 0
+                                    ? 'default'
+                                    : 'outline'
+                            }
                             size="icon-sm"
                             onClick={() => goToPage(page)}
-                            disabled={total === 0 || (isSinglePageOrEmpty && page === 1)}
+                            disabled={
+                                total === 0 ||
+                                (isSinglePageOrEmpty && page === 1)
+                            }
                             className={cn(
                                 'size-8 text-xs font-medium',
-                                current_page === page && total > 0 && 'pointer-events-none shadow-xs',
+                                current_page === page &&
+                                    total > 0 &&
+                                    'pointer-events-none shadow-xs',
                             )}
                         >
                             {page}

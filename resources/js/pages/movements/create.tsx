@@ -11,7 +11,11 @@ import InputError from '@/components/input-error';
 import { PageHeader } from '@/components/inventory/page-header';
 import { MovementRow } from './components/movement-row';
 import movements from '@/routes/movements';
-import type { Product, StockMovementType, StockMovementTypeOption } from '@/types/inventory';
+import type {
+    Product,
+    StockMovementType,
+    StockMovementTypeOption,
+} from '@/types/inventory';
 import type { MovementFormData } from '@/types/inventory';
 
 const MAX_MOVEMENTS = 20;
@@ -30,41 +34,63 @@ function createEmptyRow(): MovementFormData {
     };
 }
 
-export default function MovementsCreate({ products, types, isAdmin }: MovementsCreateProps) {
+export default function MovementsCreate({
+    products,
+    types,
+    isAdmin,
+}: MovementsCreateProps) {
     const back = useBackNavigation(movements.index.url());
 
     const [rows, setRows] = useState<MovementFormData[]>([createEmptyRow()]);
 
-    const updateRow = useCallback((index: number, field: keyof MovementFormData, value: string) => {
-        setRows((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: value } : row)));
-    }, []);
+    const updateRow = useCallback(
+        (index: number, field: keyof MovementFormData, value: string) => {
+            setRows((prev) =>
+                prev.map((row, i) =>
+                    i === index ? { ...row, [field]: value } : row,
+                ),
+            );
+        },
+        [],
+    );
 
     const addRow = useCallback(() => {
-        setRows((prev) => (prev.length < MAX_MOVEMENTS ? [...prev, createEmptyRow()] : prev));
+        setRows((prev) =>
+            prev.length < MAX_MOVEMENTS ? [...prev, createEmptyRow()] : prev,
+        );
     }, []);
 
     const removeRow = useCallback((index: number) => {
-        setRows((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
+        setRows((prev) =>
+            prev.length > 1 ? prev.filter((_, i) => i !== index) : prev,
+        );
     }, []);
 
     const summary = useMemo(() => {
         const entries = rows.filter((r) => r.type_movement === 'entry').length;
         const exits = rows.filter((r) => r.type_movement === 'exit').length;
-        const adjustments = rows.filter((r) => r.type_movement === 'adjustment').length;
+        const adjustments = rows.filter(
+            (r) => r.type_movement === 'adjustment',
+        ).length;
         return { entries, exits, adjustments, total: rows.length };
     }, [rows]);
 
     const hasInsufficientStock = useMemo(() => {
         return rows.some((row) => {
             if (row.type_movement !== 'exit' || !row.product_id) return false;
-            const product = products.find((p) => p.id === Number(row.product_id));
+            const product = products.find(
+                (p) => p.id === Number(row.product_id),
+            );
             const qty = parseInt(row.quantity_movement, 10) || 0;
             return product && qty > product.current_stock_product;
         });
     }, [rows, products]);
 
     const hasEmptyRequired = useMemo(() => {
-        return rows.some((row) => !row.product_id || !row.type_movement || !row.quantity_movement);
+        return rows.some(
+            (row) =>
+                !row.product_id || !row.type_movement || !row.quantity_movement,
+        );
     }, [rows]);
 
     const isSubmitDisabled = hasInsufficientStock || hasEmptyRequired;
@@ -75,7 +101,11 @@ export default function MovementsCreate({ products, types, isAdmin }: MovementsC
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <PageHeader
                     title="Registrar Movimientos"
-                    description={isAdmin ? "Agregar múltiples entradas, salidas o ajustes de stock en un solo lote" : "Agregar múltiples entradas o salidas de stock en un solo lote"}
+                    description={
+                        isAdmin
+                            ? 'Agregar múltiples entradas, salidas o ajustes de stock en un solo lote'
+                            : 'Agregar múltiples entradas o salidas de stock en un solo lote'
+                    }
                 >
                     <Button variant="outline" onClick={back}>
                         <ArrowLeftIcon className="size-4" />
@@ -87,20 +117,34 @@ export default function MovementsCreate({ products, types, isAdmin }: MovementsC
                     <Form
                         method="post"
                         action={movements.store.url()}
-                        onError={() => toast.error('Error al registrar los movimientos. Verifica los datos.')}
+                        onError={() =>
+                            toast.error(
+                                'Error al registrar los movimientos. Verifica los datos.',
+                            )
+                        }
                         className="space-y-5"
                         transform={(data) => {
                             const movements = rows
-                                .filter((r) => r.product_id && r.type_movement && r.quantity_movement)
+                                .filter(
+                                    (r) =>
+                                        r.product_id &&
+                                        r.type_movement &&
+                                        r.quantity_movement,
+                                )
                                 .map((r) => ({
                                     product_id: Number(r.product_id),
-                                    type_movement: r.type_movement as StockMovementType,
-                                    quantity_movement: parseInt(r.quantity_movement, 10),
+                                    type_movement:
+                                        r.type_movement as StockMovementType,
+                                    quantity_movement: parseInt(
+                                        r.quantity_movement,
+                                        10,
+                                    ),
                                 }));
 
                             return {
                                 movements,
-                                reference_movement: data.reference_movement ?? '',
+                                reference_movement:
+                                    data.reference_movement ?? '',
                                 notes_movement: data.notes_movement ?? '',
                             };
                         }}
@@ -112,16 +156,38 @@ export default function MovementsCreate({ products, types, isAdmin }: MovementsC
                                         <MovementRow
                                             key={index}
                                             index={index}
-                                            product={products.find((p) => p.id === Number(row.product_id))}
+                                            product={products.find(
+                                                (p) =>
+                                                    p.id ===
+                                                    Number(row.product_id),
+                                            )}
                                             typeMovement={row.type_movement}
                                             quantity={row.quantity_movement}
                                             products={products}
                                             types={types}
                                             errors={errors}
                                             canRemove={rows.length > 1}
-                                            onProductChange={(v) => updateRow(index, 'product_id', v)}
-                                            onTypeChange={(v) => updateRow(index, 'type_movement', v)}
-                                            onQuantityChange={(v) => updateRow(index, 'quantity_movement', v)}
+                                            onProductChange={(v) =>
+                                                updateRow(
+                                                    index,
+                                                    'product_id',
+                                                    v,
+                                                )
+                                            }
+                                            onTypeChange={(v) =>
+                                                updateRow(
+                                                    index,
+                                                    'type_movement',
+                                                    v,
+                                                )
+                                            }
+                                            onQuantityChange={(v) =>
+                                                updateRow(
+                                                    index,
+                                                    'quantity_movement',
+                                                    v,
+                                                )
+                                            }
                                             onRemove={() => removeRow(index)}
                                         />
                                     ))}
@@ -141,23 +207,32 @@ export default function MovementsCreate({ products, types, isAdmin }: MovementsC
                                 )}
 
                                 {summary.total > 0 && (
-                                    <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                                        <span className="font-medium text-foreground">
-                                            {summary.total} {summary.total === 1 ? 'movimiento' : 'movimientos'}:
+                                    <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
+                                        <span className="text-foreground font-medium">
+                                            {summary.total}{' '}
+                                            {summary.total === 1
+                                                ? 'movimiento'
+                                                : 'movimientos'}
+                                            :
                                         </span>
                                         {summary.entries > 0 && (
                                             <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400">
-                                                {summary.entries} entrada{summary.entries > 1 ? 's' : ''}
+                                                {summary.entries} entrada
+                                                {summary.entries > 1 ? 's' : ''}
                                             </span>
                                         )}
                                         {summary.exits > 0 && (
                                             <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/40 dark:text-red-400">
-                                                {summary.exits} salida{summary.exits > 1 ? 's' : ''}
+                                                {summary.exits} salida
+                                                {summary.exits > 1 ? 's' : ''}
                                             </span>
                                         )}
                                         {summary.adjustments > 0 && (
                                             <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/40 dark:text-blue-400">
-                                                {summary.adjustments} ajuste{summary.adjustments > 1 ? 's' : ''}
+                                                {summary.adjustments} ajuste
+                                                {summary.adjustments > 1
+                                                    ? 's'
+                                                    : ''}
                                             </span>
                                         )}
                                     </div>
@@ -174,7 +249,9 @@ export default function MovementsCreate({ products, types, isAdmin }: MovementsC
                                             placeholder="Ej: OC-2026-001"
                                             maxLength={100}
                                         />
-                                        <InputError message={errors.reference_movement} />
+                                        <InputError
+                                            message={errors.reference_movement}
+                                        />
                                     </div>
 
                                     <div className="space-y-2">
@@ -187,26 +264,35 @@ export default function MovementsCreate({ products, types, isAdmin }: MovementsC
                                             placeholder="Detalles del lote de movimientos..."
                                             rows={3}
                                         />
-                                        <InputError message={errors.notes_movement} />
+                                        <InputError
+                                            message={errors.notes_movement}
+                                        />
                                     </div>
                                 </div>
 
-                                {errors.movements && typeof errors.movements === 'string' && (
-                                    <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-                                        {errors.movements}
-                                    </div>
-                                )}
+                                {errors.movements &&
+                                    typeof errors.movements === 'string' && (
+                                        <div className="bg-destructive/10 text-destructive rounded-md p-3 text-sm">
+                                            {errors.movements}
+                                        </div>
+                                    )}
 
                                 <div className="flex items-center gap-3">
                                     <Button
                                         type="submit"
-                                        disabled={processing || isSubmitDisabled}
+                                        disabled={
+                                            processing || isSubmitDisabled
+                                        }
                                     >
                                         {processing
                                             ? 'Registrando...'
                                             : `Registrar ${summary.total === 1 ? 'movimiento' : `${summary.total} movimientos`}`}
                                     </Button>
-                                    <Button type="button" variant="outline" onClick={back}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={back}
+                                    >
                                         Cancelar
                                     </Button>
                                 </div>

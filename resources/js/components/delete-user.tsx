@@ -20,7 +20,7 @@ export default function DeleteUser() {
     const passwordInput = useRef<HTMLInputElement>(null);
 
     return (
-        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6 shadow-sm">
+        <div className="border-destructive/20 bg-destructive/5 rounded-lg border p-6 shadow-sm">
             <div className="mb-4 flex items-center gap-3">
                 <div className="flex size-9 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/20">
                     <Trash2 className="size-5 text-red-600 dark:text-red-400" />
@@ -39,7 +39,8 @@ export default function DeleteUser() {
                 <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
                     <p className="font-medium">Advertencia</p>
                     <p className="text-sm">
-                        Procede con precaución, esta acción no se puede deshacer.
+                        Procede con precaución, esta acción no se puede
+                        deshacer.
                     </p>
                 </div>
 
@@ -57,10 +58,10 @@ export default function DeleteUser() {
                             ¿Estás seguro de que deseas eliminar tu cuenta?
                         </DialogTitle>
                         <DialogDescription>
-                            Una vez que tu cuenta sea eliminada, todos sus recursos
-                            y datos serán eliminados permanentemente. Por favor,
-                            ingresa tu contraseña para confirmar que deseas
-                            eliminar tu cuenta permanentemente.
+                            Una vez que tu cuenta sea eliminada, todos sus
+                            recursos y datos serán eliminados permanentemente.
+                            Por favor, ingresa tu contraseña para confirmar que
+                            deseas eliminar tu cuenta permanentemente.
                         </DialogDescription>
 
                         <Form

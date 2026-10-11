@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
 import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { toast } from 'sonner';
@@ -41,14 +41,21 @@ export default function UsersEdit({ user }: UsersEditProps) {
                     <Form
                         method="put"
                         action={users.update.url(user.id)}
-                        onError={() => toast.error('Error al guardar los cambios. Verifica los datos.')}
+                        onError={() =>
+                            toast.error(
+                                'Error al guardar los cambios. Verifica los datos.',
+                            )
+                        }
                         className="space-y-6"
                     >
                         {({ processing, errors }) => (
                             <>
                                 <div className="space-y-2">
                                     <Label htmlFor="name">
-                                        Nombre <span className="text-destructive">*</span>
+                                        Nombre{' '}
+                                        <span className="text-destructive">
+                                            *
+                                        </span>
                                     </Label>
                                     <Input
                                         id="name"
@@ -62,7 +69,10 @@ export default function UsersEdit({ user }: UsersEditProps) {
 
                                 <div className="space-y-2">
                                     <Label htmlFor="email">
-                                        Correo electrónico <span className="text-destructive">*</span>
+                                        Correo electrónico{' '}
+                                        <span className="text-destructive">
+                                            *
+                                        </span>
                                     </Label>
                                     <Input
                                         id="email"
@@ -99,20 +109,32 @@ export default function UsersEdit({ user }: UsersEditProps) {
                                         placeholder="Confirmar nueva contraseña"
                                         autoComplete="new-password"
                                     />
-                                    <InputError message={errors.password_confirmation} />
+                                    <InputError
+                                        message={errors.password_confirmation}
+                                    />
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="role">
-                                        Rol <span className="text-destructive">*</span>
+                                        Rol{' '}
+                                        <span className="text-destructive">
+                                            *
+                                        </span>
                                     </Label>
-                                    <Select name="role" defaultValue={user.role}>
+                                    <Select
+                                        name="role"
+                                        defaultValue={user.role}
+                                    >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Seleccionar rol" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="employee">Empleado</SelectItem>
-                                            <SelectItem value="admin">Administrador</SelectItem>
+                                            <SelectItem value="employee">
+                                                Empleado
+                                            </SelectItem>
+                                            <SelectItem value="admin">
+                                                Administrador
+                                            </SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <InputError message={errors.role} />
@@ -120,9 +142,15 @@ export default function UsersEdit({ user }: UsersEditProps) {
 
                                 <div className="flex items-center gap-3">
                                     <Button type="submit" disabled={processing}>
-                                        {processing ? 'Guardando...' : 'Guardar cambios'}
+                                        {processing
+                                            ? 'Guardando...'
+                                            : 'Guardar cambios'}
                                     </Button>
-                                    <Button type="button" variant="outline" onClick={back}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={back}
+                                    >
                                         Cancelar
                                     </Button>
                                 </div>

@@ -26,7 +26,10 @@ export function Breadcrumbs({
 
                             const label = Icon ? (
                                 <span className="inline-flex items-center gap-1.5">
-                                    <Icon className="size-4 shrink-0" aria-hidden="true" />
+                                    <Icon
+                                        className="size-4 shrink-0"
+                                        aria-hidden="true"
+                                    />
                                     <span>{item.title}</span>
                                 </span>
                             ) : (

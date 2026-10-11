@@ -26,18 +26,29 @@ function PerPageSelector({
     }
 
     return (
-        <div className={cn('inline-flex items-center', className)} data-slot="per-page-selector">
+        <div
+            className={cn('inline-flex items-center', className)}
+            data-slot="per-page-selector"
+        >
             <Select value={String(value)} onValueChange={handleChange}>
                 <SelectTrigger
                     size="sm"
-                    className="h-8 min-w-[72px] px-2.5 text-xs font-medium bg-background/50 hover:bg-muted/40 transition-colors"
+                    className="bg-background/50 hover:bg-muted/40 h-8 min-w-[72px] px-2.5 text-xs font-medium transition-colors"
                     aria-label="Registros por página"
                 >
                     <SelectValue />
                 </SelectTrigger>
-                <SelectContent side="top" align="start" className="min-w-[72px]">
+                <SelectContent
+                    side="top"
+                    align="start"
+                    className="min-w-[72px]"
+                >
                     {PER_PAGE_OPTIONS.map((option) => (
-                        <SelectItem key={option} value={String(option)} className="text-xs">
+                        <SelectItem
+                            key={option}
+                            value={String(option)}
+                            className="text-xs"
+                        >
                             {option}
                         </SelectItem>
                     ))}

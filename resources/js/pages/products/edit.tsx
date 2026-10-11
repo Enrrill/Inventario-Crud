@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
 import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { toast } from 'sonner';
@@ -74,9 +74,16 @@ export default function ProductsEdit({
                         action={products.update.url(product.id)}
                         transform={(data) => ({
                             ...data,
-                            supplier_id: data.supplier_id === 'none' || !data.supplier_id ? null : data.supplier_id,
+                            supplier_id:
+                                data.supplier_id === 'none' || !data.supplier_id
+                                    ? null
+                                    : data.supplier_id,
                         })}
-                        onError={() => toast.error('Error al guardar los cambios. Verifica los datos.')}
+                        onError={() =>
+                            toast.error(
+                                'Error al guardar los cambios. Verifica los datos.',
+                            )
+                        }
                         className="space-y-6"
                     >
                         {({ processing, errors }) => (
@@ -84,7 +91,10 @@ export default function ProductsEdit({
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     <div className="space-y-2">
                                         <Label htmlFor="sku_product">
-                                            SKU <span className="text-destructive">*</span>
+                                            SKU{' '}
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <Input
                                             id="sku_product"
@@ -93,12 +103,17 @@ export default function ProductsEdit({
                                             required
                                             autoFocus
                                         />
-                                        <InputError message={errors.sku_product} />
+                                        <InputError
+                                            message={errors.sku_product}
+                                        />
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label htmlFor="name_product">
-                                            Nombre <span className="text-destructive">*</span>
+                                            Nombre{' '}
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <Input
                                             id="name_product"
@@ -106,7 +121,9 @@ export default function ProductsEdit({
                                             defaultValue={product.name_product}
                                             required
                                         />
-                                        <InputError message={errors.name_product} />
+                                        <InputError
+                                            message={errors.name_product}
+                                        />
                                     </div>
                                 </div>
 
@@ -117,25 +134,36 @@ export default function ProductsEdit({
                                     <Textarea
                                         id="description_product"
                                         name="description_product"
-                                        defaultValue={product.description_product ?? ''}
+                                        defaultValue={
+                                            product.description_product ?? ''
+                                        }
                                         rows={3}
                                     />
-                                    <InputError message={errors.description_product} />
+                                    <InputError
+                                        message={errors.description_product}
+                                    />
                                 </div>
 
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     <div className="space-y-2">
                                         <Label>
-                                            Categoría <span className="text-destructive">*</span>
+                                            Categoría{' '}
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <SearchableSelect
                                             name="category_id"
                                             options={categoryOptions}
-                                            defaultValue={String(product.category_id)}
+                                            defaultValue={String(
+                                                product.category_id,
+                                            )}
                                             placeholder="Seleccionar categoría"
                                             searchPlaceholder="Buscar categoría..."
                                         />
-                                        <InputError message={errors.category_id} />
+                                        <InputError
+                                            message={errors.category_id}
+                                        />
                                     </div>
 
                                     <div className="space-y-2">
@@ -145,13 +173,17 @@ export default function ProductsEdit({
                                             options={supplierOptions}
                                             defaultValue={
                                                 product.supplier_id
-                                                    ? String(product.supplier_id)
+                                                    ? String(
+                                                          product.supplier_id,
+                                                      )
                                                     : 'none'
                                             }
                                             placeholder="Seleccionar proveedor"
                                             searchPlaceholder="Buscar proveedor..."
                                         />
-                                        <InputError message={errors.supplier_id} />
+                                        <InputError
+                                            message={errors.supplier_id}
+                                        />
                                     </div>
                                 </div>
 
@@ -159,7 +191,9 @@ export default function ProductsEdit({
                                     <div className="space-y-2">
                                         <Label htmlFor="unit_price_product">
                                             Precio unitario{' '}
-                                            <span className="text-destructive">*</span>
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <Input
                                             id="unit_price_product"
@@ -167,16 +201,22 @@ export default function ProductsEdit({
                                             type="number"
                                             step="0.01"
                                             min="0"
-                                            defaultValue={product.unit_price_product}
+                                            defaultValue={
+                                                product.unit_price_product
+                                            }
                                             required
                                         />
-                                        <InputError message={errors.unit_price_product} />
+                                        <InputError
+                                            message={errors.unit_price_product}
+                                        />
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label>
                                             Unidad de medida{' '}
-                                            <span className="text-destructive">*</span>
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <input
                                             type="hidden"
@@ -185,39 +225,52 @@ export default function ProductsEdit({
                                         />
                                         <Select
                                             name="unit_of_measure_product"
-                                            defaultValue={product.unit_of_measure_product}
+                                            defaultValue={
+                                                product.unit_of_measure_product
+                                            }
                                         >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Seleccionar unidad" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {UNIDADES.map((unidad) => (
-                                                    <SelectItem key={unidad} value={unidad}>
+                                                    <SelectItem
+                                                        key={unidad}
+                                                        value={unidad}
+                                                    >
                                                         {unidad}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
                                         <InputError
-                                            message={errors.unit_of_measure_product}
+                                            message={
+                                                errors.unit_of_measure_product
+                                            }
                                         />
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label htmlFor="minimum_stock_product">
                                             Stock mínimo{' '}
-                                            <span className="text-destructive">*</span>
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <Input
                                             id="minimum_stock_product"
                                             name="minimum_stock_product"
                                             type="number"
                                             min="0"
-                                            defaultValue={product.minimum_stock_product}
+                                            defaultValue={
+                                                product.minimum_stock_product
+                                            }
                                             required
                                         />
                                         <InputError
-                                            message={errors.minimum_stock_product}
+                                            message={
+                                                errors.minimum_stock_product
+                                            }
                                         />
                                     </div>
                                 </div>
@@ -235,7 +288,9 @@ export default function ProductsEdit({
                                                 type="checkbox"
                                                 name="is_active_product"
                                                 value="1"
-                                                defaultChecked={product.is_active_product}
+                                                defaultChecked={
+                                                    product.is_active_product
+                                                }
                                                 className="border-input rounded"
                                             />
                                             <span className="text-sm">
@@ -247,9 +302,15 @@ export default function ProductsEdit({
 
                                 <div className="flex items-center gap-3">
                                     <Button type="submit" disabled={processing}>
-                                        {processing ? 'Guardando...' : 'Guardar cambios'}
+                                        {processing
+                                            ? 'Guardando...'
+                                            : 'Guardar cambios'}
                                     </Button>
-                                    <Button type="button" variant="outline" onClick={back}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={back}
+                                    >
                                         Cancelar
                                     </Button>
                                 </div>

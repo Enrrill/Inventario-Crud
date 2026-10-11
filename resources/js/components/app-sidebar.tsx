@@ -1,6 +1,18 @@
 import { Link } from '@inertiajs/react';
 import { usePage } from '@inertiajs/react';
-import { ArrowLeftRight, BookOpen, ClipboardList, FileBarChart, FolderGit2, LayoutGrid, Package, Shield, Tags, Truck, Users } from 'lucide-react';
+import {
+    ArrowLeftRight,
+    BookOpen,
+    ClipboardList,
+    FileBarChart,
+    FolderGit2,
+    LayoutGrid,
+    Package,
+    Shield,
+    Tags,
+    Truck,
+    Users,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -93,7 +105,9 @@ export function AppSidebar() {
     const groups: NavItemGroup[] = [
         { label: 'Inventario', items: inventoryNavItems },
         { label: 'Reportes', items: reportNavItems },
-        ...(isAdmin ? [{ label: 'Administración', items: adminNavItems, icon: Shield }] : []),
+        ...(isAdmin
+            ? [{ label: 'Administración', items: adminNavItems, icon: Shield }]
+            : []),
     ];
 
     return (

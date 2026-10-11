@@ -1,5 +1,13 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon, DownloadIcon, Package, DollarSign, HomeIcon, Tags, XIcon } from 'lucide-react';
+import {
+    ArrowLeftIcon,
+    DownloadIcon,
+    Package,
+    DollarSign,
+    HomeIcon,
+    Tags,
+    XIcon,
+} from 'lucide-react';
 import { useBackNavigation } from '@/hooks/use-back-navigation';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
@@ -17,7 +25,12 @@ import categoriesRoute from '@/routes/categories';
 import productsRoute from '@/routes/products';
 import reports from '@/routes/reports';
 import suppliersRoute from '@/routes/suppliers';
-import type { Category, PaginatedData, Product, Supplier } from '@/types/inventory';
+import type {
+    Category,
+    PaginatedData,
+    Product,
+    Supplier,
+} from '@/types/inventory';
 
 type ReportsInventoryProps = {
     products: PaginatedData<Product>;
@@ -52,7 +65,9 @@ export default function ReportsInventory({
         per_page: string;
     }>();
 
-    const hasActiveFilters = Boolean(queryFilters.category_id || queryFilters.supplier_id);
+    const hasActiveFilters = Boolean(
+        queryFilters.category_id || queryFilters.supplier_id,
+    );
 
     const handleCategoryChange = useCallback(
         (value: string) => {
@@ -75,8 +90,9 @@ export default function ReportsInventory({
         const supId = queryFilters.supplier_id || filters.supplier_id;
         if (catId && catId !== 'all') params.set('category_id', catId);
         if (supId && supId !== 'all') params.set('supplier_id', supId);
-        
-        window.location.href = reports.export.url(type) + '?' + params.toString();
+
+        window.location.href =
+            reports.export.url(type) + '?' + params.toString();
     }
 
     const hasData = productsPagination.total > 0;
@@ -87,7 +103,9 @@ export default function ReportsInventory({
             header: 'SKU',
             meta: { className: 'w-32' },
             cell: ({ row }) => (
-                <span className="font-mono text-sm">{row.original.sku_product}</span>
+                <span className="font-mono text-sm">
+                    {row.original.sku_product}
+                </span>
             ),
         },
         {
@@ -110,7 +128,9 @@ export default function ReportsInventory({
             cell: ({ row }) =>
                 row.original.category ? (
                     <Link
-                        href={categoriesRoute.show.url(row.original.category.id)}
+                        href={categoriesRoute.show.url(
+                            row.original.category.id,
+                        )}
                         className="hover:text-primary text-muted-foreground"
                     >
                         {row.original.category.name_category}
@@ -138,7 +158,10 @@ export default function ReportsInventory({
         {
             accessorKey: 'current_stock_product',
             header: 'Stock',
-            meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-24 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <span>{row.original.current_stock_product}</span>
             ),
@@ -146,7 +169,10 @@ export default function ReportsInventory({
         {
             accessorKey: 'unit_price_product',
             header: 'Precio',
-            meta: { className: 'w-28 text-right', headerClassName: 'text-right' },
+            meta: {
+                className: 'w-28 text-right',
+                headerClassName: 'text-right',
+            },
             cell: ({ row }) => (
                 <span>{formatCurrency(row.original.unit_price_product)}</span>
             ),
@@ -154,7 +180,10 @@ export default function ReportsInventory({
         {
             accessorKey: 'status',
             header: 'Estado',
-            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-28 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <div className="flex justify-center">
                     <StockBadge
@@ -169,12 +198,18 @@ export default function ReportsInventory({
 
     const categoryOptions = [
         { value: 'all', label: 'Todas las categorías' },
-        ...categories.map((cat) => ({ value: String(cat.id), label: cat.name_category })),
+        ...categories.map((cat) => ({
+            value: String(cat.id),
+            label: cat.name_category,
+        })),
     ];
 
     const supplierOptions = [
         { value: 'all', label: 'Todos los proveedores' },
-        ...suppliers.map((sup) => ({ value: String(sup.id), label: sup.name_supplier })),
+        ...suppliers.map((sup) => ({
+            value: String(sup.id),
+            label: sup.name_supplier,
+        })),
     ];
 
     return (
@@ -189,15 +224,27 @@ export default function ReportsInventory({
                         <ArrowLeftIcon className="size-4" />
                         Volver
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('csv')} disabled={!hasData}>
+                    <Button
+                        variant="outline"
+                        onClick={() => handleExport('csv')}
+                        disabled={!hasData}
+                    >
                         <DownloadIcon className="size-4" />
                         CSV
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('pdf')} disabled={!hasData}>
+                    <Button
+                        variant="outline"
+                        onClick={() => handleExport('pdf')}
+                        disabled={!hasData}
+                    >
                         <DownloadIcon className="size-4" />
                         PDF
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('xlsx')} disabled={!hasData}>
+                    <Button
+                        variant="outline"
+                        onClick={() => handleExport('xlsx')}
+                        disabled={!hasData}
+                    >
                         <DownloadIcon className="size-4" />
                         XLSX
                     </Button>
@@ -237,7 +284,12 @@ export default function ReportsInventory({
                         className="w-full sm:w-64"
                     />
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="shrink-0"
+                        >
                             <XIcon className="size-4" />
                             Limpiar filtros
                         </Button>
@@ -258,15 +310,26 @@ export default function ReportsInventory({
                                 />
                             ) : (
                                 <div className="space-y-3">
-                                    {Object.entries(summary.by_category).map(([name, data]) => (
-                                        <div key={name} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
-                                            <div>
-                                                <p className="font-medium">{name}</p>
-                                                <p className="text-muted-foreground text-xs">{data.count} productos</p>
+                                    {Object.entries(summary.by_category).map(
+                                        ([name, data]) => (
+                                            <div
+                                                key={name}
+                                                className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0"
+                                            >
+                                                <div>
+                                                    <p className="font-medium">
+                                                        {name}
+                                                    </p>
+                                                    <p className="text-muted-foreground text-xs">
+                                                        {data.count} productos
+                                                    </p>
+                                                </div>
+                                                <span className="text-sm font-medium">
+                                                    {formatCurrency(data.value)}
+                                                </span>
                                             </div>
-                                            <span className="text-sm font-medium">{formatCurrency(data.value)}</span>
-                                        </div>
-                                    ))}
+                                        ),
+                                    )}
                                 </div>
                             )}
                         </CardContent>
@@ -285,15 +348,26 @@ export default function ReportsInventory({
                                 />
                             ) : (
                                 <div className="space-y-3">
-                                    {Object.entries(summary.by_supplier).map(([name, data]) => (
-                                        <div key={name} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
-                                            <div>
-                                                <p className="font-medium">{name}</p>
-                                                <p className="text-muted-foreground text-xs">{data.count} productos</p>
+                                    {Object.entries(summary.by_supplier).map(
+                                        ([name, data]) => (
+                                            <div
+                                                key={name}
+                                                className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0"
+                                            >
+                                                <div>
+                                                    <p className="font-medium">
+                                                        {name}
+                                                    </p>
+                                                    <p className="text-muted-foreground text-xs">
+                                                        {data.count} productos
+                                                    </p>
+                                                </div>
+                                                <span className="text-sm font-medium">
+                                                    {formatCurrency(data.value)}
+                                                </span>
                                             </div>
-                                            <span className="text-sm font-medium">{formatCurrency(data.value)}</span>
-                                        </div>
-                                    ))}
+                                        ),
+                                    )}
                                 </div>
                             )}
                         </CardContent>
@@ -305,7 +379,9 @@ export default function ReportsInventory({
                     data={productsPagination.data}
                     pagination={productsPagination}
                     showPerPage
-                    onPerPageChange={(perPage) => setQueryFilters({ per_page: String(perPage) })}
+                    onPerPageChange={(perPage) =>
+                        setQueryFilters({ per_page: String(perPage) })
+                    }
                     emptyTitle="Sin productos"
                     emptyDescription="No se encontraron productos con los filtros seleccionados."
                 />

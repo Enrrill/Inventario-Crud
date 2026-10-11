@@ -151,11 +151,14 @@ export type ReportStockStatusSummary = {
     out_of_stock: Product[];
     low_stock: Product[];
     normal_stock: Product[];
-    by_category: Record<string, {
-        total: number;
-        out_of_stock: number;
-        low_stock: number;
-    }>;
+    by_category: Record<
+        string,
+        {
+            total: number;
+            out_of_stock: number;
+            low_stock: number;
+        }
+    >;
 };
 
 export type UserFilter = {

@@ -9,12 +9,7 @@ function FilterBar({
     className?: string;
 }) {
     return (
-        <div
-            className={cn(
-                'flex flex-wrap items-center gap-3',
-                className,
-            )}
-        >
+        <div className={cn('flex flex-wrap items-center gap-3', className)}>
             {children}
         </div>
     );

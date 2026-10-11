@@ -35,7 +35,9 @@ function SearchableSelect({
     id,
 }: SearchableSelectProps) {
     const isControlled = controlledValue !== undefined;
-    const [internalValue, setInternalValue] = useState<string>(defaultValue ?? '');
+    const [internalValue, setInternalValue] = useState<string>(
+        defaultValue ?? '',
+    );
     const currentValue = isControlled ? controlledValue : internalValue;
 
     const [open, setOpen] = useState(false);
@@ -63,7 +65,10 @@ function SearchableSelect({
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
-            if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(e.target as Node)
+            ) {
                 setOpen(false);
                 setSearch('');
             }
@@ -89,7 +94,11 @@ function SearchableSelect({
     }, [open]);
 
     return (
-        <div ref={containerRef} className={cn('relative', className)} data-slot="searchable-select">
+        <div
+            ref={containerRef}
+            className={cn('relative', className)}
+            data-slot="searchable-select"
+        >
             {name && (
                 <input
                     type="hidden"
@@ -107,7 +116,7 @@ function SearchableSelect({
             >
                 <span
                     className={cn(
-                        'flex-1 text-left truncate mr-2',
+                        'mr-2 flex-1 truncate text-left',
                         !selectedOption && 'text-muted-foreground',
                     )}
                     title={selectedOption?.label}
@@ -123,8 +132,8 @@ function SearchableSelect({
             </button>
 
             {open && (
-                <div className="bg-popover text-popover-foreground absolute left-0 z-50 mt-1 min-w-[240px] sm:min-w-[280px] w-full max-w-sm overflow-hidden rounded-md border shadow-lg animate-in fade-in-0 zoom-in-95 duration-100">
-                    <div className="border-b p-1.5 bg-muted/30">
+                <div className="bg-popover text-popover-foreground animate-in fade-in-0 zoom-in-95 absolute left-0 z-50 mt-1 w-full max-w-sm min-w-[240px] overflow-hidden rounded-md border shadow-lg duration-100 sm:min-w-[280px]">
+                    <div className="bg-muted/30 border-b p-1.5">
                         <div className="relative flex items-center">
                             <input
                                 ref={inputRef}
@@ -138,10 +147,12 @@ function SearchableSelect({
                                 <button
                                     type="button"
                                     onClick={() => setSearch('')}
-                                    className="text-muted-foreground hover:text-foreground absolute right-1.5 rounded-xs p-0.5 hover:bg-muted"
+                                    className="text-muted-foreground hover:text-foreground hover:bg-muted absolute right-1.5 rounded-xs p-0.5"
                                 >
                                     <XIcon className="size-3.5" />
-                                    <span className="sr-only">Limpiar búsqueda</span>
+                                    <span className="sr-only">
+                                        Limpiar búsqueda
+                                    </span>
                                 </button>
                             )}
                         </div>
@@ -159,17 +170,20 @@ function SearchableSelect({
                                     title={option.label}
                                     onClick={() => handleSelect(option.value)}
                                     className={cn(
-                                        'relative flex w-full cursor-pointer items-center gap-2 rounded-sm py-1.5 pr-3 pl-2 text-left text-sm outline-hidden select-none transition-colors hover:bg-accent hover:text-accent-foreground',
-                                        currentValue === option.value && 'bg-accent/80 font-medium text-accent-foreground',
+                                        'hover:bg-accent hover:text-accent-foreground relative flex w-full cursor-pointer items-center gap-2 rounded-sm py-1.5 pr-3 pl-2 text-left text-sm outline-hidden transition-colors select-none',
+                                        currentValue === option.value &&
+                                            'bg-accent/80 text-accent-foreground font-medium',
                                     )}
                                 >
                                     <CheckIcon
                                         className={cn(
-                                            'size-4 shrink-0 text-primary',
-                                            currentValue === option.value ? 'opacity-100' : 'opacity-0',
+                                            'text-primary size-4 shrink-0',
+                                            currentValue === option.value
+                                                ? 'opacity-100'
+                                                : 'opacity-0',
                                         )}
                                     />
-                                    <span className="flex-1 text-left truncate">
+                                    <span className="flex-1 truncate text-left">
                                         {option.label}
                                     </span>
                                 </button>

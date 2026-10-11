@@ -1,5 +1,13 @@
 import { Head, Link, router, setLayoutProps } from '@inertiajs/react';
-import { ArrowLeftIcon, CalendarIcon, HomeIcon, MailIcon, PencilIcon, ShieldIcon, Trash2Icon, UserIcon } from 'lucide-react';
+import {
+    ArrowLeftIcon,
+    CalendarIcon,
+    HomeIcon,
+    MailIcon,
+    PencilIcon,
+    ShieldIcon,
+    Trash2Icon,
+} from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -54,10 +62,7 @@ export default function UsersShow({ user }: UsersShowProps) {
         <>
             <Head title={user.name} />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <PageHeader
-                    title={user.name}
-                    description={user.email}
-                >
+                <PageHeader title={user.name} description={user.email}>
                     <Button variant="outline" onClick={back}>
                         <ArrowLeftIcon className="size-4" />
                         Volver
@@ -88,7 +93,9 @@ export default function UsersShow({ user }: UsersShowProps) {
                                     {getInitials(user.name)}
                                 </div>
                                 <div className="text-center">
-                                    <h3 className="text-lg font-semibold">{user.name}</h3>
+                                    <h3 className="text-lg font-semibold">
+                                        {user.name}
+                                    </h3>
                                     <RoleBadge role={user.role} />
                                 </div>
                             </div>
@@ -97,23 +104,33 @@ export default function UsersShow({ user }: UsersShowProps) {
                                 <div className="flex items-center gap-3">
                                     <MailIcon className="text-muted-foreground size-4" />
                                     <div>
-                                        <p className="text-muted-foreground text-xs">Correo</p>
-                                        <p className="font-medium">{user.email}</p>
+                                        <p className="text-muted-foreground text-xs">
+                                            Correo
+                                        </p>
+                                        <p className="font-medium">
+                                            {user.email}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <ShieldIcon className="text-muted-foreground size-4" />
                                     <div>
-                                        <p className="text-muted-foreground text-xs">Rol</p>
+                                        <p className="text-muted-foreground text-xs">
+                                            Rol
+                                        </p>
                                         <RoleBadge role={user.role} />
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <CalendarIcon className="text-muted-foreground size-4" />
                                     <div>
-                                        <p className="text-muted-foreground text-xs">Creado</p>
+                                        <p className="text-muted-foreground text-xs">
+                                            Creado
+                                        </p>
                                         <p className="font-medium">
-                                            {new Date(user.created_at).toLocaleDateString('es-VE', {
+                                            {new Date(
+                                                user.created_at,
+                                            ).toLocaleDateString('es-VE', {
                                                 year: 'numeric',
                                                 month: 'long',
                                                 day: 'numeric',
@@ -125,9 +142,13 @@ export default function UsersShow({ user }: UsersShowProps) {
                                     <div className="flex items-center gap-3">
                                         <MailIcon className="text-muted-foreground size-4" />
                                         <div>
-                                            <p className="text-muted-foreground text-xs">Verificado</p>
+                                            <p className="text-muted-foreground text-xs">
+                                                Verificado
+                                            </p>
                                             <p className="font-medium">
-                                                {new Date(user.email_verified_at).toLocaleDateString('es-VE', {
+                                                {new Date(
+                                                    user.email_verified_at,
+                                                ).toLocaleDateString('es-VE', {
                                                     year: 'numeric',
                                                     month: 'long',
                                                     day: 'numeric',
@@ -148,19 +169,41 @@ export default function UsersShow({ user }: UsersShowProps) {
                             <CardContent>
                                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                                     <div className="rounded-lg border p-4 text-center">
-                                        <p className="text-muted-foreground text-sm">Estado</p>
-                                        <Badge variant={user.email_verified_at ? 'default' : 'secondary'}>
-                                            {user.email_verified_at ? 'Verificado' : 'Sin verificar'}
+                                        <p className="text-muted-foreground text-sm">
+                                            Estado
+                                        </p>
+                                        <Badge
+                                            variant={
+                                                user.email_verified_at
+                                                    ? 'default'
+                                                    : 'secondary'
+                                            }
+                                        >
+                                            {user.email_verified_at
+                                                ? 'Verificado'
+                                                : 'Sin verificar'}
                                         </Badge>
                                     </div>
                                     <div className="rounded-lg border p-4 text-center">
-                                        <p className="text-muted-foreground text-sm">2FA</p>
-                                        <Badge variant={user.two_factor_enabled ? 'default' : 'secondary'}>
-                                            {user.two_factor_enabled ? 'Activo' : 'Inactivo'}
+                                        <p className="text-muted-foreground text-sm">
+                                            2FA
+                                        </p>
+                                        <Badge
+                                            variant={
+                                                user.two_factor_enabled
+                                                    ? 'default'
+                                                    : 'secondary'
+                                            }
+                                        >
+                                            {user.two_factor_enabled
+                                                ? 'Activo'
+                                                : 'Inactivo'}
                                         </Badge>
                                     </div>
                                     <div className="rounded-lg border p-4 text-center">
-                                        <p className="text-muted-foreground text-sm">Rol</p>
+                                        <p className="text-muted-foreground text-sm">
+                                            Rol
+                                        </p>
                                         <RoleBadge role={user.role} />
                                     </div>
                                 </div>

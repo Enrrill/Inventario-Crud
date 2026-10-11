@@ -1,5 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
-import { Lock, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -34,7 +34,9 @@ export default function Login({ status, canResetPassword }: Props) {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Correo electrónico</Label>
+                                <Label htmlFor="email">
+                                    Correo electrónico
+                                </Label>
                                 <div className="relative">
                                     <Mail className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                                     <Input
@@ -118,5 +120,6 @@ export default function Login({ status, canResetPassword }: Props) {
 
 Login.layout = {
     title: 'Iniciar sesión',
-    description: 'Ingresa tus credenciales para acceder al sistema de inventario',
+    description:
+        'Ingresa tus credenciales para acceder al sistema de inventario',
 };

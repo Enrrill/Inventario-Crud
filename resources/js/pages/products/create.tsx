@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
 import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { toast } from 'sonner';
@@ -72,9 +72,16 @@ export default function ProductsCreate({
                         action={products.store.url()}
                         transform={(data) => ({
                             ...data,
-                            supplier_id: data.supplier_id === 'none' ? null : data.supplier_id,
+                            supplier_id:
+                                data.supplier_id === 'none'
+                                    ? null
+                                    : data.supplier_id,
                         })}
-                        onError={() => toast.error('Error al crear el producto. Verifica los datos.')}
+                        onError={() =>
+                            toast.error(
+                                'Error al crear el producto. Verifica los datos.',
+                            )
+                        }
                         className="space-y-6"
                     >
                         {({ processing, errors }) => (
@@ -82,7 +89,10 @@ export default function ProductsCreate({
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     <div className="space-y-2">
                                         <Label htmlFor="sku_product">
-                                            SKU <span className="text-destructive">*</span>
+                                            SKU{' '}
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <Input
                                             id="sku_product"
@@ -91,12 +101,17 @@ export default function ProductsCreate({
                                             required
                                             autoFocus
                                         />
-                                        <InputError message={errors.sku_product} />
+                                        <InputError
+                                            message={errors.sku_product}
+                                        />
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label htmlFor="name_product">
-                                            Nombre <span className="text-destructive">*</span>
+                                            Nombre{' '}
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <Input
                                             id="name_product"
@@ -104,7 +119,9 @@ export default function ProductsCreate({
                                             placeholder="Nombre del producto"
                                             required
                                         />
-                                        <InputError message={errors.name_product} />
+                                        <InputError
+                                            message={errors.name_product}
+                                        />
                                     </div>
                                 </div>
 
@@ -118,13 +135,18 @@ export default function ProductsCreate({
                                         placeholder="Descripción del producto (opcional)"
                                         rows={3}
                                     />
-                                    <InputError message={errors.description_product} />
+                                    <InputError
+                                        message={errors.description_product}
+                                    />
                                 </div>
 
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     <div className="space-y-2">
                                         <Label>
-                                            Categoría <span className="text-destructive">*</span>
+                                            Categoría{' '}
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <SearchableSelect
                                             name="category_id"
@@ -132,7 +154,9 @@ export default function ProductsCreate({
                                             placeholder="Seleccionar categoría"
                                             searchPlaceholder="Buscar categoría..."
                                         />
-                                        <InputError message={errors.category_id} />
+                                        <InputError
+                                            message={errors.category_id}
+                                        />
                                     </div>
 
                                     <div className="space-y-2">
@@ -144,7 +168,9 @@ export default function ProductsCreate({
                                             searchPlaceholder="Buscar proveedor..."
                                             defaultValue="none"
                                         />
-                                        <InputError message={errors.supplier_id} />
+                                        <InputError
+                                            message={errors.supplier_id}
+                                        />
                                     </div>
                                 </div>
 
@@ -152,7 +178,9 @@ export default function ProductsCreate({
                                     <div className="space-y-2">
                                         <Label htmlFor="unit_price_product">
                                             Precio unitario{' '}
-                                            <span className="text-destructive">*</span>
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <Input
                                             id="unit_price_product"
@@ -163,13 +191,17 @@ export default function ProductsCreate({
                                             placeholder="0.00"
                                             required
                                         />
-                                        <InputError message={errors.unit_price_product} />
+                                        <InputError
+                                            message={errors.unit_price_product}
+                                        />
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label>
                                             Unidad de medida{' '}
-                                            <span className="text-destructive">*</span>
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <Select name="unit_of_measure_product">
                                             <SelectTrigger>
@@ -177,21 +209,28 @@ export default function ProductsCreate({
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {UNIDADES.map((unidad) => (
-                                                    <SelectItem key={unidad} value={unidad}>
+                                                    <SelectItem
+                                                        key={unidad}
+                                                        value={unidad}
+                                                    >
                                                         {unidad}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
                                         <InputError
-                                            message={errors.unit_of_measure_product}
+                                            message={
+                                                errors.unit_of_measure_product
+                                            }
                                         />
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label htmlFor="minimum_stock_product">
                                             Stock mínimo{' '}
-                                            <span className="text-destructive">*</span>
+                                            <span className="text-destructive">
+                                                *
+                                            </span>
                                         </Label>
                                         <Input
                                             id="minimum_stock_product"
@@ -202,7 +241,9 @@ export default function ProductsCreate({
                                             required
                                         />
                                         <InputError
-                                            message={errors.minimum_stock_product}
+                                            message={
+                                                errors.minimum_stock_product
+                                            }
                                         />
                                     </div>
                                 </div>
@@ -226,9 +267,15 @@ export default function ProductsCreate({
 
                                 <div className="flex items-center gap-3">
                                     <Button type="submit" disabled={processing}>
-                                        {processing ? 'Creando...' : 'Crear producto'}
+                                        {processing
+                                            ? 'Creando...'
+                                            : 'Crear producto'}
                                     </Button>
-                                    <Button type="button" variant="outline" onClick={back}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={back}
+                                    >
                                         Cancelar
                                     </Button>
                                 </div>

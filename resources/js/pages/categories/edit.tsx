@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
 import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { toast } from 'sonner';
@@ -50,16 +50,26 @@ export default function CategoriesEdit({
                         action={categories.update.url(category.id)}
                         transform={(data) => ({
                             ...data,
-                            parent_category_id: data.parent_category_id === 'none' ? null : data.parent_category_id,
+                            parent_category_id:
+                                data.parent_category_id === 'none'
+                                    ? null
+                                    : data.parent_category_id,
                         })}
-                        onError={() => toast.error('Error al guardar los cambios. Verifica los datos.')}
+                        onError={() =>
+                            toast.error(
+                                'Error al guardar los cambios. Verifica los datos.',
+                            )
+                        }
                         className="space-y-6"
                     >
                         {({ processing, errors }) => (
                             <>
                                 <div className="space-y-2">
                                     <Label htmlFor="name_category">
-                                        Nombre <span className="text-destructive">*</span>
+                                        Nombre{' '}
+                                        <span className="text-destructive">
+                                            *
+                                        </span>
                                     </Label>
                                     <Input
                                         id="name_category"
@@ -68,7 +78,9 @@ export default function CategoriesEdit({
                                         required
                                         autoFocus
                                     />
-                                    <InputError message={errors.name_category} />
+                                    <InputError
+                                        message={errors.name_category}
+                                    />
                                 </div>
 
                                 <div className="space-y-2">
@@ -78,10 +90,14 @@ export default function CategoriesEdit({
                                     <Textarea
                                         id="description_category"
                                         name="description_category"
-                                        defaultValue={category.description_category ?? ''}
+                                        defaultValue={
+                                            category.description_category ?? ''
+                                        }
                                         rows={3}
                                     />
-                                    <InputError message={errors.description_category} />
+                                    <InputError
+                                        message={errors.description_category}
+                                    />
                                 </div>
 
                                 <div className="space-y-2">
@@ -91,20 +107,30 @@ export default function CategoriesEdit({
                                         options={parentOptions}
                                         defaultValue={
                                             category.parent_category_id
-                                                ? String(category.parent_category_id)
+                                                ? String(
+                                                      category.parent_category_id,
+                                                  )
                                                 : 'none'
                                         }
                                         placeholder="Sin categoría padre"
                                         searchPlaceholder="Buscar categoría padre..."
                                     />
-                                    <InputError message={errors.parent_category_id} />
+                                    <InputError
+                                        message={errors.parent_category_id}
+                                    />
                                 </div>
 
                                 <div className="flex items-center gap-3">
                                     <Button type="submit" disabled={processing}>
-                                        {processing ? 'Guardando...' : 'Guardar cambios'}
+                                        {processing
+                                            ? 'Guardando...'
+                                            : 'Guardar cambios'}
                                     </Button>
-                                    <Button type="button" variant="outline" onClick={back}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={back}
+                                    >
                                         Cancelar
                                     </Button>
                                 </div>

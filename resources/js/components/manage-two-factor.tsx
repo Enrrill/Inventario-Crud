@@ -90,7 +90,7 @@ export default function ManageTwoFactor(props: Props) {
 
                     <div>
                         {hasSetupData ? (
-                                <Button onClick={() => setShowSetupModal(true)}>
+                            <Button onClick={() => setShowSetupModal(true)}>
                                 <ShieldCheck />
                                 Continuar configuración
                             </Button>

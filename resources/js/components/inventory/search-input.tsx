@@ -48,7 +48,7 @@ function SearchInput({
                 <button
                     type="button"
                     onClick={handleClear}
-                    className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2 rounded-sm p-0.5 hover:bg-muted"
+                    className="text-muted-foreground hover:text-foreground hover:bg-muted absolute top-1/2 right-2 -translate-y-1/2 rounded-sm p-0.5"
                 >
                     <XIcon className="size-3.5" />
                     <span className="sr-only">Limpiar búsqueda</span>

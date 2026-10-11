@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import { ArrowLeftIcon, HomeIcon } from 'lucide-react';
 import { useBackNavigation } from '@/hooks/use-back-navigation';
 import { toast } from 'sonner';
@@ -35,14 +35,21 @@ export default function SuppliersEdit({ supplier }: SuppliersEditProps) {
                     <Form
                         method="put"
                         action={suppliers.update.url(supplier.id)}
-                        onError={() => toast.error('Error al guardar los cambios. Verifica los datos.')}
+                        onError={() =>
+                            toast.error(
+                                'Error al guardar los cambios. Verifica los datos.',
+                            )
+                        }
                         className="space-y-6"
                     >
                         {({ processing, errors }) => (
                             <>
                                 <div className="space-y-2">
                                     <Label htmlFor="name_supplier">
-                                        Nombre <span className="text-destructive">*</span>
+                                        Nombre{' '}
+                                        <span className="text-destructive">
+                                            *
+                                        </span>
                                     </Label>
                                     <Input
                                         id="name_supplier"
@@ -51,7 +58,9 @@ export default function SuppliersEdit({ supplier }: SuppliersEditProps) {
                                         required
                                         autoFocus
                                     />
-                                    <InputError message={errors.name_supplier} />
+                                    <InputError
+                                        message={errors.name_supplier}
+                                    />
                                 </div>
 
                                 <div className="space-y-2">
@@ -61,49 +70,77 @@ export default function SuppliersEdit({ supplier }: SuppliersEditProps) {
                                     <Input
                                         id="contact_name_supplier"
                                         name="contact_name_supplier"
-                                        defaultValue={supplier.contact_name_supplier ?? ''}
+                                        defaultValue={
+                                            supplier.contact_name_supplier ?? ''
+                                        }
                                     />
-                                    <InputError message={errors.contact_name_supplier} />
+                                    <InputError
+                                        message={errors.contact_name_supplier}
+                                    />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="email_supplier">Email</Label>
+                                    <Label htmlFor="email_supplier">
+                                        Email
+                                    </Label>
                                     <Input
                                         id="email_supplier"
                                         name="email_supplier"
                                         type="email"
-                                        defaultValue={supplier.email_supplier ?? ''}
+                                        defaultValue={
+                                            supplier.email_supplier ?? ''
+                                        }
                                     />
-                                    <InputError message={errors.email_supplier} />
+                                    <InputError
+                                        message={errors.email_supplier}
+                                    />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="phone_supplier">Teléfono</Label>
+                                    <Label htmlFor="phone_supplier">
+                                        Teléfono
+                                    </Label>
                                     <Input
                                         id="phone_supplier"
                                         name="phone_supplier"
                                         type="tel"
-                                        defaultValue={supplier.phone_supplier ?? ''}
+                                        defaultValue={
+                                            supplier.phone_supplier ?? ''
+                                        }
                                     />
-                                    <InputError message={errors.phone_supplier} />
+                                    <InputError
+                                        message={errors.phone_supplier}
+                                    />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="address_supplier">Dirección</Label>
+                                    <Label htmlFor="address_supplier">
+                                        Dirección
+                                    </Label>
                                     <Textarea
                                         id="address_supplier"
                                         name="address_supplier"
-                                        defaultValue={supplier.address_supplier ?? ''}
+                                        defaultValue={
+                                            supplier.address_supplier ?? ''
+                                        }
                                         rows={3}
                                     />
-                                    <InputError message={errors.address_supplier} />
+                                    <InputError
+                                        message={errors.address_supplier}
+                                    />
                                 </div>
 
                                 <div className="flex items-center gap-3">
                                     <Button type="submit" disabled={processing}>
-                                        {processing ? 'Guardando...' : 'Guardar cambios'}
+                                        {processing
+                                            ? 'Guardando...'
+                                            : 'Guardar cambios'}
                                     </Button>
-                                    <Button type="button" variant="outline" onClick={back}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={back}
+                                    >
                                         Cancelar
                                     </Button>
                                 </div>

@@ -5,7 +5,6 @@ import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
 import { DataTable } from '@/components/inventory/data-table';
-import { EmptyState } from '@/components/inventory/empty-state';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
 import { SearchInput } from '@/components/inventory/search-input';
@@ -19,8 +18,14 @@ type CategoriesIndexProps = {
     isAdmin: boolean;
 };
 
-export default function CategoriesIndex({ categories: pagination, isAdmin }: CategoriesIndexProps) {
-    const [filters, setFilters] = useQueryParams<{ search: string; per_page: string }>();
+export default function CategoriesIndex({
+    categories: pagination,
+    isAdmin,
+}: CategoriesIndexProps) {
+    const [filters, setFilters] = useQueryParams<{
+        search: string;
+        per_page: string;
+    }>();
     const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
 
     const handleSearch = useCallback(
@@ -64,7 +69,10 @@ export default function CategoriesIndex({ categories: pagination, isAdmin }: Cat
         {
             accessorKey: 'products_count',
             header: 'Productos',
-            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-28 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <span className="text-muted-foreground">
                     {row.original.products_count}
@@ -74,7 +82,10 @@ export default function CategoriesIndex({ categories: pagination, isAdmin }: Cat
         {
             id: 'children_count',
             header: 'Subcategorías',
-            meta: { className: 'w-32 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-32 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <span className="text-muted-foreground">
                     {row.original.children?.length ?? 0}
@@ -82,11 +93,14 @@ export default function CategoriesIndex({ categories: pagination, isAdmin }: Cat
             ),
         },
         ...(isAdmin
-            ? [
+            ? ([
                   {
                       id: 'actions',
                       header: 'Acciones',
-                      meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
+                      meta: {
+                          className: 'w-24 text-center',
+                          headerClassName: 'text-center',
+                      },
                       cell: ({ row }) => (
                           <div className="flex items-center justify-center gap-1">
                               <Button
@@ -94,7 +108,9 @@ export default function CategoriesIndex({ categories: pagination, isAdmin }: Cat
                                   size="icon-sm"
                                   onClick={(e) => {
                                       e.stopPropagation();
-                                      router.get(categories.edit.url(row.original.id));
+                                      router.get(
+                                          categories.edit.url(row.original.id),
+                                      );
                                   }}
                               >
                                   <PencilIcon className="size-4" />
@@ -114,7 +130,7 @@ export default function CategoriesIndex({ categories: pagination, isAdmin }: Cat
                           </div>
                       ),
                   },
-              ]
+              ] satisfies ColumnDef<StockFeatures, Category>[])
             : []),
     ];
 
@@ -150,7 +166,9 @@ export default function CategoriesIndex({ categories: pagination, isAdmin }: Cat
                     data={pagination.data}
                     pagination={pagination}
                     showPerPage
-                    onPerPageChange={(perPage) => setFilters({ per_page: String(perPage) })}
+                    onPerPageChange={(perPage) =>
+                        setFilters({ per_page: String(perPage) })
+                    }
                     emptyTitle="Sin categorías"
                     emptyDescription="No se encontraron categorías. Crea una nueva para comenzar."
                     emptyAction={

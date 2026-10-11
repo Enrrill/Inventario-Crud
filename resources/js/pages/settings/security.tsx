@@ -29,15 +29,18 @@ export default function Security(props: Props) {
             <h1 className="sr-only">Seguridad</h1>
 
             <div className="space-y-6">
-                <div className="rounded-lg border bg-card p-6 shadow-sm">
+                <div className="bg-card rounded-lg border p-6 shadow-sm">
                     <div className="mb-4 flex items-center gap-3">
                         <div className="bg-primary/10 flex size-9 items-center justify-center rounded-lg">
                             <KeyRound className="text-primary size-5" />
                         </div>
                         <div>
-                            <h3 className="text-base font-medium">Actualizar Contraseña</h3>
+                            <h3 className="text-base font-medium">
+                                Actualizar Contraseña
+                            </h3>
                             <p className="text-muted-foreground text-sm">
-                                Asegúrate de que tu cuenta use una contraseña larga y aleatoria
+                                Asegúrate de que tu cuenta use una contraseña
+                                larga y aleatoria
                             </p>
                         </div>
                     </div>
@@ -78,11 +81,15 @@ export default function Security(props: Props) {
                                         autoComplete="current-password"
                                         placeholder="••••••••"
                                     />
-                                    <InputError message={errors.current_password} />
+                                    <InputError
+                                        message={errors.current_password}
+                                    />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password">Nueva contraseña</Label>
+                                    <Label htmlFor="password">
+                                        Nueva contraseña
+                                    </Label>
                                     <PasswordInput
                                         id="password"
                                         ref={passwordInput}
@@ -125,13 +132,15 @@ export default function Security(props: Props) {
                     </Form>
                 </div>
 
-                <div className="rounded-lg border bg-card p-6 shadow-sm">
+                <div className="bg-card rounded-lg border p-6 shadow-sm">
                     <div className="mb-4 flex items-center gap-3">
                         <div className="bg-primary/10 flex size-9 items-center justify-center rounded-lg">
                             <Smartphone className="text-primary size-5" />
                         </div>
                         <div>
-                            <h3 className="text-base font-medium">Autenticación de Dos Factores</h3>
+                            <h3 className="text-base font-medium">
+                                Autenticación de Dos Factores
+                            </h3>
                             <p className="text-muted-foreground text-sm">
                                 Agrega una capa extra de seguridad a tu cuenta
                             </p>
@@ -144,7 +153,7 @@ export default function Security(props: Props) {
                     />
                 </div>
 
-                <div className="rounded-lg border bg-card p-6 shadow-sm">
+                <div className="bg-card rounded-lg border p-6 shadow-sm">
                     <div className="mb-4 flex items-center gap-3">
                         <div className="bg-primary/10 flex size-9 items-center justify-center rounded-lg">
                             <Shield className="text-primary size-5" />

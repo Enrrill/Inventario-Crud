@@ -1,6 +1,13 @@
 import { Head, Link, router } from '@inertiajs/react';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
-import { AlertTriangleIcon, HomeIcon, PencilIcon, PlusIcon, Trash2Icon, XIcon } from 'lucide-react';
+import {
+    AlertTriangleIcon,
+    HomeIcon,
+    PencilIcon,
+    PlusIcon,
+    Trash2Icon,
+    XIcon,
+} from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,7 +28,6 @@ import { useQueryParams } from '@/hooks/use-query-params';
 import { cn } from '@/lib/utils';
 import categoriesRoute from '@/routes/categories';
 import products from '@/routes/products';
-import suppliersRoute from '@/routes/suppliers';
 import type {
     Category,
     PaginatedData,
@@ -70,7 +76,10 @@ export default function ProductsIndex({
     const [deleteProduct, setDeleteProduct] = useState<Product | null>(null);
 
     const hasActiveFilters = Boolean(
-        queryFilters.search || queryFilters.category_id || queryFilters.supplier_id || queryFilters.low_stock,
+        queryFilters.search ||
+        queryFilters.category_id ||
+        queryFilters.supplier_id ||
+        queryFilters.low_stock,
     );
 
     const handleFilterChange = useCallback(
@@ -82,12 +91,18 @@ export default function ProductsIndex({
 
     const categoryOptions = [
         { value: 'all', label: 'Todas las categorías' },
-        ...categories.map((cat) => ({ value: String(cat.id), label: cat.name_category })),
+        ...categories.map((cat) => ({
+            value: String(cat.id),
+            label: cat.name_category,
+        })),
     ];
 
     const supplierOptions = [
         { value: 'all', label: 'Todos los proveedores' },
-        ...suppliers.map((sup) => ({ value: String(sup.id), label: sup.name_supplier })),
+        ...suppliers.map((sup) => ({
+            value: String(sup.id),
+            label: sup.name_supplier,
+        })),
     ];
 
     function handleDelete() {
@@ -128,7 +143,9 @@ export default function ProductsIndex({
             cell: ({ row }) =>
                 row.original.category ? (
                     <Link
-                        href={categoriesRoute.show.url(row.original.category.id)}
+                        href={categoriesRoute.show.url(
+                            row.original.category.id,
+                        )}
                         className="hover:text-primary text-muted-foreground"
                     >
                         {row.original.category.name_category}
@@ -151,21 +168,29 @@ export default function ProductsIndex({
                 ),
         },
         ...(isAdmin
-            ? [
+            ? ([
                   {
                       accessorKey: 'unit_price_product',
                       header: 'Precio',
-                      meta: { className: 'w-28 text-right', headerClassName: 'text-right' },
+                      meta: {
+                          className: 'w-28 text-right',
+                          headerClassName: 'text-right',
+                      },
                       cell: ({ row }) => (
-                          <span>{formatCurrency(row.original.unit_price_product)}</span>
+                          <span>
+                              {formatCurrency(row.original.unit_price_product)}
+                          </span>
                       ),
                   },
-              ]
+              ] satisfies ColumnDef<StockFeatures, Product>[])
             : []),
         {
             accessorKey: 'current_stock_product',
             header: 'Stock',
-            meta: { className: 'w-32 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-32 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <StockBadge
                     currentStock={row.original.current_stock_product}
@@ -176,17 +201,23 @@ export default function ProductsIndex({
         {
             accessorKey: 'is_active_product',
             header: 'Estado',
-            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-28 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <StatusBadge active={row.original.is_active_product} />
             ),
         },
         ...(isAdmin
-            ? [
+            ? ([
                   {
                       id: 'actions',
                       header: 'Acciones',
-                      meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
+                      meta: {
+                          className: 'w-24 text-center',
+                          headerClassName: 'text-center',
+                      },
                       cell: ({ row }) => (
                           <div className="flex items-center justify-center gap-1">
                               <Button
@@ -194,7 +225,9 @@ export default function ProductsIndex({
                                   size="icon-sm"
                                   onClick={(e) => {
                                       e.stopPropagation();
-                                      router.get(products.edit.url(row.original.id));
+                                      router.get(
+                                          products.edit.url(row.original.id),
+                                      );
                                   }}
                               >
                                   <PencilIcon className="size-4" />
@@ -214,7 +247,7 @@ export default function ProductsIndex({
                           </div>
                       ),
                   },
-              ]
+              ] satisfies ColumnDef<StockFeatures, Product>[])
             : []),
     ];
 
@@ -239,21 +272,27 @@ export default function ProductsIndex({
                 <FilterBar>
                     <SearchInput
                         value={queryFilters.search ?? ''}
-                        onChange={(value) => handleFilterChange('search', value)}
+                        onChange={(value) =>
+                            handleFilterChange('search', value)
+                        }
                         placeholder="Buscar producto..."
                         className="w-full sm:w-72"
                     />
                     <SearchableSelect
                         options={categoryOptions}
                         value={queryFilters.category_id ?? 'all'}
-                        onValueChange={(v) => handleFilterChange('category_id', v)}
+                        onValueChange={(v) =>
+                            handleFilterChange('category_id', v)
+                        }
                         placeholder="Categoría"
                         className="w-full sm:w-56"
                     />
                     <SearchableSelect
                         options={supplierOptions}
                         value={queryFilters.supplier_id ?? 'all'}
-                        onValueChange={(v) => handleFilterChange('supplier_id', v)}
+                        onValueChange={(v) =>
+                            handleFilterChange('supplier_id', v)
+                        }
                         placeholder="Proveedor"
                         className="w-full sm:w-56"
                     />
@@ -261,13 +300,16 @@ export default function ProductsIndex({
                         type="button"
                         aria-pressed={queryFilters.low_stock === '1'}
                         onClick={() =>
-                            handleFilterChange('low_stock', queryFilters.low_stock === '1' ? '' : '1')
+                            handleFilterChange(
+                                'low_stock',
+                                queryFilters.low_stock === '1' ? '' : '1',
+                            )
                         }
                         className={cn(
-                            'inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm font-medium transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring select-none',
+                            'focus-visible:ring-ring inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm font-medium transition-all duration-150 outline-none select-none focus-visible:ring-2',
                             queryFilters.low_stock === '1'
                                 ? 'border-amber-500/50 bg-amber-500/10 text-amber-600 shadow-xs dark:text-amber-400'
-                                : 'border-input bg-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground',
+                                : 'border-input text-muted-foreground hover:bg-muted/40 hover:text-foreground bg-transparent',
                         )}
                     >
                         <AlertTriangleIcon
@@ -285,7 +327,12 @@ export default function ProductsIndex({
                     </button>
                     <ViewToggle view={view} onViewChange={setView} />
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="shrink-0"
+                        >
                             <XIcon className="size-4" />
                             Limpiar filtros
                         </Button>
@@ -298,17 +345,19 @@ export default function ProductsIndex({
                         data={pagination.data}
                         pagination={pagination}
                         showPerPage
-                        onPerPageChange={(perPage) => setQueryFilters({ per_page: String(perPage) })}
+                        onPerPageChange={(perPage) =>
+                            setQueryFilters({ per_page: String(perPage) })
+                        }
                         emptyTitle="Sin productos"
                         emptyDescription="No se encontraron productos. Crea uno nuevo para comenzar."
-                    emptyAction={
-                        isAdmin
-                            ? {
-                                  label: 'Nuevo producto',
-                                  href: products.create.url(),
-                              }
-                            : undefined
-                    }
+                        emptyAction={
+                            isAdmin
+                                ? {
+                                      label: 'Nuevo producto',
+                                      href: products.create.url(),
+                                  }
+                                : undefined
+                        }
                     />
                 ) : (
                     <div className="space-y-4">
@@ -338,18 +387,26 @@ export default function ProductsIndex({
                                                 <CardContent className="p-4">
                                                     <div className="space-y-2">
                                                         <div className="flex items-start justify-between">
-                                                            <span className="font-mono text-muted-foreground text-xs">
-                                                                {product.sku_product}
+                                                            <span className="text-muted-foreground font-mono text-xs">
+                                                                {
+                                                                    product.sku_product
+                                                                }
                                                             </span>
                                                             <StatusBadge
-                                                                active={product.is_active_product}
+                                                                active={
+                                                                    product.is_active_product
+                                                                }
                                                             />
                                                         </div>
-                                                        <h3 className="font-medium leading-tight">
-                                                            {product.name_product}
+                                                        <h3 className="leading-tight font-medium">
+                                                            {
+                                                                product.name_product
+                                                            }
                                                         </h3>
                                                         <p className="text-muted-foreground text-xs">
-                                                            {product.category?.name_category ?? 'Sin categoría'}
+                                                            {product.category
+                                                                ?.name_category ??
+                                                                'Sin categoría'}
                                                         </p>
                                                         <div className="flex items-center justify-between pt-2">
                                                             {isAdmin && (
@@ -378,7 +435,9 @@ export default function ProductsIndex({
                                     data={pagination}
                                     showPerPage
                                     onPerPageChange={(perPage) =>
-                                        setQueryFilters({ per_page: String(perPage) })
+                                        setQueryFilters({
+                                            per_page: String(perPage),
+                                        })
                                     }
                                 />
                             </>

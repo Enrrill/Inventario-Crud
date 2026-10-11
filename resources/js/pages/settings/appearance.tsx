@@ -1,6 +1,5 @@
 import { Head } from '@inertiajs/react';
 import { HomeIcon, Monitor, Moon, Sun } from 'lucide-react';
-import Heading from '@/components/heading';
 import { useAppearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
@@ -38,7 +37,7 @@ export default function Appearance() {
             <h1 className="sr-only">Apariencia</h1>
 
             <div className="space-y-6">
-                <div className="rounded-lg border bg-card p-6 shadow-sm">
+                <div className="bg-card rounded-lg border p-6 shadow-sm">
                     <h3 className="mb-1 text-base font-medium">Apariencia</h3>
                     <p className="text-muted-foreground mb-6 text-sm">
                         Selecciona el tema de la interfaz que prefieras
@@ -51,7 +50,7 @@ export default function Appearance() {
                                 onClick={() => updateAppearance(value)}
                                 title={label}
                                 className={cn(
-                                    'flex size-12 items-center justify-center rounded-xl border-2 transition-all hover:border-primary/50',
+                                    'hover:border-primary/50 flex size-12 items-center justify-center rounded-xl border-2 transition-all',
                                     appearance === value
                                         ? 'border-primary bg-primary/10 text-primary'
                                         : 'border-border bg-muted text-muted-foreground hover:text-foreground',

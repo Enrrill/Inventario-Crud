@@ -22,7 +22,10 @@ export default function SuppliersIndex({
     suppliers: pagination,
     isAdmin,
 }: SuppliersIndexProps) {
-    const [filters, setFilters] = useQueryParams<{ search: string; per_page: string }>();
+    const [filters, setFilters] = useQueryParams<{
+        search: string;
+        per_page: string;
+    }>();
     const [deleteSupplier, setDeleteSupplier] = useState<Supplier | null>(null);
 
     const handleSearch = useCallback(
@@ -64,7 +67,7 @@ export default function SuppliersIndex({
             ),
         },
         ...(isAdmin
-            ? [
+            ? ([
                   {
                       accessorKey: 'email_supplier',
                       header: 'Email',
@@ -85,12 +88,15 @@ export default function SuppliersIndex({
                           </span>
                       ),
                   },
-              ]
+              ] satisfies ColumnDef<StockFeatures, Supplier>[])
             : []),
         {
             accessorKey: 'products_count',
             header: 'Productos',
-            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-28 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <span className="text-muted-foreground">
                     {row.original.products_count}
@@ -98,11 +104,14 @@ export default function SuppliersIndex({
             ),
         },
         ...(isAdmin
-            ? [
+            ? ([
                   {
                       id: 'actions',
                       header: 'Acciones',
-                      meta: { className: 'w-24 text-center', headerClassName: 'text-center' },
+                      meta: {
+                          className: 'w-24 text-center',
+                          headerClassName: 'text-center',
+                      },
                       cell: ({ row }) => (
                           <div className="flex items-center justify-center gap-1">
                               <Button
@@ -110,7 +119,9 @@ export default function SuppliersIndex({
                                   size="icon-sm"
                                   onClick={(e) => {
                                       e.stopPropagation();
-                                      router.get(suppliers.edit.url(row.original.id));
+                                      router.get(
+                                          suppliers.edit.url(row.original.id),
+                                      );
                                   }}
                               >
                                   <PencilIcon className="size-4" />
@@ -130,7 +141,7 @@ export default function SuppliersIndex({
                           </div>
                       ),
                   },
-              ]
+              ] satisfies ColumnDef<StockFeatures, Supplier>[])
             : []),
     ];
 
@@ -166,7 +177,9 @@ export default function SuppliersIndex({
                     data={pagination.data}
                     pagination={pagination}
                     showPerPage
-                    onPerPageChange={(perPage) => setFilters({ per_page: String(perPage) })}
+                    onPerPageChange={(perPage) =>
+                        setFilters({ per_page: String(perPage) })
+                    }
                     emptyTitle="Sin proveedores"
                     emptyDescription="No se encontraron proveedores. Crea uno nuevo para comenzar."
                     emptyAction={
@@ -190,7 +203,9 @@ export default function SuppliersIndex({
                     }
                     confirmText="Eliminar"
                     variant={
-                        deleteSupplier?.products_count ? 'default' : 'destructive'
+                        deleteSupplier?.products_count
+                            ? 'default'
+                            : 'destructive'
                     }
                     onConfirm={handleDelete}
                 />

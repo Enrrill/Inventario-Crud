@@ -32,9 +32,6 @@ function DataTable<TData extends RowData, TValue>({
     columns,
     data,
     pagination,
-    searchPlaceholder,
-    searchValue,
-    onSearchChange,
     toolbar,
     emptyIcon,
     emptyTitle = 'Sin resultados',
@@ -49,9 +46,6 @@ function DataTable<TData extends RowData, TValue>({
     columns: ColumnDef<StockFeatures, TData, TValue>[];
     data: TData[];
     pagination?: PaginatedData<TData>;
-    searchPlaceholder?: string;
-    searchValue?: string;
-    onSearchChange?: (value: string) => void;
     toolbar?: React.ReactNode;
     emptyIcon?: LucideIcon;
     emptyTitle?: string;
@@ -67,7 +61,10 @@ function DataTable<TData extends RowData, TValue>({
     const [clientPage, setClientPage] = useState(1);
     const [clientPerPage, setClientPerPage] = useState(defaultPerPage);
 
-    const clientTotalPages = Math.max(1, Math.ceil(data.length / clientPerPage));
+    const clientTotalPages = Math.max(
+        1,
+        Math.ceil(data.length / clientPerPage),
+    );
 
     // Reset client page if data shrinks below current page
     const safeClientPage = Math.min(clientPage, clientTotalPages);
@@ -78,7 +75,13 @@ function DataTable<TData extends RowData, TValue>({
         }
         const start = (safeClientPage - 1) * clientPerPage;
         return data.slice(start, start + clientPerPage);
-    }, [isServerPagination, enablePagination, data, safeClientPage, clientPerPage]);
+    }, [
+        isServerPagination,
+        enablePagination,
+        data,
+        safeClientPage,
+        clientPerPage,
+    ]);
 
     const table = useTable({
         features: stockFeatures,
@@ -88,19 +91,34 @@ function DataTable<TData extends RowData, TValue>({
         pageCount: isServerPagination ? pagination.last_page : clientTotalPages,
     });
 
-    const clientPaginationData: PaginatedData<TData> | undefined = useMemo(() => {
-        if (isServerPagination || !enablePagination) return undefined;
-        return {
-            data: displayData,
-            current_page: safeClientPage,
-            last_page: clientTotalPages,
-            per_page: clientPerPage,
-            total: data.length,
-            from: data.length === 0 ? 0 : (safeClientPage - 1) * clientPerPage + 1,
-            to: data.length === 0 ? 0 : Math.min(safeClientPage * clientPerPage, data.length),
-            links: [],
-        };
-    }, [isServerPagination, enablePagination, displayData, safeClientPage, clientTotalPages, clientPerPage, data.length]);
+    const clientPaginationData: PaginatedData<TData> | undefined =
+        useMemo(() => {
+            if (isServerPagination || !enablePagination) return undefined;
+            return {
+                data: displayData,
+                current_page: safeClientPage,
+                last_page: clientTotalPages,
+                per_page: clientPerPage,
+                total: data.length,
+                from:
+                    data.length === 0
+                        ? 0
+                        : (safeClientPage - 1) * clientPerPage + 1,
+                to:
+                    data.length === 0
+                        ? 0
+                        : Math.min(safeClientPage * clientPerPage, data.length),
+                links: [],
+            };
+        }, [
+            isServerPagination,
+            enablePagination,
+            displayData,
+            safeClientPage,
+            clientTotalPages,
+            clientPerPage,
+            data.length,
+        ]);
 
     const showEmpty = !loading && data.length === 0;
 
@@ -114,17 +132,25 @@ function DataTable<TData extends RowData, TValue>({
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
-                                    const meta = (header.column.columnDef as { meta?: ColumnMeta }).meta;
+                                    const meta = (
+                                        header.column.columnDef as {
+                                            meta?: ColumnMeta;
+                                        }
+                                    ).meta;
                                     return (
                                         <TableHead
                                             key={header.id}
                                             colSpan={header.colSpan}
-                                            className={cn(meta?.className, meta?.headerClassName)}
+                                            className={cn(
+                                                meta?.className,
+                                                meta?.headerClassName,
+                                            )}
                                         >
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
-                                                      header.column.columnDef.header,
+                                                      header.column.columnDef
+                                                          .header,
                                                       header.getContext(),
                                                   )}
                                         </TableHead>
@@ -138,7 +164,9 @@ function DataTable<TData extends RowData, TValue>({
                             Array.from({ length: 5 }).map((_, rowIndex) => (
                                 <TableRow key={`skeleton-${rowIndex}`}>
                                     {columns.map((_, colIndex) => (
-                                        <TableCell key={`skeleton-${rowIndex}-${colIndex}`}>
+                                        <TableCell
+                                            key={`skeleton-${rowIndex}-${colIndex}`}
+                                        >
                                             <Skeleton className="h-5 w-full" />
                                         </TableCell>
                                     ))}
@@ -162,11 +190,18 @@ function DataTable<TData extends RowData, TValue>({
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id}>
                                     {row.getAllCells().map((cell) => {
-                                        const meta = (cell.column.columnDef as { meta?: ColumnMeta }).meta;
+                                        const meta = (
+                                            cell.column.columnDef as {
+                                                meta?: ColumnMeta;
+                                            }
+                                        ).meta;
                                         return (
                                             <TableCell
                                                 key={cell.id}
-                                                className={cn(meta?.className, meta?.cellClassName)}
+                                                className={cn(
+                                                    meta?.className,
+                                                    meta?.cellClassName,
+                                                )}
                                             >
                                                 {flexRender(
                                                     cell.column.columnDef.cell,
@@ -190,17 +225,19 @@ function DataTable<TData extends RowData, TValue>({
                 />
             )}
 
-            {!isServerPagination && enablePagination && clientPaginationData && (
-                <Pagination
-                    data={clientPaginationData}
-                    showPerPage={showPerPage}
-                    onPageChange={(page) => setClientPage(page)}
-                    onPerPageChange={(perPage) => {
-                        setClientPerPage(perPage);
-                        setClientPage(1);
-                    }}
-                />
-            )}
+            {!isServerPagination &&
+                enablePagination &&
+                clientPaginationData && (
+                    <Pagination
+                        data={clientPaginationData}
+                        showPerPage={showPerPage}
+                        onPageChange={(page) => setClientPage(page)}
+                        onPerPageChange={(perPage) => {
+                            setClientPerPage(perPage);
+                            setClientPage(1);
+                        }}
+                    />
+                )}
         </div>
     );
 }

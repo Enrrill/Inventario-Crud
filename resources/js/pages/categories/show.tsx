@@ -23,7 +23,10 @@ type CategoriesShowProps = {
     isAdmin: boolean;
 };
 
-export default function CategoriesShow({ category, isAdmin }: CategoriesShowProps) {
+export default function CategoriesShow({
+    category,
+    isAdmin,
+}: CategoriesShowProps) {
     const [showDelete, setShowDelete] = useState(false);
     const back = useBackNavigation(categories.index.url());
 
@@ -31,7 +34,10 @@ export default function CategoriesShow({ category, isAdmin }: CategoriesShowProp
         breadcrumbs: [
             { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
             { title: 'Categorías', href: categories.index.url() },
-            { title: category.name_category, href: categories.show.url(category.id) },
+            {
+                title: category.name_category,
+                href: categories.show.url(category.id),
+            },
         ],
     });
 
@@ -44,7 +50,9 @@ export default function CategoriesShow({ category, isAdmin }: CategoriesShowProp
             accessorKey: 'sku_product',
             header: 'SKU',
             cell: ({ row }) => (
-                <span className="font-mono text-sm">{row.original.sku_product}</span>
+                <span className="font-mono text-sm">
+                    {row.original.sku_product}
+                </span>
             ),
         },
         {
@@ -63,7 +71,9 @@ export default function CategoriesShow({ category, isAdmin }: CategoriesShowProp
             accessorKey: 'current_stock_product',
             header: 'Stock',
             meta: { className: 'text-center' },
-            cell: ({ row }) => <span>{row.original.current_stock_product}</span>,
+            cell: ({ row }) => (
+                <span>{row.original.current_stock_product}</span>
+            ),
         },
         {
             accessorKey: 'status',
@@ -87,7 +97,9 @@ export default function CategoriesShow({ category, isAdmin }: CategoriesShowProp
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <PageHeader
                     title={category.name_category}
-                    description={category.description_category ?? 'Sin descripción'}
+                    description={
+                        category.description_category ?? 'Sin descripción'
+                    }
                 >
                     <Button variant="outline" onClick={back}>
                         <ArrowLeftIcon className="size-4" />
@@ -119,21 +131,31 @@ export default function CategoriesShow({ category, isAdmin }: CategoriesShowProp
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <p className="text-muted-foreground text-sm">Nombre</p>
-                                <p className="font-medium">{category.name_category}</p>
+                                <p className="text-muted-foreground text-sm">
+                                    Nombre
+                                </p>
+                                <p className="font-medium">
+                                    {category.name_category}
+                                </p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground text-sm">Descripción</p>
+                                <p className="text-muted-foreground text-sm">
+                                    Descripción
+                                </p>
                                 <p className="font-medium">
                                     {category.description_category ?? '—'}
                                 </p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground text-sm">Categoría padre</p>
+                                <p className="text-muted-foreground text-sm">
+                                    Categoría padre
+                                </p>
                                 <p className="font-medium">
                                     {category.parent ? (
                                         <Link
-                                            href={categories.show.url(category.parent.id)}
+                                            href={categories.show.url(
+                                                category.parent.id,
+                                            )}
                                             className="hover:text-primary"
                                         >
                                             {category.parent.name_category}
@@ -144,12 +166,20 @@ export default function CategoriesShow({ category, isAdmin }: CategoriesShowProp
                                 </p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground text-sm">Subcategorías</p>
-                                <p className="font-medium">{category.children?.length ?? 0}</p>
+                                <p className="text-muted-foreground text-sm">
+                                    Subcategorías
+                                </p>
+                                <p className="font-medium">
+                                    {category.children?.length ?? 0}
+                                </p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground text-sm">Productos</p>
-                                <p className="font-medium">{category.products?.length ?? 0}</p>
+                                <p className="text-muted-foreground text-sm">
+                                    Productos
+                                </p>
+                                <p className="font-medium">
+                                    {category.products?.length ?? 0}
+                                </p>
                             </div>
                         </CardContent>
                     </Card>
@@ -158,11 +188,13 @@ export default function CategoriesShow({ category, isAdmin }: CategoriesShowProp
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <CardTitle>
-                                    Subcategorías ({category.children?.length ?? 0})
+                                    Subcategorías (
+                                    {category.children?.length ?? 0})
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                {!category.children || category.children.length === 0 ? (
+                                {!category.children ||
+                                category.children.length === 0 ? (
                                     <EmptyState
                                         icon={ArrowLeftIcon}
                                         title="Sin subcategorías"
@@ -173,14 +205,17 @@ export default function CategoriesShow({ category, isAdmin }: CategoriesShowProp
                                         {category.children.map((child) => (
                                             <Link
                                                 key={child.id}
-                                                href={categories.show.url(child.id)}
+                                                href={categories.show.url(
+                                                    child.id,
+                                                )}
                                                 className="hover:bg-muted flex items-center justify-between rounded-lg border p-3 transition-colors"
                                             >
                                                 <span className="font-medium">
                                                     {child.name_category}
                                                 </span>
                                                 <span className="text-muted-foreground text-sm">
-                                                    {child.products_count} productos
+                                                    {child.products_count}{' '}
+                                                    productos
                                                 </span>
                                             </Link>
                                         ))}

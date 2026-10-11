@@ -25,7 +25,9 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     {({ processing, errors }) => (
                         <>
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Dirección de correo</Label>
+                                <Label htmlFor="email">
+                                    Dirección de correo
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -65,5 +67,6 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
 ForgotPassword.layout = {
     title: 'Olvidé mi contraseña',
-    description: 'Ingresa tu correo para recibir un enlace de restablecimiento de contraseña',
+    description:
+        'Ingresa tu correo para recibir un enlace de restablecimiento de contraseña',
 };

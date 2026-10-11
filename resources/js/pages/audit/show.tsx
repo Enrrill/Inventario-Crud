@@ -1,4 +1,4 @@
-import { Head, Link, router, setLayoutProps } from '@inertiajs/react';
+import { Head, router, setLayoutProps } from '@inertiajs/react';
 import {
     ArrowLeftIcon,
     CalendarIcon,
@@ -24,15 +24,18 @@ type AuditShowProps = {
 const eventConfig: Record<AuditEvent, { label: string; className: string }> = {
     created: {
         label: 'Creado',
-        className: 'border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400',
+        className:
+            'border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400',
     },
     updated: {
         label: 'Actualizado',
-        className: 'border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-400',
+        className:
+            'border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-400',
     },
     deleted: {
         label: 'Eliminado',
-        className: 'border-transparent bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-400',
+        className:
+            'border-transparent bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-400',
     },
 };
 
@@ -64,11 +67,19 @@ const formatDateTime = (date: string) =>
         timeStyle: 'short',
     }).format(new Date(date));
 
-function JsonViewer({ data, title }: { data: Record<string, unknown> | null; title: string }) {
+function JsonViewer({
+    data,
+    title,
+}: {
+    data: Record<string, unknown> | null;
+    title: string;
+}) {
     if (!data || Object.keys(data).length === 0) {
         return (
             <div>
-                <h4 className="mb-2 text-sm font-medium text-muted-foreground">{title}</h4>
+                <h4 className="text-muted-foreground mb-2 text-sm font-medium">
+                    {title}
+                </h4>
                 <p className="text-muted-foreground text-sm">Sin datos</p>
             </div>
         );
@@ -76,8 +87,10 @@ function JsonViewer({ data, title }: { data: Record<string, unknown> | null; tit
 
     return (
         <div>
-            <h4 className="mb-2 text-sm font-medium text-muted-foreground">{title}</h4>
-            <div className="rounded-lg border bg-muted/50 p-4">
+            <h4 className="text-muted-foreground mb-2 text-sm font-medium">
+                {title}
+            </h4>
+            <div className="bg-muted/50 rounded-lg border p-4">
                 <pre className="overflow-x-auto text-sm">
                     <code>{JSON.stringify(data, null, 2)}</code>
                 </pre>
@@ -120,28 +133,42 @@ export default function AuditShow({ log, batchSiblings = [] }: AuditShowProps) {
                             <div className="flex items-center gap-3">
                                 <UserIcon className="text-muted-foreground size-4" />
                                 <div>
-                                    <p className="text-muted-foreground text-xs">Usuario</p>
-                                    <p className="font-medium">{log.user?.name ?? 'Sistema'}</p>
+                                    <p className="text-muted-foreground text-xs">
+                                        Usuario
+                                    </p>
+                                    <p className="font-medium">
+                                        {log.user?.name ?? 'Sistema'}
+                                    </p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <CalendarIcon className="text-muted-foreground size-4" />
                                 <div>
-                                    <p className="text-muted-foreground text-xs">Fecha y Hora</p>
-                                    <p className="font-medium">{formatDateTime(log.created_at)}</p>
+                                    <p className="text-muted-foreground text-xs">
+                                        Fecha y Hora
+                                    </p>
+                                    <p className="font-medium">
+                                        {formatDateTime(log.created_at)}
+                                    </p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <GlobeIcon className="text-muted-foreground size-4" />
                                 <div>
-                                    <p className="text-muted-foreground text-xs">Dirección IP</p>
-                                    <p className="font-mono font-medium">{log.ip_address ?? '—'}</p>
+                                    <p className="text-muted-foreground text-xs">
+                                        Dirección IP
+                                    </p>
+                                    <p className="font-mono font-medium">
+                                        {log.ip_address ?? '—'}
+                                    </p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <MonitorIcon className="text-muted-foreground size-4" />
                                 <div>
-                                    <p className="text-muted-foreground text-xs">User Agent</p>
+                                    <p className="text-muted-foreground text-xs">
+                                        User Agent
+                                    </p>
                                     <p className="text-muted-foreground line-clamp-3 text-xs">
                                         {log.user_agent ?? '—'}
                                     </p>
@@ -150,16 +177,28 @@ export default function AuditShow({ log, batchSiblings = [] }: AuditShowProps) {
                             <div className="border-t pt-4">
                                 <div className="space-y-2">
                                     <div>
-                                        <p className="text-muted-foreground text-xs">Modelo</p>
-                                        <p className="font-medium">{getModelName(log.auditable_type)}</p>
+                                        <p className="text-muted-foreground text-xs">
+                                            Modelo
+                                        </p>
+                                        <p className="font-medium">
+                                            {getModelName(log.auditable_type)}
+                                        </p>
                                     </div>
                                     <div>
-                                        <p className="text-muted-foreground text-xs">ID del Registro</p>
-                                        <p className="font-mono font-medium">#{log.auditable_id}</p>
+                                        <p className="text-muted-foreground text-xs">
+                                            ID del Registro
+                                        </p>
+                                        <p className="font-mono font-medium">
+                                            #{log.auditable_id}
+                                        </p>
                                     </div>
                                     <div>
-                                        <p className="text-muted-foreground text-xs">Evento</p>
-                                        <EventBadge event={log.event as AuditEvent} />
+                                        <p className="text-muted-foreground text-xs">
+                                            Evento
+                                        </p>
+                                        <EventBadge
+                                            event={log.event as AuditEvent}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -169,13 +208,18 @@ export default function AuditShow({ log, batchSiblings = [] }: AuditShowProps) {
                                     <div className="flex items-center gap-2">
                                         <LayersIcon className="size-4 text-violet-600 dark:text-violet-400" />
                                         <div>
-                                            <p className="text-muted-foreground text-xs">Lote</p>
-                                            <p className="font-mono text-sm font-medium">{log.batch_id}</p>
+                                            <p className="text-muted-foreground text-xs">
+                                                Lote
+                                            </p>
+                                            <p className="font-mono text-sm font-medium">
+                                                {log.batch_id}
+                                            </p>
                                         </div>
                                     </div>
                                     {batchSiblings.length > 1 && (
                                         <p className="text-muted-foreground mt-2 text-xs">
-                                            Parte de un lote con {batchSiblings.length} registros
+                                            Parte de un lote con{' '}
+                                            {batchSiblings.length} registros
                                         </p>
                                     )}
                                 </div>
@@ -189,20 +233,35 @@ export default function AuditShow({ log, batchSiblings = [] }: AuditShowProps) {
                                 <CardTitle>Cambios Realizados</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <JsonViewer data={log.old_values} title="Valores Anteriores" />
-                                <JsonViewer data={log.new_values} title="Valores Nuevos" />
+                                <JsonViewer
+                                    data={log.old_values}
+                                    title="Valores Anteriores"
+                                />
+                                <JsonViewer
+                                    data={log.new_values}
+                                    title="Valores Nuevos"
+                                />
                             </CardContent>
                         </Card>
 
-                        {(log.event === 'created' || log.event === 'deleted') && (
+                        {(log.event === 'created' ||
+                            log.event === 'deleted') && (
                             <Card>
                                 <CardHeader>
                                     <CardTitle> Datos del Registro</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <JsonViewer
-                                        data={log.event === 'created' ? log.new_values : log.old_values}
-                                        title={log.event === 'created' ? 'Datos Creados' : 'Datos Eliminados'}
+                                        data={
+                                            log.event === 'created'
+                                                ? log.new_values
+                                                : log.old_values
+                                        }
+                                        title={
+                                            log.event === 'created'
+                                                ? 'Datos Creados'
+                                                : 'Datos Eliminados'
+                                        }
                                     />
                                 </CardContent>
                             </Card>
@@ -214,7 +273,10 @@ export default function AuditShow({ log, batchSiblings = [] }: AuditShowProps) {
                                     <CardTitle className="flex items-center gap-2">
                                         <LayersIcon className="size-4 text-violet-600 dark:text-violet-400" />
                                         Registros del Mismo Lote
-                                        <Badge variant="secondary" className="text-xs">
+                                        <Badge
+                                            variant="secondary"
+                                            className="text-xs"
+                                        >
                                             {batchSiblings.length}
                                         </Badge>
                                     </CardTitle>
@@ -231,19 +293,32 @@ export default function AuditShow({ log, batchSiblings = [] }: AuditShowProps) {
                                                 }`}
                                                 onClick={() => {
                                                     if (sibling.id !== log.id) {
-                                                        router.get(audit.show.url(sibling.id));
+                                                        router.get(
+                                                            audit.show.url(
+                                                                sibling.id,
+                                                            ),
+                                                        );
                                                     }
                                                 }}
                                             >
-                                                <EventBadge event={sibling.event as AuditEvent} />
+                                                <EventBadge
+                                                    event={
+                                                        sibling.event as AuditEvent
+                                                    }
+                                                />
                                                 <span className="text-sm">
-                                                    {getModelName(sibling.auditable_type)}
+                                                    {getModelName(
+                                                        sibling.auditable_type,
+                                                    )}
                                                 </span>
-                                                <span className="text-xs text-muted-foreground font-mono">
+                                                <span className="text-muted-foreground font-mono text-xs">
                                                     #{sibling.auditable_id}
                                                 </span>
                                                 {sibling.id === log.id && (
-                                                    <Badge variant="outline" className="ml-auto text-xs">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="ml-auto text-xs"
+                                                    >
                                                         Actual
                                                     </Badge>
                                                 )}

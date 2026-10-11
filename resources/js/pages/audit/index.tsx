@@ -23,7 +23,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { DataTable } from '@/components/inventory/data-table';
-import { EmptyState } from '@/components/inventory/empty-state';
 import { FilterBar } from '@/components/inventory/filter-bar';
 import { PageHeader } from '@/components/inventory/page-header';
 import { StatCard } from '@/components/inventory/stat-card';
@@ -45,15 +44,18 @@ type AuditIndexProps = {
 const eventConfig: Record<AuditEvent, { label: string; className: string }> = {
     created: {
         label: 'Creado',
-        className: 'border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400',
+        className:
+            'border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400',
     },
     updated: {
         label: 'Actualizado',
-        className: 'border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-400',
+        className:
+            'border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-400',
     },
     deleted: {
         label: 'Eliminado',
-        className: 'border-transparent bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-400',
+        className:
+            'border-transparent bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-400',
     },
 };
 
@@ -87,7 +89,10 @@ function getModelName(type: string): string {
 
 function BatchBadge({ count }: { count: number }) {
     return (
-        <Badge variant="outline" className="border-transparent bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-400 gap-1">
+        <Badge
+            variant="outline"
+            className="gap-1 border-transparent bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-400"
+        >
             <LayersIcon className="size-3" />
             Lote ({count})
         </Badge>
@@ -100,7 +105,7 @@ type BatchGroup = {
     isExpanded: boolean;
 };
 
-export default function AuditIndex({ logs, filters }: AuditIndexProps) {
+export default function AuditIndex({ logs }: AuditIndexProps) {
     const [queryFilters, setQueryFilters, clearFilters] = useQueryParams<{
         event: string;
         auditable_type: string;
@@ -109,10 +114,15 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
         per_page: string;
     }>();
 
-    const [expandedBatches, setExpandedBatches] = useState<Set<string>>(new Set());
+    const [expandedBatches, setExpandedBatches] = useState<Set<string>>(
+        new Set(),
+    );
 
     const hasActiveFilters = Boolean(
-        queryFilters.event || queryFilters.auditable_type || queryFilters.date_from || queryFilters.date_to,
+        queryFilters.event ||
+        queryFilters.auditable_type ||
+        queryFilters.date_from ||
+        queryFilters.date_to,
     );
 
     const handleFilterChange = useCallback(
@@ -134,7 +144,7 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
         });
     }, []);
 
-    const { batchGroups, standaloneLogs } = useMemo(() => {
+    const { batchGroups } = useMemo(() => {
         const groups = new Map<string, AuditLog[]>();
         const standalone: AuditLog[] = [];
 
@@ -163,35 +173,6 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
 
         return { batchGroups, standaloneLogs: standalone };
     }, [logs.data, expandedBatches]);
-
-    const batchGroupMap = useMemo(() => {
-        const map = new Map<string, BatchGroup>();
-        for (const group of batchGroups) {
-            map.set(group.batchId, group);
-        }
-        return map;
-    }, [batchGroups]);
-
-    const processedLogs = useMemo(() => {
-        const result: Array<{ type: 'log'; log: AuditLog } | { type: 'batch-summary'; group: BatchGroup }> = [];
-        const addedBatches = new Set<string>();
-
-        for (const log of logs.data) {
-            if (log.batch_id) {
-                if (!addedBatches.has(log.batch_id)) {
-                    addedBatches.add(log.batch_id);
-                    const group = batchGroupMap.get(log.batch_id);
-                    if (group) {
-                        result.push({ type: 'batch-summary', group });
-                    }
-                }
-            } else {
-                result.push({ type: 'log', log });
-            }
-        }
-
-        return result;
-    }, [logs.data, batchGroupMap]);
 
     const columns: ColumnDef<StockFeatures, AuditLog>[] = [
         {
@@ -259,113 +240,6 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
         },
     ];
 
-    const batchColumns: ColumnDef<StockFeatures, BatchGroup>[] = [
-        {
-            id: 'expand',
-            header: '',
-            meta: { className: 'w-8' },
-            cell: ({ row }) => {
-                const group = row.original;
-                return (
-                    <Button
-                        variant="ghost"
-                        size="icon-xs"
-                        onClick={() => toggleBatch(group.batchId)}
-                    >
-                        {group.isExpanded ? (
-                            <ChevronDownIcon className="size-4" />
-                        ) : (
-                            <ChevronRightIcon className="size-4" />
-                        )}
-                    </Button>
-                );
-            },
-        },
-        {
-            accessorKey: 'logs.0.created_at',
-            header: 'Fecha',
-            cell: ({ row }) => {
-                const group = row.original;
-                const first = group.logs[0];
-                const last = group.logs[group.logs.length - 1];
-                return (
-                    <div className="text-sm">
-                        <span className="text-muted-foreground whitespace-nowrap">
-                            {formatDateTime(first.created_at)}
-                        </span>
-                        {first.id !== last.id && (
-                            <span className="text-muted-foreground ml-1">
-                                — {formatDateTime(last.created_at)}
-                            </span>
-                        )}
-                    </div>
-                );
-            },
-        },
-        {
-            id: 'user',
-            header: 'Usuario',
-            cell: ({ row }) => {
-                const users = [...new Set(row.original.logs.map((l) => l.user?.name ?? 'Sistema'))];
-                return <span className="font-medium">{users.join(', ')}</span>;
-            },
-        },
-        {
-            id: 'summary',
-            header: 'Resumen',
-            cell: ({ row }) => {
-                const group = row.original;
-                const eventCounts = group.logs.reduce(
-                    (acc, log) => {
-                        acc[log.event as AuditEvent] = (acc[log.event as AuditEvent] ?? 0) + 1;
-                        return acc;
-                    },
-                    {} as Partial<Record<AuditEvent, number>>,
-                );
-                const models = [...new Set(group.logs.map((l) => getModelName(l.auditable_type)))];
-                return (
-                    <div className="flex flex-wrap items-center gap-1.5">
-                        <BatchBadge count={group.logs.length} />
-                        {models.map((m) => (
-                            <Badge key={m} variant="secondary" className="text-xs">
-                                {m}
-                            </Badge>
-                        ))}
-                        {(Object.entries(eventCounts) as [AuditEvent, number][]).map(([event, count]) => (
-                            <span key={event} className="text-xs text-muted-foreground">
-                                {count} {eventConfig[event]?.label.toLowerCase()}
-                                {count > 1 ? 's' : ''}
-                            </span>
-                        ))}
-                    </div>
-                );
-            },
-        },
-        {
-            id: 'actions',
-            header: 'Acciones',
-            meta: { className: 'text-center' },
-            cell: ({ row }) => {
-                const first = row.original.logs[0];
-                return (
-                    <div className="flex items-center justify-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                router.get(audit.show.url(first.id));
-                            }}
-                        >
-                            <EyeIcon className="size-4" />
-                            <span className="sr-only">Ver detalle</span>
-                        </Button>
-                    </div>
-                );
-            },
-        },
-    ];
-
     return (
         <>
             <Head title="Auditoría" />
@@ -389,7 +263,9 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
                         <Input
                             type="date"
                             value={queryFilters.date_from ?? ''}
-                            onChange={(e) => handleFilterChange('date_from', e.target.value)}
+                            onChange={(e) =>
+                                handleFilterChange('date_from', e.target.value)
+                            }
                             className="w-full sm:w-40"
                         />
                     </div>
@@ -398,7 +274,9 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
                         <Input
                             type="date"
                             value={queryFilters.date_to ?? ''}
-                            onChange={(e) => handleFilterChange('date_to', e.target.value)}
+                            onChange={(e) =>
+                                handleFilterChange('date_to', e.target.value)
+                            }
                             className="w-full sm:w-40"
                         />
                     </div>
@@ -410,7 +288,9 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
                             <SelectValue placeholder="Todos los eventos" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">Todos los eventos</SelectItem>
+                            <SelectItem value="all">
+                                Todos los eventos
+                            </SelectItem>
                             <SelectItem value="created">Creado</SelectItem>
                             <SelectItem value="updated">Actualizado</SelectItem>
                             <SelectItem value="deleted">Eliminado</SelectItem>
@@ -418,22 +298,41 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
                     </Select>
                     <Select
                         value={queryFilters.auditable_type ?? 'all'}
-                        onValueChange={(v) => handleFilterChange('auditable_type', v)}
+                        onValueChange={(v) =>
+                            handleFilterChange('auditable_type', v)
+                        }
                     >
                         <SelectTrigger className="w-full sm:w-48">
                             <SelectValue placeholder="Todos los modelos" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">Todos los modelos</SelectItem>
-                            <SelectItem value="App\Models\User">Usuario</SelectItem>
-                            <SelectItem value="App\Models\Product">Producto</SelectItem>
-                            <SelectItem value="App\Models\Category">Categoría</SelectItem>
-                            <SelectItem value="App\Models\Supplier">Proveedor</SelectItem>
-                            <SelectItem value="App\Models\StockMovement">Movimiento</SelectItem>
+                            <SelectItem value="all">
+                                Todos los modelos
+                            </SelectItem>
+                            <SelectItem value="App\Models\User">
+                                Usuario
+                            </SelectItem>
+                            <SelectItem value="App\Models\Product">
+                                Producto
+                            </SelectItem>
+                            <SelectItem value="App\Models\Category">
+                                Categoría
+                            </SelectItem>
+                            <SelectItem value="App\Models\Supplier">
+                                Proveedor
+                            </SelectItem>
+                            <SelectItem value="App\Models\StockMovement">
+                                Movimiento
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 shrink-0">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="h-9 shrink-0"
+                        >
                             <XIcon className="size-4" />
                             Limpiar filtros
                         </Button>
@@ -445,7 +344,9 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
                     data={logs.data}
                     pagination={logs}
                     showPerPage
-                    onPerPageChange={(perPage) => setQueryFilters({ per_page: String(perPage) })}
+                    onPerPageChange={(perPage) =>
+                        setQueryFilters({ per_page: String(perPage) })
+                    }
                     emptyTitle="Sin registros"
                     emptyDescription="No se encontraron registros de auditoría con los filtros seleccionados."
                 />
@@ -466,8 +367,10 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
                                 {batchGroups.map((group) => (
                                     <div key={group.batchId}>
                                         <div
-                                            className="flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors"
-                                            onClick={() => toggleBatch(group.batchId)}
+                                            className="hover:bg-muted/50 flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors"
+                                            onClick={() =>
+                                                toggleBatch(group.batchId)
+                                            }
                                         >
                                             <Button
                                                 variant="ghost"
@@ -480,41 +383,70 @@ export default function AuditIndex({ logs, filters }: AuditIndexProps) {
                                                     <ChevronRightIcon className="size-4" />
                                                 )}
                                             </Button>
-                                            <BatchBadge count={group.logs.length} />
-                                            <span className="text-sm text-muted-foreground">
-                                                {formatDateTime(group.logs[0].created_at)}
+                                            <BatchBadge
+                                                count={group.logs.length}
+                                            />
+                                            <span className="text-muted-foreground text-sm">
+                                                {formatDateTime(
+                                                    group.logs[0].created_at,
+                                                )}
                                             </span>
                                             <span className="text-sm font-medium">
-                                                {[...new Set(group.logs.map((l) => l.user?.name ?? 'Sistema'))].join(', ')}
+                                                {[
+                                                    ...new Set(
+                                                        group.logs.map(
+                                                            (l) =>
+                                                                l.user?.name ??
+                                                                'Sistema',
+                                                        ),
+                                                    ),
+                                                ].join(', ')}
                                             </span>
-                                            <span className="text-xs text-muted-foreground ml-auto">
+                                            <span className="text-muted-foreground ml-auto text-xs">
                                                 {group.logs.length} registros
                                             </span>
                                         </div>
                                         {group.isExpanded && (
-                                            <div className="border-t bg-muted/20">
+                                            <div className="bg-muted/20 border-t">
                                                 {group.logs.map((log) => (
                                                     <div
                                                         key={log.id}
-                                                        className="flex items-center gap-3 border-b px-4 py-2 pl-12 last:border-b-0 hover:bg-muted/30 cursor-pointer"
-                                                        onClick={() => router.get(audit.show.url(log.id))}
+                                                        className="hover:bg-muted/30 flex cursor-pointer items-center gap-3 border-b px-4 py-2 pl-12 last:border-b-0"
+                                                        onClick={() =>
+                                                            router.get(
+                                                                audit.show.url(
+                                                                    log.id,
+                                                                ),
+                                                            )
+                                                        }
                                                     >
-                                                        <EventBadge event={log.event as AuditEvent} />
+                                                        <EventBadge
+                                                            event={
+                                                                log.event as AuditEvent
+                                                            }
+                                                        />
                                                         <span className="text-sm">
-                                                            {getModelName(log.auditable_type)}
+                                                            {getModelName(
+                                                                log.auditable_type,
+                                                            )}
                                                         </span>
-                                                        <span className="text-xs text-muted-foreground font-mono">
+                                                        <span className="text-muted-foreground font-mono text-xs">
                                                             #{log.auditable_id}
                                                         </span>
-                                                        <span className="text-xs text-muted-foreground ml-auto">
-                                                            {log.ip_address ?? '—'}
+                                                        <span className="text-muted-foreground ml-auto text-xs">
+                                                            {log.ip_address ??
+                                                                '—'}
                                                         </span>
                                                         <Button
                                                             variant="ghost"
                                                             size="icon-xs"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                router.get(audit.show.url(log.id));
+                                                                router.get(
+                                                                    audit.show.url(
+                                                                        log.id,
+                                                                    ),
+                                                                );
                                                             }}
                                                         >
                                                             <EyeIcon className="size-3.5" />

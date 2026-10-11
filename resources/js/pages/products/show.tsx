@@ -36,7 +36,10 @@ export default function ProductsShow({ product, isAdmin }: ProductsShowProps) {
         breadcrumbs: [
             { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
             { title: 'Productos', href: products.index.url() },
-            { title: product.name_product, href: products.show.url(product.id) },
+            {
+                title: product.name_product,
+                href: products.show.url(product.id),
+            },
         ],
     });
 
@@ -124,7 +127,10 @@ export default function ProductsShow({ product, isAdmin }: ProductsShowProps) {
                                                     )}
                                                     className="hover:text-primary"
                                                 >
-                                                    {product.category.name_category}
+                                                    {
+                                                        product.category
+                                                            .name_category
+                                                    }
                                                 </Link>
                                             ) : (
                                                 '—'
@@ -143,7 +149,10 @@ export default function ProductsShow({ product, isAdmin }: ProductsShowProps) {
                                                     )}
                                                     className="hover:text-primary"
                                                 >
-                                                    {product.supplier.name_supplier}
+                                                    {
+                                                        product.supplier
+                                                            .name_supplier
+                                                    }
                                                 </Link>
                                             ) : (
                                                 '—'
@@ -158,7 +167,9 @@ export default function ProductsShow({ product, isAdmin }: ProductsShowProps) {
                                                 Precio unitario
                                             </p>
                                             <p className="text-2xl font-bold">
-                                                {formatCurrency(product.unit_price_product)}
+                                                {formatCurrency(
+                                                    product.unit_price_product,
+                                                )}
                                             </p>
                                         </div>
                                     )}
@@ -190,7 +201,9 @@ export default function ProductsShow({ product, isAdmin }: ProductsShowProps) {
                                         <p className="text-muted-foreground text-sm">
                                             Estado
                                         </p>
-                                        <StatusBadge active={product.is_active_product} />
+                                        <StatusBadge
+                                            active={product.is_active_product}
+                                        />
                                     </div>
                                 </div>
                             </div>

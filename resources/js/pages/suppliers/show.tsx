@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/inventory/confirm-dialog';
 import { DataTable } from '@/components/inventory/data-table';
-import { EmptyState } from '@/components/inventory/empty-state';
 import { PageHeader } from '@/components/inventory/page-header';
 import { StockBadge } from '@/components/inventory/stock-badge';
 import { useBackNavigation } from '@/hooks/use-back-navigation';
@@ -22,7 +21,10 @@ type SuppliersShowProps = {
     isAdmin: boolean;
 };
 
-export default function SuppliersShow({ supplier, isAdmin }: SuppliersShowProps) {
+export default function SuppliersShow({
+    supplier,
+    isAdmin,
+}: SuppliersShowProps) {
     const [showDelete, setShowDelete] = useState(false);
     const back = useBackNavigation(suppliers.index.url());
 
@@ -30,7 +32,10 @@ export default function SuppliersShow({ supplier, isAdmin }: SuppliersShowProps)
         breadcrumbs: [
             { title: 'StockNow', href: '/dashboard', icon: HomeIcon },
             { title: 'Proveedores', href: suppliers.index.url() },
-            { title: supplier.name_supplier, href: suppliers.show.url(supplier.id) },
+            {
+                title: supplier.name_supplier,
+                href: suppliers.show.url(supplier.id),
+            },
         ],
     });
 
@@ -43,7 +48,9 @@ export default function SuppliersShow({ supplier, isAdmin }: SuppliersShowProps)
             accessorKey: 'sku_product',
             header: 'SKU',
             cell: ({ row }) => (
-                <span className="font-mono text-sm">{row.original.sku_product}</span>
+                <span className="font-mono text-sm">
+                    {row.original.sku_product}
+                </span>
             ),
         },
         {
@@ -74,7 +81,9 @@ export default function SuppliersShow({ supplier, isAdmin }: SuppliersShowProps)
             accessorKey: 'current_stock_product',
             header: 'Stock',
             meta: { className: 'text-center' },
-            cell: ({ row }) => <span>{row.original.current_stock_product}</span>,
+            cell: ({ row }) => (
+                <span>{row.original.current_stock_product}</span>
+            ),
         },
         {
             accessorKey: 'status',
@@ -98,7 +107,10 @@ export default function SuppliersShow({ supplier, isAdmin }: SuppliersShowProps)
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <PageHeader
                     title={supplier.name_supplier}
-                    description={supplier.contact_name_supplier ?? 'Sin contacto registrado'}
+                    description={
+                        supplier.contact_name_supplier ??
+                        'Sin contacto registrado'
+                    }
                 >
                     <Button variant="outline" onClick={back}>
                         <ArrowLeftIcon className="size-4" />
@@ -130,11 +142,17 @@ export default function SuppliersShow({ supplier, isAdmin }: SuppliersShowProps)
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <p className="text-muted-foreground text-sm">Nombre</p>
-                                <p className="font-medium">{supplier.name_supplier}</p>
+                                <p className="text-muted-foreground text-sm">
+                                    Nombre
+                                </p>
+                                <p className="font-medium">
+                                    {supplier.name_supplier}
+                                </p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground text-sm">Contacto</p>
+                                <p className="text-muted-foreground text-sm">
+                                    Contacto
+                                </p>
                                 <p className="font-medium">
                                     {supplier.contact_name_supplier ?? '—'}
                                 </p>
@@ -142,19 +160,25 @@ export default function SuppliersShow({ supplier, isAdmin }: SuppliersShowProps)
                             {isAdmin && (
                                 <>
                                     <div>
-                                        <p className="text-muted-foreground text-sm">Email</p>
+                                        <p className="text-muted-foreground text-sm">
+                                            Email
+                                        </p>
                                         <p className="font-medium">
                                             {supplier.email_supplier ?? '—'}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-muted-foreground text-sm">Teléfono</p>
+                                        <p className="text-muted-foreground text-sm">
+                                            Teléfono
+                                        </p>
                                         <p className="font-medium">
                                             {supplier.phone_supplier ?? '—'}
                                         </p>
                                     </div>
                                     <div>
-                                        <p className="text-muted-foreground text-sm">Dirección</p>
+                                        <p className="text-muted-foreground text-sm">
+                                            Dirección
+                                        </p>
                                         <p className="font-medium">
                                             {supplier.address_supplier ?? '—'}
                                         </p>
@@ -162,8 +186,12 @@ export default function SuppliersShow({ supplier, isAdmin }: SuppliersShowProps)
                                 </>
                             )}
                             <div>
-                                <p className="text-muted-foreground text-sm">Productos</p>
-                                <p className="font-medium">{supplier.products?.length ?? 0}</p>
+                                <p className="text-muted-foreground text-sm">
+                                    Productos
+                                </p>
+                                <p className="font-medium">
+                                    {supplier.products?.length ?? 0}
+                                </p>
                             </div>
                         </CardContent>
                     </Card>
@@ -196,7 +224,9 @@ export default function SuppliersShow({ supplier, isAdmin }: SuppliersShowProps)
                             : `¿Estás seguro de eliminar el proveedor "${supplier.name_supplier}"?`
                     }
                     confirmText="Eliminar"
-                    variant={supplier.products_count ? 'default' : 'destructive'}
+                    variant={
+                        supplier.products_count ? 'default' : 'destructive'
+                    }
                     onConfirm={handleDelete}
                 />
             </div>

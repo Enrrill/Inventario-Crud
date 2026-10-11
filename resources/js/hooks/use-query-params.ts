@@ -52,10 +52,14 @@ export function useQueryParams<T extends Record<string, string>>(): [
 
     const clearParams = useCallback(() => {
         const url = new URL(window.location.origin + page.url);
-        router.get(url.pathname, {}, {
-            preserveScroll: true,
-            preserveState: true,
-        });
+        router.get(
+            url.pathname,
+            {},
+            {
+                preserveScroll: true,
+                preserveState: true,
+            },
+        );
     }, [page.url]);
 
     return [currentParams, setParams, clearParams];

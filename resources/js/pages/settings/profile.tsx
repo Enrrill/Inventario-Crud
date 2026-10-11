@@ -40,14 +40,18 @@ export default function Profile({
             <h1 className="sr-only">Perfil</h1>
 
             <div className="space-y-6">
-                <div className="rounded-lg border bg-card p-6 shadow-sm">
+                <div className="bg-card rounded-lg border p-6 shadow-sm">
                     <div className="flex items-center gap-4">
                         <div className="bg-primary/10 text-primary flex size-16 items-center justify-center rounded-full text-xl font-semibold">
                             {getInitials(auth.user.name)}
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold">{auth.user.name}</h2>
-                            <p className="text-muted-foreground text-sm">{auth.user.email}</p>
+                            <h2 className="text-lg font-semibold">
+                                {auth.user.name}
+                            </h2>
+                            <p className="text-muted-foreground text-sm">
+                                {auth.user.email}
+                            </p>
                             <span className="bg-primary/10 text-primary mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium capitalize">
                                 {auth.user.role}
                             </span>
@@ -55,8 +59,10 @@ export default function Profile({
                     </div>
                 </div>
 
-                <div className="rounded-lg border bg-card p-6 shadow-sm">
-                    <h3 className="mb-4 text-base font-medium">Información Personal</h3>
+                <div className="bg-card rounded-lg border p-6 shadow-sm">
+                    <h3 className="mb-4 text-base font-medium">
+                        Información Personal
+                    </h3>
                     <p className="text-muted-foreground mb-4 text-sm">
                         Actualiza tu nombre y dirección de correo electrónico
                     </p>
@@ -88,7 +94,9 @@ export default function Profile({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Correo electrónico</Label>
+                                    <Label htmlFor="email">
+                                        Correo electrónico
+                                    </Label>
                                     <div className="relative">
                                         <Mail className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                                         <Input
@@ -109,22 +117,24 @@ export default function Profile({
                                     auth.user.email_verified_at === null && (
                                         <div>
                                             <p className="text-muted-foreground -mt-4 text-sm">
-                                                Tu correo electrónico no está verificado.{' '}
+                                                Tu correo electrónico no está
+                                                verificado.{' '}
                                                 <Link
                                                     href={send()}
                                                     as="button"
                                                     className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                                                 >
-                                                    Haz clic aquí para reenviar el
-                                                    correo de verificación.
+                                                    Haz clic aquí para reenviar
+                                                    el correo de verificación.
                                                 </Link>
                                             </p>
 
                                             {status ===
                                                 'verification-link-sent' && (
                                                 <div className="mt-2 text-sm font-medium text-green-600">
-                                                    Se ha enviado un nuevo enlace de verificación
-                                                    a tu correo electrónico.
+                                                    Se ha enviado un nuevo
+                                                    enlace de verificación a tu
+                                                    correo electrónico.
                                                 </div>
                                             )}
                                         </div>

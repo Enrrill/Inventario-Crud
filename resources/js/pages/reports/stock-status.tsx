@@ -1,5 +1,14 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeftIcon, DownloadIcon, AlertTriangle, CheckCircle, HomeIcon, XCircle, Package, XIcon } from 'lucide-react';
+import {
+    ArrowLeftIcon,
+    DownloadIcon,
+    AlertTriangle,
+    CheckCircle,
+    HomeIcon,
+    XCircle,
+    Package,
+    XIcon,
+} from 'lucide-react';
 import { useBackNavigation } from '@/hooks/use-back-navigation';
 import type { ColumnDef, StockFeatures } from '@tanstack/react-table';
 import { useCallback } from 'react';
@@ -25,11 +34,14 @@ type ReportsStockStatusProps = {
         out_of_stock: Product[];
         low_stock: Product[];
         normal_stock: Product[];
-        by_category: Record<string, {
-            total: number;
-            out_of_stock: number;
-            low_stock: number;
-        }>;
+        by_category: Record<
+            string,
+            {
+                total: number;
+                out_of_stock: number;
+                low_stock: number;
+            }
+        >;
     };
     filters: { category_id?: string };
     categories: Category[];
@@ -59,8 +71,9 @@ export default function ReportsStockStatus({
         params.set('report', 'stock-status');
         const catId = queryFilters.category_id || filters.category_id;
         if (catId && catId !== 'all') params.set('category_id', catId);
-        
-        window.location.href = reports.export.url(type) + '?' + params.toString();
+
+        window.location.href =
+            reports.export.url(type) + '?' + params.toString();
     }
 
     const hasData = summary.total_active > 0;
@@ -73,7 +86,9 @@ export default function ReportsStockStatus({
             header: 'SKU',
             meta: { className: 'w-32' },
             cell: ({ row }) => (
-                <span className="font-mono text-sm">{row.original.sku_product}</span>
+                <span className="font-mono text-sm">
+                    {row.original.sku_product}
+                </span>
             ),
         },
         {
@@ -96,7 +111,9 @@ export default function ReportsStockStatus({
             cell: ({ row }) =>
                 row.original.category ? (
                     <Link
-                        href={categoriesRoute.show.url(row.original.category.id)}
+                        href={categoriesRoute.show.url(
+                            row.original.category.id,
+                        )}
                         className="hover:text-primary text-muted-foreground"
                     >
                         {row.original.category.name_category}
@@ -108,15 +125,23 @@ export default function ReportsStockStatus({
         {
             accessorKey: 'current_stock_product',
             header: 'Stock Actual',
-            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-28 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
-                <span className="font-medium">{row.original.current_stock_product}</span>
+                <span className="font-medium">
+                    {row.original.current_stock_product}
+                </span>
             ),
         },
         {
             accessorKey: 'minimum_stock_product',
             header: 'Stock Mínimo',
-            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-28 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <span>{row.original.minimum_stock_product}</span>
             ),
@@ -124,7 +149,10 @@ export default function ReportsStockStatus({
         {
             accessorKey: 'status',
             header: 'Estado',
-            meta: { className: 'w-28 text-center', headerClassName: 'text-center' },
+            meta: {
+                className: 'w-28 text-center',
+                headerClassName: 'text-center',
+            },
             cell: ({ row }) => (
                 <div className="flex justify-center">
                     <StockBadge
@@ -139,7 +167,10 @@ export default function ReportsStockStatus({
 
     const categoryOptions = [
         { value: 'all', label: 'Todas las categorías' },
-        ...categories.map((cat) => ({ value: String(cat.id), label: cat.name_category })),
+        ...categories.map((cat) => ({
+            value: String(cat.id),
+            label: cat.name_category,
+        })),
     ];
 
     return (
@@ -154,15 +185,27 @@ export default function ReportsStockStatus({
                         <ArrowLeftIcon className="size-4" />
                         Volver
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('csv')} disabled={!hasData}>
+                    <Button
+                        variant="outline"
+                        onClick={() => handleExport('csv')}
+                        disabled={!hasData}
+                    >
                         <DownloadIcon className="size-4" />
                         CSV
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('pdf')} disabled={!hasData}>
+                    <Button
+                        variant="outline"
+                        onClick={() => handleExport('pdf')}
+                        disabled={!hasData}
+                    >
                         <DownloadIcon className="size-4" />
                         PDF
                     </Button>
-                    <Button variant="outline" onClick={() => handleExport('xlsx')} disabled={!hasData}>
+                    <Button
+                        variant="outline"
+                        onClick={() => handleExport('xlsx')}
+                        disabled={!hasData}
+                    >
                         <DownloadIcon className="size-4" />
                         XLSX
                     </Button>
@@ -203,7 +246,12 @@ export default function ReportsStockStatus({
                         className="w-full sm:w-64"
                     />
                     {hasActiveFilters && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="shrink-0">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="shrink-0"
+                        >
                             <XIcon className="size-4" />
                             Limpiar filtros
                         </Button>
@@ -228,12 +276,26 @@ export default function ReportsStockStatus({
                             ) : (
                                 <div className="space-y-2">
                                     {summary.out_of_stock.map((product) => (
-                                        <div key={product.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
+                                        <div
+                                            key={product.id}
+                                            className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0"
+                                        >
                                             <div className="min-w-0 flex-1">
-                                                <p className="truncate text-sm font-medium">{product.name_product}</p>
-                                                <p className="text-muted-foreground text-xs">{product.category?.name_category ?? '—'}</p>
+                                                <p className="truncate text-sm font-medium">
+                                                    {product.name_product}
+                                                </p>
+                                                <p className="text-muted-foreground text-xs">
+                                                    {product.category
+                                                        ?.name_category ?? '—'}
+                                                </p>
                                             </div>
-                                            <StockBadge currentStock={0} minimumStock={product.minimum_stock_product} showValue={false} />
+                                            <StockBadge
+                                                currentStock={0}
+                                                minimumStock={
+                                                    product.minimum_stock_product
+                                                }
+                                                showValue={false}
+                                            />
                                         </div>
                                     ))}
                                 </div>
@@ -258,12 +320,27 @@ export default function ReportsStockStatus({
                             ) : (
                                 <div className="space-y-2">
                                     {summary.low_stock.map((product) => (
-                                        <div key={product.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
+                                        <div
+                                            key={product.id}
+                                            className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0"
+                                        >
                                             <div className="min-w-0 flex-1">
-                                                <p className="truncate text-sm font-medium">{product.name_product}</p>
-                                                <p className="text-muted-foreground text-xs">{product.category?.name_category ?? '—'}</p>
+                                                <p className="truncate text-sm font-medium">
+                                                    {product.name_product}
+                                                </p>
+                                                <p className="text-muted-foreground text-xs">
+                                                    {product.category
+                                                        ?.name_category ?? '—'}
+                                                </p>
                                             </div>
-                                            <StockBadge currentStock={product.current_stock_product} minimumStock={product.minimum_stock_product} />
+                                            <StockBadge
+                                                currentStock={
+                                                    product.current_stock_product
+                                                }
+                                                minimumStock={
+                                                    product.minimum_stock_product
+                                                }
+                                            />
                                         </div>
                                     ))}
                                 </div>
@@ -284,26 +361,43 @@ export default function ReportsStockStatus({
                                 />
                             ) : (
                                 <div className="space-y-3">
-                                    {Object.entries(summary.by_category).map(([name, data]) => (
-                                        <div key={name} className="border-b pb-2 last:border-0 last:pb-0">
-                                            <div className="flex items-center justify-between">
-                                                <p className="font-medium">{name}</p>
-                                                <span className="text-muted-foreground text-sm">{data.total} total</span>
+                                    {Object.entries(summary.by_category).map(
+                                        ([name, data]) => (
+                                            <div
+                                                key={name}
+                                                className="border-b pb-2 last:border-0 last:pb-0"
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <p className="font-medium">
+                                                        {name}
+                                                    </p>
+                                                    <span className="text-muted-foreground text-sm">
+                                                        {data.total} total
+                                                    </span>
+                                                </div>
+                                                <div className="mt-1 flex gap-2">
+                                                    {data.out_of_stock > 0 && (
+                                                        <Badge
+                                                            variant="destructive"
+                                                            className="text-xs"
+                                                        >
+                                                            {data.out_of_stock}{' '}
+                                                            sin stock
+                                                        </Badge>
+                                                    )}
+                                                    {data.low_stock > 0 && (
+                                                        <Badge
+                                                            variant="secondary"
+                                                            className="text-xs"
+                                                        >
+                                                            {data.low_stock}{' '}
+                                                            bajo
+                                                        </Badge>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div className="mt-1 flex gap-2">
-                                                {data.out_of_stock > 0 && (
-                                                    <Badge variant="destructive" className="text-xs">
-                                                        {data.out_of_stock} sin stock
-                                                    </Badge>
-                                                )}
-                                                {data.low_stock > 0 && (
-                                                    <Badge variant="secondary" className="text-xs">
-                                                        {data.low_stock} bajo
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
+                                        ),
+                                    )}
                                 </div>
                             )}
                         </CardContent>
@@ -313,7 +407,9 @@ export default function ReportsStockStatus({
                 {problemProducts.length > 0 && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>Productos que Requieren Atención</CardTitle>
+                            <CardTitle>
+                                Productos que Requieren Atención
+                            </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <DataTable

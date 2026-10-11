@@ -15,7 +15,8 @@ export function useBackNavigation(fallback: string): () => void {
         // document.referrer check ensures the previous page belongs to the same origin.
         const hasSpaHistory =
             window.history.length > 2 &&
-            (document.referrer === '' || document.referrer.startsWith(window.location.origin));
+            (document.referrer === '' ||
+                document.referrer.startsWith(window.location.origin));
 
         if (hasSpaHistory) {
             window.history.back();

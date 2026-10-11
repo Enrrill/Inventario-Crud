@@ -1,4 +1,9 @@
-import { ArrowDownCircleIcon, ArrowUpCircleIcon, RefreshCwIcon, XIcon } from 'lucide-react';
+import {
+    ArrowDownCircleIcon,
+    ArrowUpCircleIcon,
+    RefreshCwIcon,
+    XIcon,
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -12,7 +17,11 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import InputError from '@/components/input-error';
-import type { Product, StockMovementType, StockMovementTypeOption } from '@/types/inventory';
+import type {
+    Product,
+    StockMovementType,
+    StockMovementTypeOption,
+} from '@/types/inventory';
 
 type MovementRowProps = {
     index: number;
@@ -66,14 +75,15 @@ function MovementRow({
     const isStockInsufficient = isExit && quantityNum > currentStock;
 
     return (
-        <div className="rounded-lg border bg-card p-4 shadow-xs">
+        <div className="bg-card rounded-lg border p-4 shadow-xs">
             <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                     <div className="grid gap-3 sm:grid-cols-[1fr_160px_100px]">
                         <div className="space-y-1.5">
                             {index === 0 && (
-                                <Label className="text-xs text-muted-foreground">
-                                    Producto <span className="text-destructive">*</span>
+                                <Label className="text-muted-foreground text-xs">
+                                    Producto{' '}
+                                    <span className="text-destructive">*</span>
                                 </Label>
                             )}
                             <SearchableSelect
@@ -83,16 +93,24 @@ function MovementRow({
                                 placeholder="Seleccionar producto"
                                 searchPlaceholder="Buscar por nombre o SKU..."
                             />
-                            <InputError message={errors[`movements.${index}.product_id`]} />
+                            <InputError
+                                message={
+                                    errors[`movements.${index}.product_id`]
+                                }
+                            />
                         </div>
 
                         <div className="space-y-1.5">
                             {index === 0 && (
-                                <Label className="text-xs text-muted-foreground">
-                                    Tipo <span className="text-destructive">*</span>
+                                <Label className="text-muted-foreground text-xs">
+                                    Tipo{' '}
+                                    <span className="text-destructive">*</span>
                                 </Label>
                             )}
-                            <Select value={typeMovement} onValueChange={onTypeChange}>
+                            <Select
+                                value={typeMovement}
+                                onValueChange={onTypeChange}
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Tipo" />
                                 </SelectTrigger>
@@ -100,9 +118,14 @@ function MovementRow({
                                     {types.map((t) => {
                                         const Icon = typeIcons[t.value];
                                         return (
-                                            <SelectItem key={t.value} value={t.value}>
+                                            <SelectItem
+                                                key={t.value}
+                                                value={t.value}
+                                            >
                                                 <span className="flex items-center gap-1.5">
-                                                    <Icon className={`size-3.5 ${typeColors[t.value]}`} />
+                                                    <Icon
+                                                        className={`size-3.5 ${typeColors[t.value]}`}
+                                                    />
                                                     {t.label}
                                                 </span>
                                             </SelectItem>
@@ -110,38 +133,54 @@ function MovementRow({
                                     })}
                                 </SelectContent>
                             </Select>
-                            <InputError message={errors[`movements.${index}.type_movement`]} />
+                            <InputError
+                                message={
+                                    errors[`movements.${index}.type_movement`]
+                                }
+                            />
                         </div>
 
                         <div className="space-y-1.5">
                             {index === 0 && (
-                                <Label className="text-xs text-muted-foreground">
-                                    Cantidad <span className="text-destructive">*</span>
+                                <Label className="text-muted-foreground text-xs">
+                                    Cantidad{' '}
+                                    <span className="text-destructive">*</span>
                                 </Label>
                             )}
                             <Input
                                 type="number"
                                 min="1"
                                 value={quantity}
-                                onChange={(e) => onQuantityChange(e.target.value)}
+                                onChange={(e) =>
+                                    onQuantityChange(e.target.value)
+                                }
                                 placeholder="0"
                             />
                             {isStockInsufficient && (
                                 <p className="text-xs text-amber-600 dark:text-amber-400">
-                                    Stock insuficiente. Disponible: {currentStock}
+                                    Stock insuficiente. Disponible:{' '}
+                                    {currentStock}
                                 </p>
                             )}
-                            <InputError message={errors[`movements.${index}.quantity_movement`]} />
+                            <InputError
+                                message={
+                                    errors[
+                                        `movements.${index}.quantity_movement`
+                                    ]
+                                }
+                            />
                         </div>
                     </div>
 
                     {product && (
-                        <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
-                            <span className="font-medium text-foreground">
+                        <div className="text-muted-foreground mt-2 flex items-center gap-3 text-xs">
+                            <span className="text-foreground font-medium">
                                 {product.name_product}
                             </span>
                             <span>&middot;</span>
-                            <span>Stock actual: {product.current_stock_product}</span>
+                            <span>
+                                Stock actual: {product.current_stock_product}
+                            </span>
                             <span>&middot;</span>
                             <span>Mínimo: {product.minimum_stock_product}</span>
                             <StockBadge
@@ -158,7 +197,7 @@ function MovementRow({
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="mt-5 size-8 shrink-0 text-muted-foreground hover:text-destructive"
+                        className="text-muted-foreground hover:text-destructive mt-5 size-8 shrink-0"
                         onClick={onRemove}
                     >
                         <XIcon className="size-4" />

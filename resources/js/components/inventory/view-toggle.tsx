@@ -10,7 +10,7 @@ function ViewToggle({
     onViewChange: (view: 'list' | 'grid') => void;
 }) {
     return (
-        <div className="flex items-center border rounded-md">
+        <div className="flex items-center rounded-md border">
             <Button
                 variant="ghost"
                 size="icon-sm"

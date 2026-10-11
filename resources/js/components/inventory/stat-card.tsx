@@ -29,13 +29,17 @@ function StatCard({
                 <div className="text-2xl font-bold">{value}</div>
                 <div className="flex items-center gap-2">
                     {description && (
-                        <p className="text-muted-foreground text-xs">{description}</p>
+                        <p className="text-muted-foreground text-xs">
+                            {description}
+                        </p>
                     )}
                     {trend && (
                         <span
                             className={cn(
                                 'inline-flex items-center text-xs font-medium',
-                                trend.isPositive ? 'text-emerald-600' : 'text-red-600',
+                                trend.isPositive
+                                    ? 'text-emerald-600'
+                                    : 'text-red-600',
                             )}
                         >
                             {trend.isPositive ? (

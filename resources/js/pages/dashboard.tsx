@@ -39,7 +39,7 @@ const formatDate = (date: string) =>
         new Date(date),
     );
 
-function DashboardSkeleton() {
+function DashboardSkeleton({ isAdmin }: Pick<DashboardProps, 'isAdmin'>) {
     return (
         <>
             <Head title="Dashboard" />
@@ -49,7 +49,9 @@ function DashboardSkeleton() {
                     <Skeleton className="h-4 w-64" />
                 </div>
 
-                <DataGrid className={isAdmin ? 'xl:grid-cols-5' : 'xl:grid-cols-4'}>
+                <DataGrid
+                    className={isAdmin ? 'xl:grid-cols-5' : 'xl:grid-cols-4'}
+                >
                     {Array.from({ length: isAdmin ? 5 : 4 }).map((_, i) => (
                         <Card key={`stat-skeleton-${i}`}>
                             <CardContent className="p-6">
@@ -71,7 +73,10 @@ function DashboardSkeleton() {
                         <CardContent>
                             <div className="space-y-4">
                                 {Array.from({ length: 3 }).map((_, i) => (
-                                    <div key={`mov-skeleton-${i}`} className="flex items-center justify-between">
+                                    <div
+                                        key={`mov-skeleton-${i}`}
+                                        className="flex items-center justify-between"
+                                    >
                                         <div className="space-y-1">
                                             <Skeleton className="h-4 w-32" />
                                             <Skeleton className="h-3 w-24" />
@@ -90,7 +95,10 @@ function DashboardSkeleton() {
                         <CardContent>
                             <div className="space-y-4">
                                 {Array.from({ length: 5 }).map((_, i) => (
-                                    <div key={`stock-skeleton-${i}`} className="flex items-center justify-between">
+                                    <div
+                                        key={`stock-skeleton-${i}`}
+                                        className="flex items-center justify-between"
+                                    >
                                         <div className="space-y-1">
                                             <Skeleton className="h-4 w-36" />
                                             <Skeleton className="h-3 w-28" />
@@ -114,7 +122,7 @@ export default function Dashboard({
     isAdmin,
 }: DashboardProps) {
     if (!stats) {
-        return <DashboardSkeleton />;
+        return <DashboardSkeleton isAdmin={isAdmin} />;
     }
 
     return (
@@ -123,10 +131,16 @@ export default function Dashboard({
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
                 <PageHeader
                     title="Dashboard"
-                    description={isAdmin ? 'Resumen general del sistema de inventario' : 'Resumen de tu actividad en el sistema'}
+                    description={
+                        isAdmin
+                            ? 'Resumen general del sistema de inventario'
+                            : 'Resumen de tu actividad en el sistema'
+                    }
                 />
 
-                <DataGrid className={isAdmin ? 'xl:grid-cols-5' : 'xl:grid-cols-4'}>
+                <DataGrid
+                    className={isAdmin ? 'xl:grid-cols-5' : 'xl:grid-cols-4'}
+                >
                     <StatCard
                         title="Total Productos"
                         value={stats.total_products}
@@ -169,7 +183,11 @@ export default function Dashboard({
                 <div className="grid gap-6 lg:grid-cols-2">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>{isAdmin ? 'Últimos Movimientos' : 'Mis Últimos Movimientos'}</CardTitle>
+                            <CardTitle>
+                                {isAdmin
+                                    ? 'Últimos Movimientos'
+                                    : 'Mis Últimos Movimientos'}
+                            </CardTitle>
                             <Link
                                 href={movements.index.url()}
                                 className="text-muted-foreground hover:text-primary text-sm font-medium"
@@ -205,7 +223,9 @@ export default function Dashboard({
                                             </div>
                                             <div className="ml-4 flex items-center gap-2">
                                                 <TypeBadge
-                                                    type={movement.type_movement}
+                                                    type={
+                                                        movement.type_movement
+                                                    }
                                                 />
                                                 <span className="text-muted-foreground text-sm">
                                                     {movement.type_movement ===
